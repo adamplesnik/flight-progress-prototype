@@ -1,14 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { countryLabels } from "./countryLabels";
-import { distanceProgressAt, readoutAt, type FlightReadout } from "./flightData";
+import {
+  distanceProgressAt,
+  readoutAt,
+  type FlightReadout,
+} from "./flightData";
 
 const assetPath = "/assets";
 const routeGeometry =
   "M596.4 359.9 C588.2 363.2 569 366.4 543.9 359.8 C513.4 351.8 439.4 311.8 383.4 277.3 C365 266 338 245 312.2 225 C264.3 186.6 215.6 149 166.3 112.2 C116.5 76.1 66.6 40.2 -11.6 -4.1";
 // Set to false to hide country names on the map
 const showCountryNames = false;
-const flightDuration = 18000;
-const initialFlightProgress = 0.5;
+const flightDuration = 40000;
+const initialFlightProgress = 0.9;
 
 type CityClusterProps = {
   city: string;
@@ -117,9 +121,12 @@ function AnimatedRoute({
     let previousTime: number | undefined;
     let progress = initialFlightProgress;
 
+    // `progress` is timeline time (0..1); the marker follows distance flown,
+    // so it stays put until take-off and moves slowly while the aircraft is slow.
     const renderProgress = (progress: number) => {
-      const point = route.getPointAtLength(routeLength * progress);
-      flown.setAttribute("stroke-dasharray", `${progress} 1`);
+      const flownShare = distanceProgressAt(progress);
+      const point = route.getPointAtLength(routeLength * flownShare);
+      flown.setAttribute("stroke-dasharray", `${flownShare} 1`);
       marker.setAttribute("transform", `translate(${point.x} ${point.y})`);
       onReadout(readoutAt(progress));
     };

@@ -91,8 +91,20 @@ const samples: [number, number, number, number][] = [
 ]
 
 export const STEP_MIN = 5
-export const TOTAL_MIN = (samples.length - 1) * STEP_MIN // 430
-const DEPARTURE_GST_MIN = 3 * 60 + 40
+const FLIGHT_MIN = (samples.length - 1) * STEP_MIN // 430
+// Minutes on the ground before the flight profile begins (0 = timeline starts at take-off)
+const PRE_DEPARTURE_MIN = 20
+// Minutes parked at the gate after landing
+const POST_ARRIVAL_MIN = 10
+export const TOTAL_MIN = PRE_DEPARTURE_MIN + FLIGHT_MIN + POST_ARRIVAL_MIN // 460
+const START_GST_MIN = 3 * 60 + 40 - PRE_DEPARTURE_MIN // 03:20 GST
+
+/** Minutes airborne-timeline (0 while still on the ground) for a 0..1 timeline progress. */
+const flightMinutes = (progress: number) =>
+  Math.min(
+    Math.max(Math.min(Math.max(progress, 0), 1) * TOTAL_MIN - PRE_DEPARTURE_MIN, 0),
+    FLIGHT_MIN,
+  )
 
 const KMH_PER_KNOT = 1.852
 const MPH_PER_KNOT = 1.15078
@@ -117,20 +129,22 @@ export type FlightReadout = {
   miles: string
 }
 
-/** progress: 0..1 across the whole flight. Values are interpolated linearly, then snapped. */
+/** progress: 0..1 across the whole timeline (EOBT to landing). Values are interpolated linearly, then snapped. */
 export function readoutAt(progress: number): FlightReadout {
-  const minutes = Math.min(Math.max(progress, 0), 1) * TOTAL_MIN
+  const elapsed = Math.min(Math.max(progress, 0), 1) * TOTAL_MIN
+  const minutes = flightMinutes(progress)
   const i = Math.min(Math.floor(minutes / STEP_MIN), samples.length - 2)
   const t = (minutes - i * STEP_MIN) / STEP_MIN
   const [s0, a0, c0, d0] = samples[i]
   const [s1, a1, c1, d1] = samples[i + 1]
 
   // time: whole minutes
-  const wholeMin = Math.floor(minutes)
-  const clockMin = (DEPARTURE_GST_MIN + wholeMin) % 1440
-  const left = TOTAL_MIN - wholeMin
+  const wholeMin = Math.floor(elapsed)
+  const clockMin = (START_GST_MIN + wholeMin) % 1440
+  const left = FLIGHT_MIN - Math.floor(minutes) // frozen at 7:10 until take-off
   // speed: nearest 5 knots
-  const knots = roundTo(lerp(s0, s1, t) / KMH_PER_KNOT, 5)
+  const parked = elapsed > PRE_DEPARTURE_MIN + FLIGHT_MIN
+  const knots = parked ? 0 : roundTo(lerp(s0, s1, t) / KMH_PER_KNOT, 5)
   // altitude: nearest 100 ft
   const feet = roundTo(lerp(a0, a1, t), 100)
   // distance: nearest 10 km
@@ -153,7 +167,7 @@ export function readoutAt(progress: number): FlightReadout {
 
 /** Share of the route already flown (0..1) after `progress` (0..1) of the flight time. */
 export function distanceProgressAt(progress: number): number {
-  const minutes = Math.min(Math.max(progress, 0), 1) * TOTAL_MIN
+  const minutes = flightMinutes(progress)
   const i = Math.min(Math.floor(minutes / STEP_MIN), samples.length - 2)
   const t = (minutes - i * STEP_MIN) / STEP_MIN
   const remaining = lerp(samples[i][3], samples[i + 1][3], t)
