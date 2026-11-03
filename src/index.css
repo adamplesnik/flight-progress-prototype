@@ -86,10 +86,6 @@
   stroke-width: 16;
 }
 
-.route-remaining {
-  stroke-dasharray: 28 30;
-}
-
 .flight-marker circle {
   fill: #fafafa;
   stroke: #cc0000;

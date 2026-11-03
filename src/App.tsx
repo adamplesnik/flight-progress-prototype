@@ -11,6 +11,9 @@ const routeGeometry =
   "M596.4 359.9 C588.2 363.2 569 366.4 543.9 359.8 C513.4 351.8 439.4 311.8 383.4 277.3 C365 266 338 245 312.2 225 C264.3 186.6 215.6 149 166.3 112.2 C116.5 76.1 66.6 40.2 -11.6 -4.1";
 // Set to false to hide country names on the map
 const showCountryNames = false;
+// Route dash pattern (px)
+const dashLength = 28;
+const dashGap = 30;
 const flightDuration = 40000;
 const initialFlightProgress = 0.9;
 
@@ -114,6 +117,16 @@ function AnimatedRoute({
     if (!route || !flown || !marker) return;
 
     const routeLength = route.getTotalLength();
+
+    // Fit the dash pattern so the first and last dash both sit half inside the
+    // departure/arrival dots: dashes span 10px..(length - 10px) of the route (dot
+    // radius 24px, dash 28px). The gap is stretched slightly so it divides evenly.
+    const dashInset = 10;
+    const span = routeLength - 2 * dashInset - dashLength;
+    const dashCount = Math.max(1, Math.round(span / (dashLength + dashGap)));
+    const fittedGap = span / dashCount - dashLength;
+    route.setAttribute("stroke-dasharray", `${dashLength} ${fittedGap}`);
+    route.setAttribute("stroke-dashoffset", String(-dashInset));
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
