@@ -243,3 +243,12 @@
   line-height: 1;
   white-space: nowrap;
 }
+
+.country-names text {
+  fill: #7a7a7a;
+  font-family: 'Inter:Regular', Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  text-anchor: middle;
+  dominant-baseline: central;
+}

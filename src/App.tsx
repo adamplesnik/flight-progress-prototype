@@ -1,17 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from "react"
-import { readoutAt, type FlightReadout } from "./flightData"
+import { useCallback, useEffect, useRef, useState } from "react";
+import { countryLabels } from "./countryLabels";
+import { readoutAt, type FlightReadout } from "./flightData";
 
-const assetPath = "/assets"
+const assetPath = "/assets";
 const routeGeometry =
-  "M596.4 359.9 C588.2 363.2 569 366.4 543.9 359.8 C513.4 351.8 439.4 311.8 383.4 277.3 C365 266 338 245 312.2 225 C264.3 186.6 215.6 149 166.3 112.2 C116.5 76.1 66.6 40.2 -11.6 -4.1"
-const flightDuration = 18000
-const initialFlightProgress = 0.5
+  "M596.4 359.9 C588.2 363.2 569 366.4 543.9 359.8 C513.4 351.8 439.4 311.8 383.4 277.3 C365 266 338 245 312.2 225 C264.3 186.6 215.6 149 166.3 112.2 C116.5 76.1 66.6 40.2 -11.6 -4.1";
+// Set to false to hide country names on the map
+const showCountryNames = false;
+const flightDuration = 18000;
+const initialFlightProgress = 0.5;
 
 type CityClusterProps = {
-  city: string
-  time: string
-  className: string
-}
+  city: string;
+  time: string;
+  className: string;
+};
 
 function CityCluster({ city, time, className }: CityClusterProps) {
   return (
@@ -22,7 +25,7 @@ function CityCluster({ city, time, className }: CityClusterProps) {
       </div>
       <span className="route-dot" aria-hidden="true" />
     </section>
-  )
+  );
 }
 
 function FlightData({ data }: { data: FlightReadout }) {
@@ -53,78 +56,94 @@ function FlightData({ data }: { data: FlightReadout }) {
         </dd>
       </div>
     </dl>
-  )
+  );
+}
+
+function CountryNames() {
+  return (
+    <svg
+      className="world-map country-names"
+      viewBox="0 0 4003.05 1721.37"
+      aria-hidden="true"
+    >
+      {countryLabels.map(({ id, name, x, y }) => (
+        <text key={id} x={x} y={y}>
+          {name}
+        </text>
+      ))}
+    </svg>
+  );
 }
 
 function AnimatedRoute({
   data,
   onReadout,
 }: {
-  data: FlightReadout
-  onReadout: (data: FlightReadout) => void
+  data: FlightReadout;
+  onReadout: (data: FlightReadout) => void;
 }) {
-  const routeRef = useRef<SVGPathElement>(null)
-  const flownRef = useRef<SVGPathElement>(null)
-  const markerRef = useRef<SVGGElement>(null)
-  const pausedRef = useRef(false)
-  const [isPaused, setIsPaused] = useState(false)
+  const routeRef = useRef<SVGPathElement>(null);
+  const flownRef = useRef<SVGPathElement>(null);
+  const markerRef = useRef<SVGGElement>(null);
+  const pausedRef = useRef(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   const toggleFlight = () => {
-    pausedRef.current = !pausedRef.current
-    setIsPaused(pausedRef.current)
-  }
+    pausedRef.current = !pausedRef.current;
+    setIsPaused(pausedRef.current);
+  };
 
   const handleMarkerKeyDown = (
     event: React.KeyboardEvent<SVGCircleElement>,
   ) => {
     if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault()
-      toggleFlight()
+      event.preventDefault();
+      toggleFlight();
     }
-  }
+  };
 
   useEffect(() => {
-    const route = routeRef.current
-    const flown = flownRef.current
-    const marker = markerRef.current
+    const route = routeRef.current;
+    const flown = flownRef.current;
+    const marker = markerRef.current;
 
-    if (!route || !flown || !marker) return
+    if (!route || !flown || !marker) return;
 
-    const routeLength = route.getTotalLength()
+    const routeLength = route.getTotalLength();
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
-    ).matches
-    let frame = 0
-    let previousTime: number | undefined
-    let progress = initialFlightProgress
+    ).matches;
+    let frame = 0;
+    let previousTime: number | undefined;
+    let progress = initialFlightProgress;
 
     const renderProgress = (progress: number) => {
-      const point = route.getPointAtLength(routeLength * progress)
-      flown.setAttribute("stroke-dasharray", `${progress} 1`)
-      marker.setAttribute("transform", `translate(${point.x} ${point.y})`)
-      onReadout(readoutAt(progress))
-    }
+      const point = route.getPointAtLength(routeLength * progress);
+      flown.setAttribute("stroke-dasharray", `${progress} 1`);
+      marker.setAttribute("transform", `translate(${point.x} ${point.y})`);
+      onReadout(readoutAt(progress));
+    };
 
     if (reducedMotion) {
-      renderProgress(initialFlightProgress)
-      return
+      renderProgress(initialFlightProgress);
+      return;
     }
 
     const animate = (time: number) => {
-      previousTime ??= time
+      previousTime ??= time;
 
       if (!pausedRef.current) {
-        progress = (progress + (time - previousTime) / flightDuration) % 1
-        renderProgress(progress)
+        progress = (progress + (time - previousTime) / flightDuration) % 1;
+        renderProgress(progress);
       }
 
-      previousTime = time
-      frame = window.requestAnimationFrame(animate)
-    }
+      previousTime = time;
+      frame = window.requestAnimationFrame(animate);
+    };
 
-    frame = window.requestAnimationFrame(animate)
-    return () => window.cancelAnimationFrame(frame)
-  }, [onReadout])
+    frame = window.requestAnimationFrame(animate);
+    return () => window.cancelAnimationFrame(frame);
+  }, [onReadout]);
 
   return (
     <>
@@ -178,11 +197,11 @@ function AnimatedRoute({
         </g>
       </svg>
     </>
-  )
+  );
 }
 
 function App() {
-  const [data, setData] = useState(() => readoutAt(initialFlightProgress))
+  const [data, setData] = useState(() => readoutAt(initialFlightProgress));
   const onReadout = useCallback((next: FlightReadout) => {
     setData((prev) =>
       (Object.keys(next) as (keyof FlightReadout)[]).every(
@@ -190,8 +209,8 @@ function App() {
       )
         ? prev
         : next,
-    )
-  }, [])
+    );
+  }, []);
 
   return (
     <main className="flight-map">
@@ -202,6 +221,8 @@ function App() {
           alt=""
           aria-hidden="true"
         />
+
+        {showCountryNames && <CountryNames />}
 
         <AnimatedRoute data={data} onReadout={onReadout} />
 
@@ -224,7 +245,7 @@ function App() {
         </time>
       </div>
     </main>
-  )
+  );
 }
 
-export default App
+export default App;
