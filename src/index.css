@@ -211,6 +211,11 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 0.390625cqw;
+  width: 14.6484375cqw; /* 150px at the 1024px design width: speed, altitude */
+}
+
+.flight-data > div:last-child {
+  width: 9.765625cqw; /* 100px: temperature */
 }
 
 .flight-data dt,
