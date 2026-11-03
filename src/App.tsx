@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { readoutAt, type FlightReadout } from "./flightData"
 
 const assetPath = "/assets"
 const routeGeometry =
@@ -24,38 +25,44 @@ function CityCluster({ city, time, className }: CityClusterProps) {
   )
 }
 
-function FlightData() {
+function FlightData({ data }: { data: FlightReadout }) {
   return (
     <dl className="flight-data" aria-label="Current flight conditions">
       <div>
         <dt>
-          796 <span>km/h</span>
+          {data.kmh} <span>km/h</span>
         </dt>
         <dd>
-          495 <span>mph</span>
+          {data.mph} <span>mph</span>
         </dd>
       </div>
       <div>
         <dt>
-          11,580 <span>m</span>
+          {data.meters} <span>m</span>
         </dt>
         <dd>
-          38,000 <span>ft</span>
+          {data.feet} <span>ft</span>
         </dd>
       </div>
       <div>
         <dt>
-          -56 <span>°C</span>
+          {data.celsius} <span>°C</span>
         </dt>
         <dd>
-          -69 <span>°F</span>
+          {data.fahrenheit} <span>°F</span>
         </dd>
       </div>
     </dl>
   )
 }
 
-function AnimatedRoute() {
+function AnimatedRoute({
+  data,
+  onReadout,
+}: {
+  data: FlightReadout
+  onReadout: (data: FlightReadout) => void
+}) {
   const routeRef = useRef<SVGPathElement>(null)
   const flownRef = useRef<SVGPathElement>(null)
   const markerRef = useRef<SVGGElement>(null)
@@ -95,6 +102,7 @@ function AnimatedRoute() {
       const point = route.getPointAtLength(routeLength * progress)
       flown.setAttribute("stroke-dasharray", `${progress} 1`)
       marker.setAttribute("transform", `translate(${point.x} ${point.y})`)
+      onReadout(readoutAt(progress))
     }
 
     if (reducedMotion) {
@@ -116,7 +124,7 @@ function AnimatedRoute() {
 
     frame = window.requestAnimationFrame(animate)
     return () => window.cancelAnimationFrame(frame)
-  }, [])
+  }, [onReadout])
 
   return (
     <>
@@ -150,10 +158,10 @@ function AnimatedRoute() {
           <foreignObject x="-150" y="40" width="174" height="150">
             <div className="marker-data">
               <p className="time-left">
-                <span>in</span> 5:12
+                <span>in</span> {data.remaining}
               </p>
-              <p className="distance-primary">3,245 km</p>
-              <p className="distance-secondary">2,016 mi</p>
+              <p className="distance-primary">{data.km} km</p>
+              <p className="distance-secondary">{data.miles} mi</p>
             </div>
           </foreignObject>
           <circle
@@ -174,6 +182,17 @@ function AnimatedRoute() {
 }
 
 function App() {
+  const [data, setData] = useState(() => readoutAt(initialFlightProgress))
+  const onReadout = useCallback((next: FlightReadout) => {
+    setData((prev) =>
+      (Object.keys(next) as (keyof FlightReadout)[]).every(
+        (k) => prev[k] === next[k],
+      )
+        ? prev
+        : next,
+    )
+  }, [])
+
   return (
     <main className="flight-map">
       <div className="scene">
@@ -184,7 +203,7 @@ function App() {
           aria-hidden="true"
         />
 
-        <AnimatedRoute />
+        <AnimatedRoute data={data} onReadout={onReadout} />
 
         <CityCluster
           city="London"
@@ -198,10 +217,10 @@ function App() {
           className="dubai-cluster"
         />
 
-        <FlightData />
+        <FlightData data={data} />
 
-        <time className="local-time" dateTime="04:58">
-          04:58
+        <time className="local-time" dateTime={data.clock}>
+          {data.clock}
         </time>
       </div>
     </main>
