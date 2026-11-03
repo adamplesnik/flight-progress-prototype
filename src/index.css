@@ -1,5 +1,19 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Inter:Regular';
+  src: url('https://static.figma.com/font/Inter_1') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Inter:Semi Bold';
+  src: url('https://static.figma.com/font/Inter_1') format('woff2');
+  font-style: normal;
+  font-weight: 600;
+}
+
 @layer base {
   html,
   body,
@@ -134,7 +148,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 0.78125cqw;
-  font-family: Inter, sans-serif;
+  font-family: 'Inter:Semi Bold', Inter, sans-serif;
   font-weight: 600;
   line-height: 1;
 }
@@ -159,7 +173,7 @@
 .time-left {
   display: flex;
   gap: 1.171875cqw;
-  font-family: Inter, sans-serif;
+  font-family: 'Inter:Semi Bold', Inter, sans-serif;
   font-size: 5.078125cqw;
   font-weight: 600;
 }
@@ -170,12 +184,12 @@
 }
 
 .distance-primary {
-  font-family: Inter, sans-serif;
+  font-family: 'Inter:Semi Bold', Inter, sans-serif;
   font-weight: 600;
 }
 
 .distance-secondary {
-  font-family: Inter, sans-serif;
+  font-family: 'Inter:Regular', Inter, sans-serif;
   font-weight: 400;
 }
 
@@ -214,13 +228,13 @@
 
 .flight-data dt {
   gap: 0.5859375cqw;
-  font-family: Inter, sans-serif;
+  font-family: 'Inter:Semi Bold', Inter, sans-serif;
   font-weight: 600;
 }
 
 .flight-data dd {
   gap: 0.78125cqw;
-  font-family: Inter, sans-serif;
+  font-family: 'Inter:Regular', Inter, sans-serif;
   font-weight: 400;
 }
 
@@ -228,7 +242,7 @@
   position: absolute;
   bottom: 6.25%;
   left: 4.6875%;
-  font-family: Inter, sans-serif;
+  font-family: 'Inter:Semi Bold', Inter, sans-serif;
   font-size: 3.515625cqw;
   font-weight: 600;
   line-height: 1;
@@ -237,7 +251,7 @@
 
 .country-names text {
   fill: #7a7a7a;
-  font-family: Inter, sans-serif;
+  font-family: 'Inter:Regular', Inter, sans-serif;
   font-size: 16px;
   font-weight: 400;
   text-anchor: middle;
