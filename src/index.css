@@ -1,0 +1,245 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Inter:Regular';
+  src: url('https://static.figma.com/font/Inter_1') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Inter:Semi Bold';
+  src: url('https://static.figma.com/font/Inter_1') format('woff2');
+  font-style: normal;
+  font-weight: 600;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    width: 100%;
+    min-height: 100%;
+  }
+
+  body {
+    overflow: hidden;
+    background: #e9ebed;
+  }
+}
+
+.flight-map {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #e9ebed;
+  color: #090909;
+}
+
+.scene {
+  position: relative;
+  width: min(100vw, 133.333333dvh);
+  aspect-ratio: 4 / 3;
+  flex: 0 0 auto;
+  overflow: visible;
+  container-type: size;
+}
+
+.world-map,
+.route-path {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.world-map {
+  left: -177.5390625%;
+  top: -20.1653646%;
+  width: 390.9231445%;
+  height: 224.1361979%;
+}
+
+.route-path {
+  left: 17.1484375%;
+  top: 24.4921875%;
+  width: 58.4445313%;
+  height: 49.9532552%;
+  overflow: visible;
+}
+
+.route-lines {
+  z-index: 1;
+}
+
+.marker-layer {
+  z-index: 5;
+}
+
+.route-segment {
+  fill: none;
+  stroke: #cc0000;
+  stroke-width: 16;
+}
+
+.route-remaining {
+  stroke-dasharray: 28 30;
+}
+
+.flight-marker circle {
+  fill: #fafafa;
+  stroke: #cc0000;
+  stroke-width: 12;
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.flight-marker circle:focus-visible {
+  outline: none;
+  filter: drop-shadow(0 0 5px rgb(9 9 9 / 45%));
+}
+
+.marker-data {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  color: #090909;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.marker-data .time-left {
+  gap: 12px;
+  font-size: 52px;
+}
+
+.marker-data .distance-primary,
+.marker-data .distance-secondary {
+  font-size: 36px;
+}
+
+.city-cluster {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5625cqw;
+  white-space: nowrap;
+}
+
+.london-cluster {
+  left: 13.671875%;
+  top: 6.25%;
+}
+
+.dubai-cluster {
+  left: 73.046875%;
+  top: 53.6458333%;
+}
+
+.city-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.78125cqw;
+  font-family: 'Inter:Semi Bold', Inter, sans-serif;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.city-copy h1 {
+  font-size: 5.078125cqw;
+}
+
+.city-copy p {
+  font-size: 3.515625cqw;
+}
+
+.route-dot {
+  display: block;
+  width: 4.6875cqw;
+  height: 4.6875cqw;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #cc0000;
+}
+
+.time-left {
+  display: flex;
+  gap: 1.171875cqw;
+  font-family: 'Inter:Semi Bold', Inter, sans-serif;
+  font-size: 5.078125cqw;
+  font-weight: 600;
+}
+
+.distance-primary,
+.distance-secondary {
+  font-size: 3.515625cqw;
+}
+
+.distance-primary {
+  font-family: 'Inter:Semi Bold', Inter, sans-serif;
+  font-weight: 600;
+}
+
+.distance-secondary {
+  font-family: 'Inter:Regular', Inter, sans-serif;
+  font-weight: 400;
+}
+
+.flight-data {
+  position: absolute;
+  top: 6.25%;
+  right: 4.6875%;
+  display: flex;
+  align-items: flex-start;
+  gap: 3.125cqw;
+  margin: 0;
+  font-size: 3.125cqw;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.flight-data > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.390625cqw;
+}
+
+.flight-data dt,
+.flight-data dd {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.flight-data dt {
+  gap: 0.5859375cqw;
+  font-family: 'Inter:Semi Bold', Inter, sans-serif;
+  font-weight: 600;
+}
+
+.flight-data dd {
+  gap: 0.78125cqw;
+  font-family: 'Inter:Regular', Inter, sans-serif;
+  font-weight: 400;
+}
+
+.local-time {
+  position: absolute;
+  bottom: 6.25%;
+  left: 4.6875%;
+  font-family: 'Inter:Semi Bold', Inter, sans-serif;
+  font-size: 3.515625cqw;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
