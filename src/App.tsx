@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { countryLabels } from "./countryLabels";
-import { readoutAt, type FlightReadout } from "./flightData";
+import { distanceProgressAt, readoutAt, type FlightReadout } from "./flightData";
 
 const assetPath = "/assets";
 const routeGeometry =

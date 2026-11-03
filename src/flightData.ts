@@ -150,3 +150,12 @@ export function readoutAt(progress: number): FlightReadout {
     miles: fmt(Math.round(km * MI_PER_KM)),
   }
 }
+
+/** Share of the route already flown (0..1) after `progress` (0..1) of the flight time. */
+export function distanceProgressAt(progress: number): number {
+  const minutes = Math.min(Math.max(progress, 0), 1) * TOTAL_MIN
+  const i = Math.min(Math.floor(minutes / STEP_MIN), samples.length - 2)
+  const t = (minutes - i * STEP_MIN) / STEP_MIN
+  const remaining = lerp(samples[i][3], samples[i + 1][3], t)
+  return 1 - remaining / samples[0][3]
+}
