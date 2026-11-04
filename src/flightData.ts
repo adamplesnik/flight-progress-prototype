@@ -105,7 +105,10 @@ const START_GST_MIN = 3 * 60 + 40 - PRE_DEPARTURE_MIN // 03:20 GST
 /** Minutes airborne-timeline (0 while still on the ground) for a 0..1 timeline progress. */
 const flightMinutes = (progress: number) =>
   Math.min(
-    Math.max(Math.min(Math.max(progress, 0), 1) * TOTAL_MIN - PRE_DEPARTURE_MIN, 0),
+    Math.max(
+      Math.min(Math.max(progress, 0), 1) * TOTAL_MIN - PRE_DEPARTURE_MIN,
+      0,
+    ),
     FLIGHT_MIN,
   )
 
@@ -116,8 +119,8 @@ const MI_PER_KM = 0.621371
 
 const roundTo = (value: number, step: number) => Math.round(value / step) * step
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
-const pad = (n: number) => String(n).padStart(2, "0")
-const fmt = (n: number) => n.toLocaleString("en-US")
+const pad = (n: number) => String(n).padStart(2, '0')
+const fmt = (n: number) => n.toLocaleString('en-US')
 
 export type FlightReadout = {
   clock: string
@@ -147,8 +150,13 @@ export function readoutAt(progress: number): FlightReadout {
   const left = FLIGHT_MIN - Math.floor(minutes) // frozen at 7:10 until take-off
   // speed: nearest 5 knots
   const parked = elapsed > PRE_DEPARTURE_MIN + FLIGHT_MIN
-  const taxiing = elapsed >= PRE_DEPARTURE_MIN - TAXI_MIN && elapsed < PRE_DEPARTURE_MIN
-  const knots = parked ? 0 : taxiing ? TAXI_KNOTS : roundTo(lerp(s0, s1, t) / KMH_PER_KNOT, 5)
+  const taxiing =
+    elapsed >= PRE_DEPARTURE_MIN - TAXI_MIN && elapsed < PRE_DEPARTURE_MIN
+  const knots = parked
+    ? 0
+    : taxiing
+      ? TAXI_KNOTS
+      : roundTo(lerp(s0, s1, t) / KMH_PER_KNOT, 5)
   // altitude: nearest 100 ft
   const feet = roundTo(lerp(a0, a1, t), 100)
   // distance: nearest 10 km
