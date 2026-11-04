@@ -13,13 +13,20 @@ export type Endpoint = {
   city: string
   /** Time label under the city name, e.g. "03:40 GST →" */
   label: string
-  /** Top-left corner of the city cluster, in percent of the scene */
-  position: { left: number; top: number }
+  /** Centre of the route dot, in percent of the scene */
+  dot: { left: number; top: number }
+  /** Which dot edge the city text lines up with (default: start/left) */
+  align?: 'start' | 'end'
 }
 
 export type Flight = {
   id: string
   title: string
+  /**
+   * 'cities-above': city text above the dots, progress label below the marker, data top right.
+   * 'cities-below': city text below the dots, progress label above the marker, data bottom right.
+   */
+  layout: 'cities-above' | 'cities-below'
   origin: Endpoint
   destination: Endpoint
   map: {

@@ -1,8 +1,17 @@
 import type { FlightReadout } from '../data/flightModel'
 
-export function FlightData({ data }: { data: FlightReadout }) {
+export function FlightData({
+  data,
+  bottom = false,
+}: {
+  data: FlightReadout
+  bottom?: boolean
+}) {
   return (
-    <dl className="flight-data" aria-label="Current flight conditions">
+    <dl
+      className={bottom ? 'flight-data bottom' : 'flight-data'}
+      aria-label="Current flight conditions"
+    >
       <div>
         <dt>
           {data.kmh} <span>km/h</span>

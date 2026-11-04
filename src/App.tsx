@@ -38,6 +38,8 @@ function App() {
     setSeek(null)
   }
 
+  const citiesBelow = flight.layout === 'cities-below'
+  const placement = citiesBelow ? 'below' : 'above'
   const { box: mapBox, src: mapSrc } = flight.map
 
   return (
@@ -80,7 +82,7 @@ function App() {
             alt=""
             aria-hidden="true"
           />
-          {showCountryNames && <CountryNames />}
+          {showCountryNames && <CountryNames box={flight.map.box} />}
           <AnimatedRoute
             key={flight.id}
             flight={flight}
@@ -91,9 +93,9 @@ function App() {
             paused={paused}
             seek={seek}
           />
-          <CityCluster {...flight.destination} />
-          <CityCluster {...flight.origin} />
-          <FlightData data={data} />
+          <CityCluster {...flight.destination} placement={placement} />
+          <CityCluster {...flight.origin} placement={placement} />
+          <FlightData data={data} bottom={citiesBelow} />
           <LocalTime clock={data.clock} />
         </div>
       </div>

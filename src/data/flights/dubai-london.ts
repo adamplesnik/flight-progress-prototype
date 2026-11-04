@@ -3,15 +3,16 @@ import type { Flight } from '../types'
 export const dubaiLondon: Flight = {
   id: 'dubai-london',
   title: 'Dubai - London',
+  layout: 'cities-above',
   origin: {
     city: 'Dubai',
     label: '03:40 GST →',
-    position: { left: 73.046875, top: 53.6458333 },
+    dot: { left: 75.390625, top: 71.354167 },
   },
   destination: {
     city: 'London',
     label: '→ 06:50 GMT',
-    position: { left: 13.671875, top: 6.25 },
+    dot: { left: 16.015625, top: 23.958333 },
   },
   map: {
     src: '/assets/150bf.svg',

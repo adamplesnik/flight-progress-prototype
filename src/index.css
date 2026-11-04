@@ -110,28 +110,68 @@
   font-size: 52px;
 }
 
+.marker-data .distances {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+/* label placed by code: 'above' sits on the bottom edge of its box, 'left' aligns text left */
+.marker-data {
+  height: 100%;
+}
+
+.marker-data.above {
+  justify-content: flex-end;
+}
+
+.marker-data.left,
+.marker-data.left .distances {
+  align-items: flex-start;
+}
+
 .marker-data .distance-primary,
 .marker-data .distance-secondary {
   font-size: 36px;
 }
 
+/* A city cluster is a zero-size anchor at the route dot's centre */
 .city-cluster {
   position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1.5625cqw;
+  width: 0;
+  height: 0;
   white-space: nowrap;
 }
 
 .city-copy {
+  position: absolute;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 0.78125cqw;
   font-family: 'Inter:Semi Bold', Inter, sans-serif;
   font-weight: 600;
   line-height: 1;
+}
+
+/* dot radius 24px + 16px gap */
+.city-cluster.above .city-copy {
+  bottom: 3.90625cqw;
+}
+
+.city-cluster.below .city-copy {
+  top: 3.90625cqw;
+}
+
+.city-cluster.align-start .city-copy {
+  left: -2.34375cqw;
+  align-items: flex-start;
+}
+
+.city-cluster.align-end .city-copy {
+  right: -2.34375cqw;
+  align-items: flex-end;
+  text-align: right;
 }
 
 .city-copy h1 {
@@ -143,6 +183,10 @@
 }
 
 .route-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  translate: -50% -50%;
   display: block;
   width: 4.6875cqw;
   height: 4.6875cqw;
@@ -185,6 +229,11 @@
   font-size: 3.125cqw;
   line-height: 1;
   white-space: nowrap;
+}
+
+.flight-data.bottom {
+  top: auto;
+  bottom: 6.25%;
 }
 
 .flight-data > div {
@@ -233,7 +282,6 @@
 .country-names text {
   fill: currentColor;
   font-family: 'Inter:Regular', Inter, sans-serif;
-  font-size: 16px;
   font-weight: 400;
   text-anchor: middle;
   dominant-baseline: central;
