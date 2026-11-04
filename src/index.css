@@ -70,18 +70,7 @@
   user-select: none;
 }
 
-.world-map {
-  left: -177.5390625%;
-  top: -20.1653646%;
-  width: 390.9231445%;
-  height: 224.1361979%;
-}
-
 .route-path {
-  left: 17.1484375%;
-  top: 24.4921875%;
-  width: 58.4445313%;
-  height: 49.9532552%;
   overflow: visible;
 }
 
@@ -133,16 +122,6 @@
   align-items: flex-start;
   gap: 1.5625cqw;
   white-space: nowrap;
-}
-
-.london-cluster {
-  left: 13.671875%;
-  top: 6.25%;
-}
-
-.dubai-cluster {
-  left: 73.046875%;
-  top: 53.6458333%;
 }
 
 .city-copy {

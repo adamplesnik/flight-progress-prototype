@@ -1,5 +1,6 @@
-import { useCallback, useState } from 'react'
-import { readoutAt, type FlightReadout } from './data/flightData'
+import { useCallback, useMemo, useState } from 'react'
+import { createFlightModel, type FlightReadout } from './data/flightModel'
+import { defaultFlight, flights } from './data/flights'
 import { AnimatedRoute } from './partials/AnimatedRoute'
 import { CityCluster } from './partials/CityCluster'
 import { Controls } from './partials/Controls'
@@ -7,11 +8,14 @@ import { CountryNames } from './partials/CountryNames'
 import { FlightData } from './partials/FlightData'
 import { LocalTime } from './partials/LocalTime'
 
-const assetPath = '/assets'
-const initialFlightProgress = 0.9
+const initialFlightProgress = 0.2
 
 function App() {
-  const [data, setData] = useState(() => readoutAt(initialFlightProgress))
+  const [flightId, setFlightId] = useState(defaultFlight.id)
+  const flight = flights.find((f) => f.id === flightId) ?? defaultFlight
+  const model = useMemo(() => createFlightModel(flight), [flight])
+
+  const [data, setData] = useState(() => model.readoutAt(initialFlightProgress))
   const [paused, setPaused] = useState(false)
   // Country names on the map (toggle in the controls)
   const [showCountryNames, setShowCountryNames] = useState(false)
@@ -26,10 +30,34 @@ function App() {
     )
   }, [])
 
+  const selectFlight = (id: string) => {
+    const next = flights.find((f) => f.id === id)
+    if (!next) return
+    setFlightId(id)
+    setData(createFlightModel(next).readoutAt(initialFlightProgress))
+    setSeek(null)
+  }
+
+  const { box: mapBox, src: mapSrc } = flight.map
+
   return (
     <main className="wrapper">
       <div className="flex w-5xl items-center justify-between rounded-xl">
-        <h1 className="text-2xl font-semibold">Dubai - London</h1>
+        {flights.length > 1 ? (
+          <select
+            value={flight.id}
+            onChange={(e) => selectFlight(e.target.value)}
+            className="rounded-xl text-2xl font-semibold"
+          >
+            {flights.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.title}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <h1 className="text-2xl font-semibold">{flight.title}</h1>
+        )}
         <Controls
           paused={paused}
           onToggle={() => setPaused((p) => !p)}
@@ -42,28 +70,29 @@ function App() {
         <div className="scene">
           <img
             className="world-map"
-            src={`${assetPath}/150bf.svg`}
+            src={mapSrc}
+            style={{
+              left: `${mapBox.left}%`,
+              top: `${mapBox.top}%`,
+              width: `${mapBox.width}%`,
+              height: `${mapBox.height}%`,
+            }}
             alt=""
             aria-hidden="true"
           />
           {showCountryNames && <CountryNames />}
           <AnimatedRoute
+            key={flight.id}
+            flight={flight}
+            model={model}
             data={data}
             onReadout={onReadout}
             initialProgress={initialFlightProgress}
             paused={paused}
             seek={seek}
           />
-          <CityCluster
-            city="London"
-            time="→ 06:50 GMT"
-            className="london-cluster"
-          />
-          <CityCluster
-            city="Dubai"
-            time="03:40 GST →"
-            className="dubai-cluster"
-          />
+          <CityCluster {...flight.destination} />
+          <CityCluster {...flight.origin} />
           <FlightData data={data} />
           <LocalTime clock={data.clock} />
         </div>

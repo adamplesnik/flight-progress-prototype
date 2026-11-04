@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react'
-import {
-  distanceProgressAt,
-  readoutAt,
-  type FlightReadout,
-} from '../data/flightData'
+import type { FlightModel, FlightReadout } from '../data/flightModel'
+import type { Box, Flight } from '../data/types'
 
-const routeGeometry =
-  'M596.4 359.9 C588.2 363.2 569 366.4 543.9 359.8 C513.4 351.8 439.4 311.8 383.4 277.3 C365 266 338 245 312.2 225 C264.3 186.6 215.6 149 166.3 112.2 C116.5 76.1 66.6 40.2 -11.6 -4.1'
+const boxStyle = ({ left, top, width, height }: Box) => ({
+  left: `${left}%`,
+  top: `${top}%`,
+  width: `${width}%`,
+  height: `${height}%`,
+})
 // Route dash pattern (px)
 const dashLength = 28
 const dashGap = 30
@@ -14,12 +15,16 @@ const dashGap = 30
 const flightDuration = 40000
 
 export function AnimatedRoute({
+  flight,
+  model,
   data,
   onReadout,
   initialProgress,
   paused,
   seek,
 }: {
+  flight: Flight
+  model: FlightModel
   data: FlightReadout
   onReadout: (data: FlightReadout) => void
   initialProgress: number
@@ -27,6 +32,7 @@ export function AnimatedRoute({
   /** Jump the animation to `to` (0..1); a new `id` triggers a new jump. */
   seek: { to: number; id: number } | null
 }) {
+  const viewBox = `0 0 ${flight.route.viewBox.width} ${flight.route.viewBox.height}`
   const routeRef = useRef<SVGPathElement>(null)
   const flownRef = useRef<SVGPathElement>(null)
   const markerRef = useRef<SVGGElement>(null)
@@ -69,11 +75,11 @@ export function AnimatedRoute({
     // `progress` is timeline time (0..1); the marker follows distance flown,
     // so it stays put until take-off and moves slowly while the aircraft is slow.
     const renderProgress = (progress: number) => {
-      const flownShare = distanceProgressAt(progress)
+      const flownShare = model.distanceProgressAt(progress)
       const point = route.getPointAtLength(routeLength * flownShare)
       flown.setAttribute('stroke-dasharray', `${flownShare} 1`)
       marker.setAttribute('transform', `translate(${point.x} ${point.y})`)
-      onReadout(readoutAt(progress))
+      onReadout(model.readoutAt(progress))
     }
 
     jumpRef.current = (to) => {
@@ -100,32 +106,34 @@ export function AnimatedRoute({
 
     frame = window.requestAnimationFrame(animate)
     return () => window.cancelAnimationFrame(frame)
-  }, [onReadout, initialProgress])
+  }, [onReadout, initialProgress, model])
 
   return (
     <>
       <svg
         className="route-path route-lines"
-        viewBox="0 0 598.472 383.641"
+        style={boxStyle(flight.route.box)}
+        viewBox={viewBox}
         fill="none"
         aria-hidden="true"
       >
         <path
           ref={routeRef}
           className="route-segment route-remaining"
-          d={routeGeometry}
+          d={flight.route.geometry}
         />
         <path
           ref={flownRef}
           className="route-segment route-flown"
-          d={routeGeometry}
+          d={flight.route.geometry}
           pathLength="1"
           strokeDasharray="0 1"
         />
       </svg>
       <svg
         className="route-path marker-layer"
-        viewBox="0 0 598.472 383.641"
+        style={boxStyle(flight.route.box)}
+        viewBox={viewBox}
         fill="none"
         overflow="visible"
         aria-hidden="true"
