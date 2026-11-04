@@ -96,6 +96,9 @@ const FLIGHT_MIN = (samples.length - 1) * STEP_MIN // 430
 const PRE_DEPARTURE_MIN = 20
 // Minutes parked at the gate after landing
 const POST_ARRIVAL_MIN = 10
+// Taxiing in the last 10 min before take-off (03:30–03:40): 10 knots
+const TAXI_MIN = 10
+const TAXI_KNOTS = 10
 export const TOTAL_MIN = PRE_DEPARTURE_MIN + FLIGHT_MIN + POST_ARRIVAL_MIN // 460
 const START_GST_MIN = 3 * 60 + 40 - PRE_DEPARTURE_MIN // 03:20 GST
 
@@ -144,7 +147,8 @@ export function readoutAt(progress: number): FlightReadout {
   const left = FLIGHT_MIN - Math.floor(minutes) // frozen at 7:10 until take-off
   // speed: nearest 5 knots
   const parked = elapsed > PRE_DEPARTURE_MIN + FLIGHT_MIN
-  const knots = parked ? 0 : roundTo(lerp(s0, s1, t) / KMH_PER_KNOT, 5)
+  const taxiing = elapsed >= PRE_DEPARTURE_MIN - TAXI_MIN && elapsed < PRE_DEPARTURE_MIN
+  const knots = parked ? 0 : taxiing ? TAXI_KNOTS : roundTo(lerp(s0, s1, t) / KMH_PER_KNOT, 5)
   // altitude: nearest 100 ft
   const feet = roundTo(lerp(a0, a1, t), 100)
   // distance: nearest 10 km
