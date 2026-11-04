@@ -28,22 +28,37 @@
   }
 }
 
-.flight-map {
+.wrapper {
+  /* 4:3 map width: limited by viewport width, or by height minus padding, gap and controls */
+  --map-width: min(100vw - 32px, (100dvh - 32px - 16px - 48px) * 4 / 3);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 16px;
+  box-sizing: border-box;
   width: 100%;
   min-height: 100dvh;
-  overflow: hidden;
+  padding: 16px;
   background: #e9ebed;
   color: #090909;
 }
 
+.flight-map {
+  width: var(--map-width);
+  aspect-ratio: 4 / 3;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 1px solid #b3b3b3;
+  border-radius: 8px;
+  background: #e9ebed;
+}
+
 .scene {
   position: relative;
-  width: min(100vw, 133.333333dvh);
-  aspect-ratio: 4 / 3;
-  flex: 0 0 auto;
+  width: 100%;
+  height: 100%;
   overflow: visible;
   container-type: size;
 }
@@ -90,13 +105,6 @@
   fill: #fafafa;
   stroke: #cc0000;
   stroke-width: 12;
-  pointer-events: all;
-  cursor: pointer;
-}
-
-.flight-marker circle:focus-visible {
-  outline: none;
-  filter: drop-shadow(0 0 5px rgb(9 9 9 / 45%));
 }
 
 .marker-data {
@@ -252,4 +260,46 @@
   font-weight: 400;
   text-anchor: middle;
   dominant-baseline: central;
+}
+
+.controls {
+  display: flex;
+  width: var(--map-width);
+  gap: 16px;
+
+  .buttons-wrapper {
+    border: 1px currentColor solid;
+    border-radius: 12px;
+    padding: 4px 4px 4px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.controls button {
+  padding: 12px;
+  border: 1px transparent solid;
+
+  border-radius: 8px;
+  font-family: 'Inter:Regular', Inter, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  &:hover {
+    background-color: #ccc;
+  }
+
+  &.primary {
+    border-radius: 12px;
+    background: #090909;
+    color: #fafafa;
+    width: 96px;
+  }
+}
+
+.controls button:focus-visible {
+  outline: 2px solid #cc0000;
+  outline-offset: 2px;
 }

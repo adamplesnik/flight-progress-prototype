@@ -107,9 +107,9 @@ const flightMinutes = (progress: number) =>
   Math.min(
     Math.max(
       Math.min(Math.max(progress, 0), 1) * TOTAL_MIN - PRE_DEPARTURE_MIN,
-      0,
+      0
     ),
-    FLIGHT_MIN,
+    FLIGHT_MIN
   )
 
 const KMH_PER_KNOT = 1.852

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import {
   distanceProgressAt,
   readoutAt,
@@ -17,30 +17,29 @@ export function AnimatedRoute({
   data,
   onReadout,
   initialProgress,
+  paused,
+  seek,
 }: {
   data: FlightReadout
   onReadout: (data: FlightReadout) => void
   initialProgress: number
+  paused: boolean
+  /** Jump the animation to `to` (0..1); a new `id` triggers a new jump. */
+  seek: { to: number; id: number } | null
 }) {
   const routeRef = useRef<SVGPathElement>(null)
   const flownRef = useRef<SVGPathElement>(null)
   const markerRef = useRef<SVGGElement>(null)
-  const pausedRef = useRef(false)
-  const [isPaused, setIsPaused] = useState(false)
+  const pausedRef = useRef(paused)
+  const jumpRef = useRef<(to: number) => void>(undefined)
 
-  const toggleFlight = () => {
-    pausedRef.current = !pausedRef.current
-    setIsPaused(pausedRef.current)
-  }
+  useEffect(() => {
+    pausedRef.current = paused
+  }, [paused])
 
-  const handleMarkerKeyDown = (
-    event: React.KeyboardEvent<SVGCircleElement>,
-  ) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      toggleFlight()
-    }
-  }
+  useEffect(() => {
+    if (seek) jumpRef.current?.(seek.to)
+  }, [seek])
 
   useEffect(() => {
     const route = routeRef.current
@@ -61,7 +60,7 @@ export function AnimatedRoute({
     route.setAttribute('stroke-dasharray', `${dashLength} ${fittedGap}`)
     route.setAttribute('stroke-dashoffset', String(-dashInset))
     const reducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
+      '(prefers-reduced-motion: reduce)'
     ).matches
     let frame = 0
     let previousTime: number | undefined
@@ -75,6 +74,11 @@ export function AnimatedRoute({
       flown.setAttribute('stroke-dasharray', `${flownShare} 1`)
       marker.setAttribute('transform', `translate(${point.x} ${point.y})`)
       onReadout(readoutAt(progress))
+    }
+
+    jumpRef.current = (to) => {
+      progress = to
+      renderProgress(to)
     }
 
     if (reducedMotion) {
@@ -136,17 +140,7 @@ export function AnimatedRoute({
               <p className="distance-secondary">{data.miles} mi</p>
             </div>
           </foreignObject>
-          <circle
-            r="18"
-            role="button"
-            tabIndex={0}
-            aria-label={
-              isPaused ? 'Resume flight animation' : 'Pause flight animation'
-            }
-            aria-pressed={isPaused}
-            onClick={toggleFlight}
-            onKeyDown={handleMarkerKeyDown}
-          />
+          <circle r="18" />
         </g>
       </svg>
     </>
