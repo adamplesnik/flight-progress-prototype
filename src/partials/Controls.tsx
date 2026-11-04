@@ -14,14 +14,23 @@ export function Controls({
   onSeek: (to: number) => void
 }) {
   return (
-    <div className="flex gap-2 items-stretch">
-      <button type="button" onClick={onToggle} className="primary">
+    <div className="flex items-stretch gap-2">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-24 cursor-pointer rounded-xl bg-black p-3 text-white hover:bg-neutral-700"
+      >
         {paused ? 'Play' : 'Pause'}
       </button>
-      <div className="buttons-wrapper">
+      <div className="flex items-center gap-2 rounded-xl border border-current p-1 pl-2">
         Go to
         {jumps.map(({ label, to }) => (
-          <button key={label} type="button" onClick={() => onSeek(to)}>
+          <button
+            key={label}
+            type="button"
+            onClick={() => onSeek(to)}
+            className="rounded-x cursor-pointer rounded-lg p-3 hover:bg-neutral-300"
+          >
             {label}
           </button>
         ))}

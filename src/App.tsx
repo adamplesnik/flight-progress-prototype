@@ -28,7 +28,7 @@ function App() {
 
   return (
     <main className="wrapper">
-      <div className="controls flex items-center justify-between rounded-xl">
+      <div className="flex w-full items-center justify-between rounded-xl">
         <h1 className="text-2xl font-semibold">Dubai - London</h1>
         <Controls
           paused={paused}
