@@ -8,13 +8,13 @@ import { FlightData } from './partials/FlightData'
 import { LocalTime } from './partials/LocalTime'
 
 const assetPath = '/assets'
-// Set to false to hide country names on the map
-const showCountryNames = false
 const initialFlightProgress = 0.9
 
 function App() {
   const [data, setData] = useState(() => readoutAt(initialFlightProgress))
   const [paused, setPaused] = useState(false)
+  // Country names on the map (toggle in the controls)
+  const [showCountryNames, setShowCountryNames] = useState(false)
   const [seek, setSeek] = useState<{ to: number; id: number } | null>(null)
   const onReadout = useCallback((next: FlightReadout) => {
     setData((prev) =>
@@ -28,11 +28,13 @@ function App() {
 
   return (
     <main className="wrapper">
-      <div className="flex w-full items-center justify-between rounded-xl">
+      <div className="flex w-5xl items-center justify-between rounded-xl">
         <h1 className="text-2xl font-semibold">Dubai - London</h1>
         <Controls
           paused={paused}
           onToggle={() => setPaused((p) => !p)}
+          showCountryNames={showCountryNames}
+          onToggleCountryNames={() => setShowCountryNames((v) => !v)}
           onSeek={(to) => setSeek((prev) => ({ to, id: (prev?.id ?? 0) + 1 }))}
         />
       </div>
