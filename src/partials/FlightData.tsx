@@ -1,4 +1,4 @@
-import type { FlightReadout } from '../flightData'
+import type { FlightReadout } from '../data/flightData'
 
 export function FlightData({ data }: { data: FlightReadout }) {
   return (

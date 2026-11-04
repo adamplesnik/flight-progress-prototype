@@ -1,4 +1,4 @@
-import { countryLabels } from '../countryLabels'
+import { countryLabels } from '../data/countryLabels'
 
 export function CountryNames() {
   return (

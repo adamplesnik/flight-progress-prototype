@@ -18,34 +18,34 @@ export function Controls({
   onToggleCountryNames: () => void
 }) {
   return (
-    <div className="flex items-stretch gap-2">
+    <div className="flex items-center gap-2">
       <button
         type="button"
         onClick={onToggle}
-        className="w-24 cursor-pointer rounded-xl bg-black p-3 text-white hover:bg-neutral-700"
+        className="w-24 cursor-pointer rounded-xl bg-gray-900 px-4 py-3 font-medium text-white hover:bg-gray-700"
       >
         {paused ? 'Play' : 'Pause'}
       </button>
-      <div className="flex items-center gap-2 rounded-xl border border-neutral-400 p-1 pl-2">
+      <div className="flex items-center gap-2 rounded-xl border border-gray-400/60 p-1 pl-2">
         Go to
         {jumps.map(({ label, to }) => (
           <button
             key={label}
             type="button"
             onClick={() => onSeek(to)}
-            className="cursor-pointer rounded-lg p-3 hover:bg-neutral-300"
+            className="cursor-pointer rounded-lg px-3 py-2 hover:bg-gray-300"
           >
             {label}
           </button>
         ))}
-        <div className="h-full w-px bg-neutral-400"></div>
+        <div className="h-6 w-px bg-gray-400"></div>
         <button
           type="button"
           aria-pressed={showCountryNames}
           onClick={onToggleCountryNames}
-          className="w-36 cursor-pointer rounded-lg p-3 hover:bg-neutral-300"
+          className="w-48 cursor-pointer rounded-lg px-3 py-2 hover:bg-gray-300"
         >
-          {showCountryNames ? 'Hide countries' : 'Show countries'}
+          {showCountryNames ? 'Hide country names' : 'Show country names'}
         </button>
       </div>
     </div>

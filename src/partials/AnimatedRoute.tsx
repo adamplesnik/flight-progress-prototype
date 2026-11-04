@@ -3,7 +3,7 @@ import {
   distanceProgressAt,
   readoutAt,
   type FlightReadout,
-} from '../flightData'
+} from '../data/flightData'
 
 const routeGeometry =
   'M596.4 359.9 C588.2 363.2 569 366.4 543.9 359.8 C513.4 351.8 439.4 311.8 383.4 277.3 C365 266 338 245 312.2 225 C264.3 186.6 215.6 149 166.3 112.2 C116.5 76.1 66.6 40.2 -11.6 -4.1'

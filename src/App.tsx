@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { readoutAt, type FlightReadout } from './flightData'
+import { readoutAt, type FlightReadout } from './data/flightData'
 import { AnimatedRoute } from './partials/AnimatedRoute'
 import { CityCluster } from './partials/CityCluster'
 import { Controls } from './partials/Controls'
@@ -38,7 +38,7 @@ function App() {
           onSeek={(to) => setSeek((prev) => ({ to, id: (prev?.id ?? 0) + 1 }))}
         />
       </div>
-      <div className="flight-map">
+      <div className="flight-map max-w-5xl rounded-xl border border-gray-300">
         <div className="scene">
           <img
             className="world-map"
@@ -46,9 +46,7 @@ function App() {
             alt=""
             aria-hidden="true"
           />
-
           {showCountryNames && <CountryNames />}
-
           <AnimatedRoute
             data={data}
             onReadout={onReadout}
@@ -56,21 +54,17 @@ function App() {
             paused={paused}
             seek={seek}
           />
-
           <CityCluster
             city="London"
             time="→ 06:50 GMT"
             className="london-cluster"
           />
-
           <CityCluster
             city="Dubai"
             time="03:40 GST →"
             className="dubai-cluster"
           />
-
           <FlightData data={data} />
-
           <LocalTime clock={data.clock} />
         </div>
       </div>
