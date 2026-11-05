@@ -1,7 +1,7 @@
 import type { Flight } from '../types'
 
-// Route geometry is in scene pixels (1024 × 768): the map is scaled so the dots sit 48px from the left and right edges and
-// positioned so that JFK and Copenhagen land on their real coordinates.
+// The map is scaled so the dots' outer edges sit 48px from the left and right edges of the
+// scene, and positioned so that JFK and Copenhagen land on their real coordinates.
 export const jfkCopenhagen: Flight = {
   id: 'jfk-copenhagen',
   title: 'New York - Copenhagen',
@@ -9,12 +9,12 @@ export const jfkCopenhagen: Flight = {
   origin: {
     city: 'New York',
     label: '18:00 EST →',
-    dot: { left: 7.03125, top: 63.671875 },
+    dot: { x: 72, y: 489 },
   },
   destination: {
     city: 'Copenhagen',
     label: '→ 06:50 CET',
-    dot: { left: 92.967306, top: 39.077349 },
+    dot: { x: 952, y: 300.1 },
     align: 'end',
   },
   map: {
@@ -26,12 +26,8 @@ export const jfkCopenhagen: Flight = {
       height: 226.645383,
     },
   },
-  route: {
-    geometry:
-      'M72.0 489.0 C85.8 480.8 125.4 455.1 154.7 439.9 C183.9 424.7 215.7 410.4 247.3 397.8 C279.0 385.2 311.2 377.0 344.6 364.3 C378.0 351.5 417.1 335.5 447.8 321.3 C478.5 307.2 507.2 289.9 528.8 279.4 C550.4 268.9 560.7 264.9 577.4 258.1 C594.0 251.4 613.2 243.7 628.6 238.9 C644.0 234.1 656.3 231.2 669.8 229.2 C683.3 227.3 693.9 227.4 709.8 227.2 C725.8 227.0 745.0 227.1 765.5 228.0 C786.1 228.8 815.2 228.7 833.2 232.3 C851.3 236.0 860.7 243.1 873.7 249.8 C886.6 256.5 899.5 265.1 911.1 272.6 C922.7 280.1 936.5 290.2 943.3 294.7 C950.1 299.3 950.5 299.2 952.0 300.1',
-    viewBox: { width: 1024, height: 768 },
-    box: { left: 0, top: 0, width: 100, height: 100 },
-  },
+  route:
+    'M72.0 489.0 C85.8 480.8 125.4 455.1 154.7 439.9 C183.9 424.7 215.7 410.4 247.3 397.8 C279.0 385.2 311.2 377.0 344.6 364.3 C378.0 351.5 417.1 335.5 447.8 321.3 C478.5 307.2 507.2 289.9 528.8 279.4 C550.4 268.9 560.7 264.9 577.4 258.1 C594.0 251.4 613.2 243.7 628.6 238.9 C644.0 234.1 656.3 231.2 669.8 229.2 C683.3 227.3 693.9 227.4 709.8 227.2 C725.8 227.0 745.0 227.1 765.5 228.0 C786.1 228.8 815.2 228.7 833.2 232.3 C851.3 236.0 860.7 243.1 873.7 249.8 C886.6 256.5 899.5 265.1 911.1 272.6 C922.7 280.1 936.5 290.2 943.3 294.7 C950.1 299.3 950.5 299.2 952.0 300.1',
   profile: {
     stepMin: 5,
     // Sampled every 5 minutes from take-off (18:00 EST), total flight 6h50 (410 min)

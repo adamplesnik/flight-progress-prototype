@@ -7,12 +7,12 @@ export const dubaiLondon: Flight = {
   origin: {
     city: 'Dubai',
     label: '03:40 GST →',
-    dot: { left: 75.390625, top: 71.354167 },
+    dot: { x: 772, y: 548 },
   },
   destination: {
     city: 'London',
     label: '→ 06:50 GMT',
-    dot: { left: 16.015625, top: 23.958333 },
+    dot: { x: 164, y: 184 },
   },
   map: {
     src: '/assets/150bf.svg',
@@ -23,17 +23,8 @@ export const dubaiLondon: Flight = {
       height: 224.1361979,
     },
   },
-  route: {
-    geometry:
-      'M596.4 359.9 C588.2 363.2 569 366.4 543.9 359.8 C513.4 351.8 439.4 311.8 383.4 277.3 C365 266 338 245 312.2 225 C264.3 186.6 215.6 149 166.3 112.2 C116.5 76.1 66.6 40.2 -11.6 -4.1',
-    viewBox: { width: 598.472, height: 383.641 },
-    box: {
-      left: 17.1484375,
-      top: 24.4921875,
-      width: 58.4445313,
-      height: 49.9532552,
-    },
-  },
+  route:
+    'M772 548 C763.8 551.3 744.6 554.5 719.5 547.9 C689 539.9 615 499.9 559 465.4 C540.6 454.1 513.6 433.1 487.8 413.1 C439.9 374.7 391.2 337.1 341.9 300.3 C292.1 264.2 242.2 228.3 164 184',
   profile: {
     stepMin: 5,
     // Sampled every 5 minutes from take-off (03:40 GST), total flight 7h10 (430 min)

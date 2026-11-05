@@ -1,46 +1,22 @@
-import { useCallback, useMemo, useState } from 'react'
-import { createFlightModel, type FlightReadout } from './data/flightModel'
+import { useState } from 'react'
 import { defaultFlight, flights } from './data/flights'
-import { AnimatedRoute } from './partials/AnimatedRoute'
-import { CityCluster } from './partials/CityCluster'
 import { Controls } from './partials/Controls'
 import { CountryNames } from './partials/CountryNames'
-import { FlightData } from './partials/FlightData'
-import { LocalTime } from './partials/LocalTime'
-
-const initialFlightProgress = 0.2
+import { FlightProgress } from './partials/FlightProgress'
+import { boxStyle } from './partials/scene'
 
 function App() {
   const [flightId, setFlightId] = useState(defaultFlight.id)
   const flight = flights.find((f) => f.id === flightId) ?? defaultFlight
-  const model = useMemo(() => createFlightModel(flight), [flight])
-
-  const [data, setData] = useState(() => model.readoutAt(initialFlightProgress))
   const [paused, setPaused] = useState(false)
   // Country names on the map (toggle in the controls)
   const [showCountryNames, setShowCountryNames] = useState(false)
   const [seek, setSeek] = useState<{ to: number; id: number } | null>(null)
-  const onReadout = useCallback((next: FlightReadout) => {
-    setData((prev) =>
-      (Object.keys(next) as (keyof FlightReadout)[]).every(
-        (k) => prev[k] === next[k]
-      )
-        ? prev
-        : next
-    )
-  }, [])
 
   const selectFlight = (id: string) => {
-    const next = flights.find((f) => f.id === id)
-    if (!next) return
     setFlightId(id)
-    setData(createFlightModel(next).readoutAt(initialFlightProgress))
     setSeek(null)
   }
-
-  const citiesBelow = flight.layout === 'cities-below'
-  const placement = citiesBelow ? 'below' : 'above'
-  const { box: mapBox, src: mapSrc } = flight.map
 
   return (
     <main className="wrapper">
@@ -72,31 +48,18 @@ function App() {
         <div className="scene">
           <img
             className="world-map"
-            src={mapSrc}
-            style={{
-              left: `${mapBox.left}%`,
-              top: `${mapBox.top}%`,
-              width: `${mapBox.width}%`,
-              height: `${mapBox.height}%`,
-            }}
+            src={flight.map.src}
+            style={boxStyle(flight.map.box)}
             alt=""
             aria-hidden="true"
           />
           {showCountryNames && <CountryNames box={flight.map.box} />}
-          <AnimatedRoute
+          <FlightProgress
             key={flight.id}
             flight={flight}
-            model={model}
-            data={data}
-            onReadout={onReadout}
-            initialProgress={initialFlightProgress}
             paused={paused}
             seek={seek}
           />
-          <CityCluster {...flight.destination} placement={placement} />
-          <CityCluster {...flight.origin} placement={placement} />
-          <FlightData data={data} bottom={citiesBelow} />
-          <LocalTime clock={data.clock} />
         </div>
       </div>
     </main>

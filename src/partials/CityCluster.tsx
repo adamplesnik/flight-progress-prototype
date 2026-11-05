@@ -1,4 +1,5 @@
-import type { Endpoint } from '../data/types'
+import type { Endpoint, Side } from '../data/types'
+import { SCENE } from './scene'
 
 export function CityCluster({
   city,
@@ -6,11 +7,14 @@ export function CityCluster({
   dot,
   align = 'start',
   placement,
-}: Endpoint & { placement: 'above' | 'below' }) {
+}: Endpoint & { placement: Side }) {
   return (
     <section
       className={`city-cluster ${placement} align-${align}`}
-      style={{ left: `${dot.left}%`, top: `${dot.top}%` }}
+      style={{
+        left: `${(dot.x / SCENE.w) * 100}%`,
+        top: `${(dot.y / SCENE.h) * 100}%`,
+      }}
     >
       <span className="route-dot" aria-hidden="true" />
       <div className="city-copy">

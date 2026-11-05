@@ -9,12 +9,17 @@ export type ProfileSample = [
 /** Position and size in percent of the 4:3 scene. */
 export type Box = { left: number; top: number; width: number; height: number }
 
+/** A point in scene pixels (1024 × 768). */
+export type Point = { x: number; y: number }
+
+export type Side = 'above' | 'below'
+
 export type Endpoint = {
   city: string
   /** Time label under the city name, e.g. "03:40 GST →" */
   label: string
-  /** Centre of the route dot, in percent of the scene */
-  dot: { left: number; top: number }
+  /** Centre of the route dot; the route starts or ends here */
+  dot: Point
   /** Which dot edge the city text lines up with (default: start/left) */
   align?: 'start' | 'end'
 }
@@ -35,13 +40,8 @@ export type Flight = {
     /** Where the map image sits in the scene (it is usually larger than the scene) */
     box: Box
   }
-  route: {
-    /** SVG path from origin to destination, in `viewBox` units */
-    geometry: string
-    viewBox: { width: number; height: number }
-    /** Where the route SVG sits in the scene */
-    box: Box
-  }
+  /** SVG path from origin to destination, in scene pixels (1024 × 768) */
+  route: string
   profile: {
     samples: ProfileSample[]
     /** Minutes between two samples */
