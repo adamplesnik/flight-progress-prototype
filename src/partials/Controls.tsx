@@ -10,12 +10,17 @@ export function Controls({
   onSeek,
   showCountryNames,
   onToggleCountryNames,
+  autoLayout,
+  onToggleAutoLayout,
 }: {
   paused: boolean
   onToggle: () => void
   onSeek: (to: number) => void
   showCountryNames: boolean
   onToggleCountryNames: () => void
+  autoLayout: boolean
+  /** Absent when the flight has no hand-tuned layout to compare with */
+  onToggleAutoLayout?: () => void
 }) {
   return (
     <div className="flex items-center gap-2">
@@ -47,6 +52,16 @@ export function Controls({
         >
           {showCountryNames ? 'Hide country names' : 'Show country names'}
         </button>
+        {onToggleAutoLayout && (
+          <button
+            type="button"
+            aria-pressed={autoLayout}
+            onClick={onToggleAutoLayout}
+            className="w-32 cursor-pointer rounded-lg px-3 py-2 hover:bg-gray-300"
+          >
+            {autoLayout ? 'Auto layout' : 'Hand layout'}
+          </button>
+        )}
       </div>
     </div>
   )

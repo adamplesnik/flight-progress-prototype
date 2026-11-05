@@ -73,6 +73,21 @@
   overflow: visible;
 }
 
+.world-map path {
+  stroke-width: var(--map-stroke);
+}
+
+/* Australia and Tasmania: the source has outlines baked in as filled shapes, which cannot
+   keep their weight when zoomed. Hide those and stroke the land itself, like every country. */
+.world-map path[fill='#B3B3B3'] {
+  display: none;
+}
+
+.world-map path:not([stroke]) {
+  stroke: #b3b3b3;
+  stroke-linejoin: round;
+}
+
 .route-lines {
   z-index: 1;
 }
@@ -130,6 +145,16 @@
   gap: 8px;
 }
 
+.marker-data.one-row .distances {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.marker-layer foreignObject {
+  overflow: visible;
+}
+
 .distance-primary,
 .distance-secondary {
   font-size: 36px;
@@ -176,6 +201,17 @@
   text-align: right;
 }
 
+/* Beside the dot, lined up with its top */
+.city-cluster.right.align-start .city-copy {
+  top: -2.34375cqw;
+  left: 3.90625cqw;
+}
+
+.city-cluster.left.align-end .city-copy {
+  top: -2.34375cqw;
+  right: 3.90625cqw;
+}
+
 .city-copy h1 {
   font-size: 5.078125cqw;
 }
@@ -195,10 +231,25 @@
   background: #cc0000;
 }
 
+/* Corners of the 48px safe zone */
+.at-top {
+  top: 6.25%;
+}
+
+.at-bottom {
+  bottom: 6.25%;
+}
+
+.at-left {
+  left: 4.6875%;
+}
+
+.at-right {
+  right: 4.6875%;
+}
+
 .flight-data {
   position: absolute;
-  top: 6.25%;
-  right: 4.6875%;
   display: flex;
   align-items: flex-start;
   gap: 3.125cqw;
@@ -207,9 +258,13 @@
   white-space: nowrap;
 }
 
-.flight-data.bottom {
-  top: auto;
-  bottom: 6.25%;
+.flight-data.column {
+  flex-direction: column;
+}
+
+/* A column in a right corner lines up with the safe zone's right edge */
+.flight-data.column.at-right > div {
+  align-items: flex-end;
 }
 
 .flight-data > div {
@@ -242,8 +297,6 @@
 
 .local-time {
   position: absolute;
-  bottom: 6.25%;
-  left: 4.6875%;
   font-size: 3.515625cqw;
   font-weight: 600;
   line-height: 1;

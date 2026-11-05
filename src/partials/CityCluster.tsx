@@ -1,4 +1,4 @@
-import type { Endpoint, Side } from '../data/types'
+import type { PlacedCity } from '../data/types'
 import { SCENE } from './scene'
 
 export function CityCluster({
@@ -7,7 +7,7 @@ export function CityCluster({
   dot,
   align = 'start',
   placement,
-}: Endpoint & { placement: Side }) {
+}: PlacedCity) {
   return (
     <section
       className={`city-cluster ${placement} align-${align}`}

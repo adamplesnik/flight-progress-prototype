@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import type { FlightModel, FlightReadout } from '../data/flightModel'
-import type { Flight } from '../data/types'
+import type { LabelStep, SceneLayout } from '../data/types'
 import { createLabelPlacer, LABEL_SIZE } from './labelPlacement'
 import { SCENE } from './scene'
 
@@ -31,7 +31,7 @@ function fitDashes(route: SVGPathElement) {
 }
 
 export function AnimatedRoute({
-  flight,
+  layout,
   model,
   data,
   onReadout,
@@ -39,7 +39,7 @@ export function AnimatedRoute({
   paused,
   seek,
 }: {
-  flight: Flight
+  layout: SceneLayout
   model: FlightModel
   data: FlightReadout
   onReadout: (data: FlightReadout) => void
@@ -48,8 +48,6 @@ export function AnimatedRoute({
   /** Jump the animation to `to` (0..1); a new `id` triggers a new jump. */
   seek: { to: number; id: number } | null
 }) {
-  // Only the 'cities-below' layout places its label dynamically
-  const placesLabel = flight.layout === 'cities-below'
   const routeRef = useRef<SVGPathElement>(null)
   const flownRef = useRef<SVGPathElement>(null)
   const markerRef = useRef<SVGGElement>(null)
@@ -78,9 +76,22 @@ export function AnimatedRoute({
 
     fitDashes(route)
     const routeLength = route.getTotalLength()
-    const placeLabel = placesLabel
-      ? createLabelPlacer(route, [flight.origin, flight.destination])
-      : null
+    const placeLabel =
+      layout.label.kind === 'avoid'
+        ? createLabelPlacer(route, [layout.origin, layout.destination])
+        : null
+    const planSteps = layout.label.kind === 'plan' ? layout.label.steps : null
+    let currentStep: LabelStep | undefined
+
+    const applyStep = (step: LabelStep) => {
+      currentStep = step
+      label.setAttribute('x', String(step.dx))
+      label.setAttribute('y', String(step.dy))
+      label.setAttribute('width', String(step.w))
+      label.setAttribute('height', String(step.h))
+      labelBody.classList.toggle('left', step.align === 'left')
+      labelBody.classList.toggle('one-row', step.rows === 1)
+    }
 
     // `at` is timeline time (0..1); the marker follows distance flown,
     // so it stays put until take-off and moves slowly while the aircraft is slow.
@@ -95,6 +106,10 @@ export function AnimatedRoute({
         label.setAttribute('y', String(rect.y - point.y))
         labelBody.classList.toggle('above', side === 'above')
         labelBody.classList.toggle('left', align === 'left')
+      }
+      if (planSteps) {
+        const step = planSteps.reduce((a, b) => (b.from <= flownShare ? b : a))
+        if (step !== currentStep) applyStep(step)
       }
       onReadout(model.readoutAt(at))
     }
@@ -124,7 +139,7 @@ export function AnimatedRoute({
 
     frame = window.requestAnimationFrame(animate)
     return () => window.cancelAnimationFrame(frame)
-  }, [onReadout, initialProgress, model, flight, placesLabel])
+  }, [onReadout, initialProgress, model, layout])
 
   return (
     <>
@@ -133,11 +148,11 @@ export function AnimatedRoute({
         viewBox={VIEW_BOX}
         aria-hidden="true"
       >
-        <path ref={routeRef} className="route-segment" d={flight.route} />
+        <path ref={routeRef} className="route-segment" d={layout.route} />
         <path
           ref={flownRef}
           className="route-segment"
-          d={flight.route}
+          d={layout.route}
           pathLength="1"
           strokeDasharray="0 1"
         />
@@ -150,7 +165,7 @@ export function AnimatedRoute({
         <g ref={markerRef} className="flight-marker">
           <foreignObject
             ref={labelRef}
-            {...(placesLabel ? PLACED_LABEL : FIXED_LABEL)}
+            {...(layout.label.kind === 'fixed' ? FIXED_LABEL : PLACED_LABEL)}
           >
             <div ref={labelBodyRef} className="marker-data">
               <p className="time-left">

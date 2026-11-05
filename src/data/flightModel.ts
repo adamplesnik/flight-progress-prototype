@@ -85,7 +85,10 @@ export function createFlightModel(flight: Flight) {
 
     return {
       clock: `${pad(Math.floor(clockMin / 60))}:${pad(clockMin % 60)}`,
-      remaining: `${Math.floor(left / 60)}:${pad(left % 60)}`,
+      remaining:
+        left < 60
+          ? `${left} min`
+          : `${Math.floor(left / 60)}:${pad(left % 60)}`,
       kmh: fmt(Math.round(knots * KMH_PER_KNOT)),
       mph: fmt(Math.round(knots * MPH_PER_KNOT)),
       meters: fmt(Math.round(feet * M_PER_FT)),

@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { defaultFlight, flights } from './data/flights'
+import { computeLayout } from './layout/computeLayout'
+import { manualLayout } from './layout/manualLayout'
 import { Controls } from './partials/Controls'
 import { CountryNames } from './partials/CountryNames'
 import { FlightProgress } from './partials/FlightProgress'
-import { boxStyle } from './partials/scene'
+import { WorldMapView } from './partials/WorldMapView'
 
 function App() {
   const [flightId, setFlightId] = useState(defaultFlight.id)
@@ -12,6 +14,11 @@ function App() {
   // Country names on the map (toggle in the controls)
   const [showCountryNames, setShowCountryNames] = useState(false)
   const [seek, setSeek] = useState<{ to: number; id: number } | null>(null)
+  const [autoLayout, setAutoLayout] = useState(true)
+  const manual = useMemo(() => manualLayout(flight), [flight])
+  const auto = useMemo(() => computeLayout(flight), [flight])
+  const useManual = !autoLayout && manual !== null
+  const layout = useManual ? manual : auto
 
   const selectFlight = (id: string) => {
     setFlightId(id)
@@ -42,21 +49,25 @@ function App() {
           showCountryNames={showCountryNames}
           onToggleCountryNames={() => setShowCountryNames((v) => !v)}
           onSeek={(to) => setSeek((prev) => ({ to, id: (prev?.id ?? 0) + 1 }))}
+          autoLayout={!useManual}
+          onToggleAutoLayout={
+            manual
+              ? () => {
+                  setAutoLayout((v) => !v)
+                  setSeek(null)
+                }
+              : undefined
+          }
         />
       </div>
       <div className="flight-map max-w-5xl rounded-xl border border-gray-300">
         <div className="scene">
-          <img
-            className="world-map"
-            src={flight.map.src}
-            style={boxStyle(flight.map.box)}
-            alt=""
-            aria-hidden="true"
-          />
-          {showCountryNames && <CountryNames box={flight.map.box} />}
+          <WorldMapView map={layout.map} />
+          {showCountryNames && <CountryNames map={layout.map} />}
           <FlightProgress
-            key={flight.id}
+            key={`${flight.id}:${useManual ? 'manual' : 'auto'}`}
             flight={flight}
+            layout={layout}
             paused={paused}
             seek={seek}
           />

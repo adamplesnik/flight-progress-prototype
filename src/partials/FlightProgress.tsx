@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { createFlightModel, type FlightReadout } from '../data/flightModel'
-import type { Flight } from '../data/types'
+import type { Flight, SceneLayout } from '../data/types'
 import { AnimatedRoute } from './AnimatedRoute'
 import { CityCluster } from './CityCluster'
 import { FlightData } from './FlightData'
@@ -11,13 +11,15 @@ const INITIAL_PROGRESS = 0.2
 const sameReadout = (a: FlightReadout, b: FlightReadout) =>
   (Object.keys(a) as (keyof FlightReadout)[]).every((k) => a[k] === b[k])
 
-/** Everything in the scene that follows the flight. Render with `key={flight.id}`. */
+/** Everything in the scene that follows the flight. Render with a key per flight and layout. */
 export function FlightProgress({
   flight,
+  layout,
   paused,
   seek,
 }: {
   flight: Flight
+  layout: SceneLayout
   paused: boolean
   seek: { to: number; id: number } | null
 }) {
@@ -27,13 +29,10 @@ export function FlightProgress({
     setData((prev) => (sameReadout(prev, next) ? prev : next))
   }, [])
 
-  const citiesBelow = flight.layout === 'cities-below'
-  const placement = citiesBelow ? 'below' : 'above'
-
   return (
     <>
       <AnimatedRoute
-        flight={flight}
+        layout={layout}
         model={model}
         data={data}
         onReadout={onReadout}
@@ -41,10 +40,10 @@ export function FlightProgress({
         paused={paused}
         seek={seek}
       />
-      <CityCluster {...flight.destination} placement={placement} />
-      <CityCluster {...flight.origin} placement={placement} />
-      <FlightData data={data} bottom={citiesBelow} />
-      <LocalTime clock={data.clock} />
+      <CityCluster {...layout.destination} />
+      <CityCluster {...layout.origin} />
+      <FlightData data={data} {...layout.flightData} />
+      <LocalTime clock={data.clock} {...layout.clock} />
     </>
   )
 }

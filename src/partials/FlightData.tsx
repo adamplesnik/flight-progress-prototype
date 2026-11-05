@@ -1,15 +1,19 @@
 import type { FlightReadout } from '../data/flightModel'
+import type { Corner, Orientation } from '../data/types'
+import { cornerClasses } from './scene'
 
 export function FlightData({
   data,
-  bottom = false,
+  corner,
+  orientation,
 }: {
   data: FlightReadout
-  bottom?: boolean
+  corner: Corner
+  orientation: Orientation
 }) {
   return (
     <dl
-      className={bottom ? 'flight-data bottom' : 'flight-data'}
+      className={`flight-data ${orientation} ${cornerClasses(corner)}`}
       aria-label="Current flight conditions"
     >
       <div>
