@@ -57,35 +57,29 @@
   font-family: Inter, sans-serif;
 }
 
+/* The map and route SVGs cover the scene */
 .world-map,
 .route-path {
   position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   max-width: none;
   pointer-events: none;
   user-select: none;
 }
 
-/* The route SVGs cover the scene; their viewBox is the scene's design size */
 .route-path {
-  inset: 0;
-  width: 100%;
-  height: 100%;
   overflow: visible;
+}
+
+/* The sea */
+.world-map:not(.country-names) {
+  background: #e9ebed;
 }
 
 .world-map path {
   stroke-width: var(--map-stroke);
-}
-
-/* Australia and Tasmania: the source has outlines baked in as filled shapes, which cannot
-   keep their weight when zoomed. Hide those and stroke the land itself, like every country. */
-.world-map path[fill='#B3B3B3'] {
-  display: none;
-}
-
-.world-map path:not([stroke]) {
-  stroke: #b3b3b3;
-  stroke-linejoin: round;
 }
 
 .route-lines {

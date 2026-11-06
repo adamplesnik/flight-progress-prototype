@@ -1,6 +1,7 @@
 import type { Flight } from '../types'
 import { dubaiLondon } from './dubai-london'
 import { jfkCopenhagen } from './jfk-copenhagen'
+import { jfkSingapore } from './jfk-singapore'
 import { laxAuckland } from './lax-auckland'
 import { melbourneHobart } from './melbourne-hobart'
 
@@ -8,6 +9,7 @@ import { melbourneHobart } from './melbourne-hobart'
 export const flights: Flight[] = [
   dubaiLondon,
   jfkCopenhagen,
+  jfkSingapore,
   laxAuckland,
   melbourneHobart,
 ]
