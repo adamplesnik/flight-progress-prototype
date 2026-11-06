@@ -2,6 +2,7 @@ const jumps = [
   { label: '0%', to: 0 },
   { label: '50%', to: 0.5 },
   { label: '90%', to: 0.9 },
+  { label: '100%', to: 1 },
 ]
 
 export function Controls({
@@ -31,8 +32,7 @@ export function Controls({
       >
         {paused ? 'Play' : 'Pause'}
       </button>
-      <div className="flex items-center gap-2 rounded-xl border border-gray-400/60 p-1 pl-2">
-        Go to
+      <div className="flex items-center gap-2 rounded-xl border border-gray-400/60 p-1">
         {jumps.map(({ label, to }) => (
           <button
             key={label}

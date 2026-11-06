@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
+import { flushSync } from 'react-dom'
 import type { FlightModel, FlightReadout } from '../data/flightModel'
 import type { LabelStep, SceneLayout } from '../data/types'
 import { createLabelPlacer, LABEL_SIZE } from './labelPlacement'
@@ -130,7 +131,8 @@ export function AnimatedRoute({
 
       if (!pausedRef.current) {
         progress = (progress + (time - previousTime) / FLIGHT_DURATION) % 1
-        render(progress)
+        // Text and marker change in the same frame, or the old text flashes at the new spot
+        flushSync(() => render(progress))
       }
 
       previousTime = time

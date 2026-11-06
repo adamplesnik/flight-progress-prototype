@@ -279,6 +279,10 @@
   width: 9.765625cqw; /* 100px: temperature */
 }
 
+.flight-data.column > div:last-child {
+  width: 14.6484375cqw; /* stacked: same width as the others, so they share an edge */
+}
+
 .flight-data dt,
 .flight-data dd {
   display: flex;
