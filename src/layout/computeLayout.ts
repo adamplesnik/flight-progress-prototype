@@ -22,7 +22,6 @@ const CITY_GAP = 40 // dot centre → city text
 // Clearances
 const CITY_LINE_CLEARANCE = 10
 const OBSTACLE_PADDING = 8
-const MIN_SIDE = 0.15 // sine of the angle to the path below which a spot is on neither side
 
 // Search
 const ROUTE_STEPS = 96
@@ -69,18 +68,6 @@ const distanceSquared = (r: Rect, p: Point) => {
   const dx = Math.max(r.x - p.x, 0, p.x - r.x - r.w)
   const dy = Math.max(r.y - p.y, 0, p.y - r.y - r.h)
   return dx * dx + dy * dy
-}
-
-/**
- * Which side of the direction of travel a rectangle lies on: positive or negative, as the
- * sine of its angle to that direction (near 0 = straight ahead or behind, so on neither).
- */
-const sideOfPath = (from: Point, to: Point, at: Point, r: Rect) => {
-  const tx = to.x - from.x
-  const ty = to.y - from.y
-  const ox = r.x + r.w / 2 - at.x
-  const oy = r.y + r.h / 2 - at.y
-  return (tx * oy - ty * ox) / (Math.hypot(tx, ty) * Math.hypot(ox, oy) || 1)
 }
 
 const clearOfLine = (r: Rect, line: Point[], clearance: number) =>
@@ -191,36 +178,13 @@ export function computeLayout(flight: Flight): SceneLayout {
     return { maxScale: low, room }
   }
 
-  // Both cities go on one side of the path: the side is known from the route's direction
-  // at each end, whatever the scale
-  const lookAhead = Math.min(3, mapPoints.length - 1)
-  const zero = { x: 0, y: 0 }
-  const sideAtEnd = (from: Point, to: Point, offset: Rect) => {
-    const side = sideOfPath(from, to, zero, offset)
-    return Math.abs(side) < MIN_SIDE ? 0 : Math.sign(side)
-  }
   const combos = CITY_POSITIONS.flatMap((originPosition) =>
-    CITY_POSITIONS.flatMap((destinationPosition) => {
-      const originOffset = cityOffset(originPosition, originSize)
-      const destinationOffset = cityOffset(destinationPosition, destinationSize)
-      const citySide = sideAtEnd(start, mapPoints[lookAhead], originOffset)
-      const sameSide =
-        citySide !== 0 &&
-        citySide ===
-          sideAtEnd(
-            mapPoints[mapPoints.length - 1 - lookAhead],
-            end,
-            destinationOffset
-          )
-      return sameSide
-        ? {
-            originPosition,
-            destinationPosition,
-            originOffset,
-            destinationOffset,
-          }
-        : []
-    })
+    CITY_POSITIONS.map((destinationPosition) => ({
+      originPosition,
+      destinationPosition,
+      originOffset: cityOffset(originPosition, originSize),
+      destinationOffset: cityOffset(destinationPosition, destinationSize),
+    }))
   )
   type Combo = (typeof combos)[number]
 
