@@ -39,14 +39,15 @@ const CITY_POSITIONS: { placement: CitySide; align: 'start' | 'end' }[] = [
 ]
 
 // A bottom row or a right column holds progress and flight data, and the route and cities
-// get the rest of the safe zone, less a 16px gap
+// get the rest of the safe zone: above the row they stop 192px from the bottom, and beside
+// the column there is a 16px gap
 const LAYOUTS: { area: Rect; orientation: Orientation }[] = [
   {
-    area: { x: MARGIN, y: MARGIN, w: 928, h: 560 },
+    area: { x: MARGIN, y: MARGIN, w: 928, h: 528 },
     orientation: 'row',
   },
   {
-    area: { x: MARGIN, y: MARGIN, w: 692, h: 672 },
+    area: { x: MARGIN, y: MARGIN, w: 676, h: 672 },
     orientation: 'column',
   },
 ]
