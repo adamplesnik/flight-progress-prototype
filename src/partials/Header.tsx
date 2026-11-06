@@ -1,4 +1,4 @@
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Square, SquareCheck } from 'lucide-react'
 import { flights } from '../data/flights'
 import type { Flight } from '../data/types'
 
@@ -74,16 +74,26 @@ export function Header({
             type="button"
             aria-pressed={showCountryNames}
             onClick={onToggleCountryNames}
-            className="w-48 cursor-pointer rounded-lg px-3 py-2 hover:bg-gray-300"
+            className="flex cursor-pointer gap-1 rounded-lg px-3 py-2 hover:bg-gray-300"
           >
-            {showCountryNames ? 'Hide country names' : 'Show country names'}
+            {showCountryNames ? (
+              <SquareCheck className="w-4" />
+            ) : (
+              <Square className="w-4" />
+            )}
+            Country names
           </button>
           <button
             type="button"
             aria-pressed={floatingLabel}
             onClick={onToggleFloatingLabel}
-            className="w-32 cursor-pointer rounded-lg px-3 py-2 hover:bg-gray-300 aria-pressed:bg-gray-300"
+            className="flex cursor-pointer gap-1 rounded-lg px-3 py-2 hover:bg-gray-300"
           >
+            {floatingLabel ? (
+              <SquareCheck className="w-4" />
+            ) : (
+              <Square className="w-4" />
+            )}
             Floating label
           </button>
         </div>

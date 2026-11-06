@@ -185,6 +185,12 @@
   align-items: flex-end;
 }
 
+.progress-block.one-row .distances {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 1.5625cqw;
+}
+
 /* A city cluster is a zero-size anchor at the route dot's centre */
 .city-cluster {
   position: absolute;
@@ -318,14 +324,6 @@
 
 .flight-data dd {
   gap: 0.78125cqw;
-}
-
-.local-time {
-  position: absolute;
-  font-size: 3.515625cqw;
-  font-weight: 600;
-  line-height: 1;
-  white-space: nowrap;
 }
 
 .country-names text {

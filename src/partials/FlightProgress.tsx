@@ -4,7 +4,6 @@ import type { Flight, SceneLayout } from '../data/types'
 import { AnimatedRoute } from './AnimatedRoute'
 import { CityCluster } from './CityCluster'
 import { FlightData } from './FlightData'
-import { LocalTime } from './LocalTime'
 import { ProgressText } from './ProgressText'
 import { cornerClasses } from './scene'
 
@@ -45,10 +44,9 @@ export function FlightProgress({
       <CityCluster {...layout.destination} />
       <CityCluster {...layout.origin} />
       <FlightData data={data} {...layout.flightData} />
-      <LocalTime clock={data.clock} {...layout.clock} />
       {layout.progress.mode === 'fixed' && (
         <div
-          className={`progress-block ${cornerClasses(layout.progress.corner)}`}
+          className={`progress-block ${layout.progress.rows === 1 ? 'one-row' : ''} ${cornerClasses(layout.progress.corner)}`}
         >
           <ProgressText data={data} />
         </div>

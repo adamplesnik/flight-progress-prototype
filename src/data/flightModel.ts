@@ -13,7 +13,6 @@ const pad = (n: number) => String(n).padStart(2, '0')
 const fmt = (n: number) => n.toLocaleString('en-US')
 
 export type FlightReadout = {
-  clock: string
   remaining: string
   kmh: string
   mph: string
@@ -31,16 +30,10 @@ export type FlightReadout = {
  */
 export function createFlightModel(flight: Flight) {
   const { samples, stepMin } = flight.profile
-  const {
-    takeoffClockMin,
-    preDepartureMin,
-    postArrivalMin,
-    taxiMin,
-    taxiKnots,
-  } = flight.timeline
+  const { preDepartureMin, postArrivalMin, taxiMin, taxiKnots } =
+    flight.timeline
   const flightMin = (samples.length - 1) * stepMin
   const totalMin = preDepartureMin + flightMin + postArrivalMin
-  const startClockMin = takeoffClockMin - preDepartureMin
 
   /** Minutes since the start of the timeline for a 0..1 timeline progress. */
   const elapsedMinutes = (progress: number) => clamp(progress, 0, 1) * totalMin
@@ -64,9 +57,6 @@ export function createFlightModel(flight: Flight) {
     const minutes = flightMinutes(elapsed)
     const [kmh, ft, c, d] = sampleAt(minutes)
 
-    // time: whole minutes
-    const wholeMin = Math.floor(elapsed)
-    const clockMin = (((startClockMin + wholeMin) % 1440) + 1440) % 1440
     const left = flightMin - Math.floor(minutes) // frozen until take-off
     // speed: nearest 5 knots
     const parked = elapsed > preDepartureMin + flightMin
@@ -84,7 +74,6 @@ export function createFlightModel(flight: Flight) {
     const celsius = Math.round(c)
 
     return {
-      clock: `${pad(Math.floor(clockMin / 60))}:${pad(clockMin % 60)}`,
       remaining:
         left < 60
           ? `${left} min`

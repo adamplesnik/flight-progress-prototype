@@ -248,7 +248,6 @@ export const jfkSingapore: Flight = {
     ],
   },
   timeline: {
-    takeoffClockMin: 21 * 60 + 45, // 21:45 EST
     preDepartureMin: 20,
     postArrivalMin: 10,
     taxiMin: 10,

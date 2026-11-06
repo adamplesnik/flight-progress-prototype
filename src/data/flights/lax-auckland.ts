@@ -174,7 +174,6 @@ export const laxAuckland: Flight = {
     ],
   },
   timeline: {
-    takeoffClockMin: 22 * 60 + 35, // 22:35 PDT
     preDepartureMin: 20,
     postArrivalMin: 10,
     taxiMin: 10,

@@ -105,7 +105,6 @@ export const jfkCopenhagen: Flight = {
     ],
   },
   timeline: {
-    takeoffClockMin: 18 * 60, // 18:00 EST
     preDepartureMin: 20,
     postArrivalMin: 10,
     taxiMin: 10,

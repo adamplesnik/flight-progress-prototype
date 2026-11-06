@@ -30,8 +30,6 @@ export type Flight = {
     stepMin: number
   }
   timeline: {
-    /** Clock time of take-off, in minutes after midnight */
-    takeoffClockMin: number
     /** Minutes on the ground before take-off (the animation starts here) */
     preDepartureMin: number
     /** Minutes at the gate after landing */
@@ -93,11 +91,10 @@ export type SceneLayout = {
   origin: PlacedCity
   destination: PlacedCity
   progress:
-    | { mode: 'fixed'; corner: Corner }
+    | { mode: 'fixed'; corner: Corner; rows: 1 | 2 }
     /** Where the label sits along the whole flight */
     | { mode: 'floating'; steps: LabelStep[] }
   flightData: { corner: Corner; orientation: Orientation }
-  clock: { corner: Corner }
   report: {
     scale: number
     evaluations: number

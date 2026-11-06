@@ -85,7 +85,6 @@ export const melbourneHobart: Flight = {
     ],
   },
   timeline: {
-    takeoffClockMin: 19 * 60 + 14, // 19:14 AEST
     preDepartureMin: 20,
     postArrivalMin: 10,
     taxiMin: 10,

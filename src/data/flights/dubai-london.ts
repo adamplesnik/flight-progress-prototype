@@ -104,7 +104,6 @@ export const dubaiLondon: Flight = {
     ],
   },
   timeline: {
-    takeoffClockMin: 3 * 60 + 40, // 03:40 GST
     preDepartureMin: 20,
     postArrivalMin: 10,
     taxiMin: 10,
