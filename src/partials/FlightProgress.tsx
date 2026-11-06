@@ -4,7 +4,6 @@ import type { Flight, SceneLayout } from '../data/types'
 import { AnimatedRoute } from './AnimatedRoute'
 import { CityCluster } from './CityCluster'
 import { FlightData } from './FlightData'
-import { ProgressText } from './ProgressText'
 import { cornerClasses } from './scene'
 
 const INITIAL_PROGRESS = 0.2
@@ -35,7 +34,6 @@ export function FlightProgress({
       <AnimatedRoute
         layout={layout}
         model={model}
-        data={data}
         onReadout={onReadout}
         initialProgress={INITIAL_PROGRESS}
         paused={paused}
@@ -44,13 +42,17 @@ export function FlightProgress({
       <CityCluster {...layout.destination} />
       <CityCluster {...layout.origin} />
       <FlightData data={data} {...layout.flightData} />
-      {layout.progress.mode === 'fixed' && (
-        <div
-          className={`progress-block ${layout.progress.rows === 1 ? 'one-row' : ''} ${cornerClasses(layout.progress.corner)}`}
-        >
-          <ProgressText data={data} />
+      <div
+        className={`progress-block ${layout.progress.rows === 1 ? 'one-row' : ''} ${cornerClasses(layout.progress.corner)}`}
+      >
+        <p className="time-left">
+          <span>in</span> {data.remaining}
+        </p>
+        <div className="distances">
+          <p className="distance-primary">{data.km} km</p>
+          <p className="distance-secondary">{data.miles} mi</p>
         </div>
-      )}
+      </div>
     </>
   )
 }

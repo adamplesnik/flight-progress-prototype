@@ -102,58 +102,7 @@
   stroke-width: 12;
 }
 
-/* Marker label: lives inside the route SVG, which scales it, so its sizes are in px */
-.marker-data {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  color: #090909;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-/* Text hugs the marker side of the label box: 'left' aligns it left */
-.marker-data.left,
-.marker-data.left .distances {
-  align-items: flex-start;
-}
-
-.time-left {
-  display: flex;
-  gap: 12px;
-  font-size: 52px;
-  font-weight: 600;
-}
-
-.distances {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-}
-
-.marker-data.one-row .distances {
-  flex-direction: row;
-  align-items: baseline;
-  gap: 16px;
-}
-
-.marker-layer foreignObject {
-  overflow: visible;
-}
-
-.distance-primary,
-.distance-secondary {
-  font-size: 36px;
-}
-
-.distance-primary {
-  font-weight: 600;
-}
-
-/* Progress fixed in a corner: the same text, in the scene's units */
+/* Progress in a corner of the safe zone */
 .progress-block {
   position: absolute;
   display: flex;
@@ -165,19 +114,27 @@
   white-space: nowrap;
 }
 
-.progress-block .time-left {
+.time-left {
+  display: flex;
   gap: 1.171875cqw;
   font-size: 5.078125cqw;
+  font-weight: 600;
 }
 
-.progress-block .distances {
-  gap: 0.78125cqw;
+.distances {
+  display: flex;
+  flex-direction: column;
   align-items: flex-start;
+  gap: 0.78125cqw;
 }
 
-.progress-block .distance-primary,
-.progress-block .distance-secondary {
+.distance-primary,
+.distance-secondary {
   font-size: 3.515625cqw;
+}
+
+.distance-primary {
+  font-weight: 600;
 }
 
 .progress-block.at-right,

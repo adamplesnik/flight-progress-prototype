@@ -56,32 +56,6 @@ export type PlacedCity = {
 export type Corner = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 export type Orientation = 'row' | 'column'
 
-export type LabelAnchor =
-  | 'above-end'
-  | 'above-start'
-  | 'below-end'
-  | 'below-start'
-  | 'left-bottom'
-  | 'left-top'
-  | 'right-bottom'
-  | 'right-top'
-
-/** Fixed: progress stays in a corner and only the marker moves. Floating: it follows the marker. */
-export type ProgressMode = 'fixed' | 'floating'
-
-/** Where the progress label sits, from a share (0..1) of the route onwards. */
-export type LabelStep = {
-  from: number
-  /** Label box relative to the marker */
-  dx: number
-  dy: number
-  w: number
-  h: number
-  align: 'left' | 'right'
-  /** Rows used by km and mi */
-  rows: 1 | 2
-}
-
 /** Everything the scene needs to know about where things go. */
 export type SceneLayout = {
   /** The part of the world on screen: map position at the scene's top-left, scene px per map unit */
@@ -90,16 +64,7 @@ export type SceneLayout = {
   route: string
   origin: PlacedCity
   destination: PlacedCity
-  progress:
-    | { mode: 'fixed'; corner: Corner; rows: 1 | 2 }
-    /** Where the label sits along the whole flight */
-    | { mode: 'floating'; steps: LabelStep[] }
+  progress: { corner: Corner; rows: 1 | 2 }
   flightData: { corner: Corner; orientation: Orientation }
-  report: {
-    scale: number
-    evaluations: number
-    /** How many candidates each rule rejected, for tuning */
-    rejected: Record<'cities' | 'label' | 'corners' | 'between', number>
-    warnings: string[]
-  }
+  report: { scale: number; warnings: string[] }
 }

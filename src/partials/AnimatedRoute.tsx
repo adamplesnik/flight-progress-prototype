@@ -1,8 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { flushSync } from 'react-dom'
 import type { FlightModel, FlightReadout } from '../data/flightModel'
-import type { LabelStep, SceneLayout } from '../data/types'
-import { ProgressText } from './ProgressText'
+import type { SceneLayout } from '../data/types'
 import { SCENE } from './scene'
 
 const VIEW_BOX = `0 0 ${SCENE.w} ${SCENE.h}`
@@ -31,7 +30,6 @@ function fitDashes(route: SVGPathElement) {
 export function AnimatedRoute({
   layout,
   model,
-  data,
   onReadout,
   initialProgress,
   paused,
@@ -39,7 +37,6 @@ export function AnimatedRoute({
 }: {
   layout: SceneLayout
   model: FlightModel
-  data: FlightReadout
   onReadout: (data: FlightReadout) => void
   initialProgress: number
   paused: boolean
@@ -49,14 +46,8 @@ export function AnimatedRoute({
   const routeRef = useRef<SVGPathElement>(null)
   const flownRef = useRef<SVGPathElement>(null)
   const markerRef = useRef<SVGGElement>(null)
-  const labelRef = useRef<SVGForeignObjectElement>(null)
-  const labelBodyRef = useRef<HTMLDivElement>(null)
   const pausedRef = useRef(paused)
   const jumpRef = useRef<(to: number) => void>(undefined)
-  // Survives a new layout, so switching the progress mode does not restart the flight
-  const progressRef = useRef(initialProgress)
-  const steps =
-    layout.progress.mode === 'floating' ? layout.progress.steps : null
 
   useEffect(() => {
     pausedRef.current = paused
@@ -71,25 +62,11 @@ export function AnimatedRoute({
     const route = routeRef.current
     const flown = flownRef.current
     const marker = markerRef.current
-    const label = labelRef.current
-    const labelBody = labelBodyRef.current
 
     if (!route || !flown || !marker) return
 
     fitDashes(route)
     const routeLength = route.getTotalLength()
-    let currentStep: LabelStep | undefined
-
-    const applyStep = (step: LabelStep) => {
-      if (!label || !labelBody) return
-      currentStep = step
-      label.setAttribute('x', String(step.dx))
-      label.setAttribute('y', String(step.dy))
-      label.setAttribute('width', String(step.w))
-      label.setAttribute('height', String(step.h))
-      labelBody.classList.toggle('left', step.align === 'left')
-      labelBody.classList.toggle('one-row', step.rows === 1)
-    }
 
     // `at` is timeline time (0..1); the marker follows distance flown,
     // so it stays put until take-off and moves slowly while the aircraft is slow.
@@ -98,17 +75,16 @@ export function AnimatedRoute({
       const point = route.getPointAtLength(routeLength * flownShare)
       flown.setAttribute('stroke-dasharray', `${flownShare} 1`)
       marker.setAttribute('transform', `translate(${point.x} ${point.y})`)
-      const step = steps?.reduce((a, b) => (b.from <= flownShare ? b : a))
-      if (step && step !== currentStep) applyStep(step)
       onReadout(model.readoutAt(at))
     }
 
+    let progress = initialProgress
     jumpRef.current = (to) => {
-      progressRef.current = to
+      progress = to
       render(to)
     }
 
-    render(progressRef.current)
+    render(progress)
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     let frame = 0
@@ -117,10 +93,8 @@ export function AnimatedRoute({
       previousTime ??= time
 
       if (!pausedRef.current) {
-        const progress =
-          (progressRef.current + (time - previousTime) / FLIGHT_DURATION) % 1
-        progressRef.current = progress
-        // Text and marker change in the same frame, or the old text flashes at the new spot
+        progress = (progress + (time - previousTime) / FLIGHT_DURATION) % 1
+        // Text and marker change in the same frame
         flushSync(() => render(progress))
       }
 
@@ -130,7 +104,7 @@ export function AnimatedRoute({
 
     frame = window.requestAnimationFrame(animate)
     return () => window.cancelAnimationFrame(frame)
-  }, [onReadout, model, layout, steps])
+  }, [onReadout, initialProgress, model, layout])
 
   return (
     <>
@@ -154,13 +128,6 @@ export function AnimatedRoute({
         aria-hidden="true"
       >
         <g ref={markerRef} className="flight-marker">
-          {steps && (
-            <foreignObject ref={labelRef}>
-              <div ref={labelBodyRef} className="marker-data">
-                <ProgressText data={data} />
-              </div>
-            </foreignObject>
-          )}
           <circle r="18" />
         </g>
       </svg>

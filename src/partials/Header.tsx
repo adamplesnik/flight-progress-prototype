@@ -17,8 +17,6 @@ export function Header({
   onSeek,
   showCountryNames,
   onToggleCountryNames,
-  floatingLabel,
-  onToggleFloatingLabel,
 }: {
   flight: Flight
   onSelectFlight: (id: string) => void
@@ -27,8 +25,6 @@ export function Header({
   onSeek: (to: number) => void
   showCountryNames: boolean
   onToggleCountryNames: () => void
-  floatingLabel: boolean
-  onToggleFloatingLabel: () => void
 }) {
   return (
     <header className="flex w-5xl items-center justify-between rounded-xl">
@@ -82,19 +78,6 @@ export function Header({
               <Square className="w-4" />
             )}
             Country names
-          </button>
-          <button
-            type="button"
-            aria-pressed={floatingLabel}
-            onClick={onToggleFloatingLabel}
-            className="flex cursor-pointer gap-1 rounded-lg px-3 py-2 hover:bg-gray-300"
-          >
-            {floatingLabel ? (
-              <SquareCheck className="w-4" />
-            ) : (
-              <Square className="w-4" />
-            )}
-            Floating label
           </button>
         </div>
       </div>

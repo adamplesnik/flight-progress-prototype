@@ -1,80 +1,35 @@
-import { createFlightModel } from '../data/flightModel'
 import type {
   CitySide,
   Corner,
   Flight,
-  LabelAnchor,
-  LabelStep,
   Orientation,
   PlacedCity,
   Point,
-  ProgressMode,
   SceneLayout,
 } from '../data/types'
-import { SCENE } from '../partials/scene'
 import { greatCircle, MAX_LAT, project, WORLD, type LatLon } from './projection'
 import { textWidth } from './textMetrics'
 
 type Rect = { x: number; y: number; w: number; h: number }
 
-// Safe zone: nothing but the map may leave it
-const MARGIN = 48
-const SAFE: Rect = {
-  x: MARGIN,
-  y: MARGIN,
-  w: SCENE.w - 2 * MARGIN,
-  h: SCENE.h - 2 * MARGIN,
-}
+const MARGIN = 48 // safe zone: nothing but the map may leave it
 
 // Sizes of the components, in scene px (see index.css)
 const DOT_RADIUS = 24
 const MARKER_RADIUS = 18 // the route's outer limit: the marker travels along it
 const CITY_GAP = 40 // dot centre → city text
-// Marker centre → progress label. The far gap is for lines near 45°: they pass only 8.5px
-// from the corner of every label spot at the near gap.
-const LABEL_GAPS = [36, 52]
-const DATA_SIZE: Record<Orientation, { w: number; h: number }> = {
-  row: { w: 464, h: 68 },
-  column: { w: 150, h: 268 },
-}
 
 // Clearances
 const CITY_LINE_CLEARANCE = 10
-const LABEL_LINE_CLEARANCE = 11
-const LABEL_LINE_CLEARANCE_DENSE = 10 // between planning samples
-const CORNER_LINE_CLEARANCE = 16
 const OBSTACLE_PADDING = 8
-const SWEEP_PADDING = 16 // the label moves between planning samples
 const MIN_SIDE = 0.15 // sine of the angle to the path below which a spot is on neither side
 
 // Search
 const ROUTE_STEPS = 96
-const PLAN_SAMPLES = 48
-const VERIFY_SAMPLES = 200
 const SCALE_STEP = 0.98
 const MAX_SCALE = 12 // Melbourne-Hobart needs about 8
 const MIN_SCALE = 0.12 // the map repeats sideways, so routes half the world long fit too
-const MAX_EVALUATIONS = 60000
-const COARSE_STOPS = [1] // shares of the way from the centre to the limit of the room
-const FINE_STOPS = [0.25, 0.5, 0.75, 1]
 const REFINE_STEPS = 7
-const LABEL_MOVE_COST = 10 // px off centre worth accepting to save one label move
-const DATA_OPTION_COST = 1 // px off centre worth accepting per step down DATA_OPTIONS
-
-// Label plan costs: stay put unless another spot is better for a long part of the flight
-const SWITCH_ANCHOR_COST = 8
-const SWITCH_ROWS_COST = 3
-const ANCHOR_COST: Record<LabelAnchor, number> = {
-  'above-end': 0,
-  'above-start': 0.1,
-  'right-top': 0.2,
-  'left-bottom': 0.2,
-  'right-bottom': 0.3,
-  'left-top': 0.3,
-  'below-end': 0.4,
-  'below-start': 0.4,
-}
-const ANCHORS = Object.keys(ANCHOR_COST) as LabelAnchor[]
 
 const CITY_POSITIONS: { placement: CitySide; align: 'start' | 'end' }[] = [
   { placement: 'above', align: 'end' },
@@ -85,61 +40,30 @@ const CITY_POSITIONS: { placement: CitySide; align: 'start' | 'end' }[] = [
   { placement: 'left', align: 'end' },
 ]
 
-// Floating label: in order of preference
-const DATA_OPTIONS: { corner: Corner; orientation: Orientation }[] = [
-  { corner: 'bottom-right', orientation: 'row' },
-  { corner: 'bottom-right', orientation: 'column' },
-]
-
-// Fixed progress: a bottom row or a right column holds progress and flight data, and the
-// route and cities get the rest of the safe zone, less a 16px gap
-const FIXED_LAYOUTS: {
+// A bottom row or a right column holds progress and flight data, and the route and cities
+// get the rest of the safe zone, less a 16px gap
+const LAYOUTS: {
   area: Rect
-  flightData: (typeof DATA_OPTIONS)[number]
+  flightData: { corner: Corner; orientation: Orientation }
   progress: { corner: Corner; rows: 1 | 2 }
 }[] = [
   {
     area: { x: MARGIN, y: MARGIN, w: 928, h: 560 },
-    flightData: DATA_OPTIONS[0],
+    flightData: { corner: 'bottom-right', orientation: 'row' },
     progress: { corner: 'bottom-left', rows: 1 },
   },
   {
     area: { x: MARGIN, y: MARGIN, w: 692, h: 672 },
-    flightData: DATA_OPTIONS[1],
+    flightData: { corner: 'bottom-right', orientation: 'column' },
     progress: { corner: 'top-right', rows: 2 },
   },
 ]
-
-/**
- * Where the path's middle belongs: the centre of the scene without the side the flight data
- * takes. A row takes height, a column takes width.
- */
-const centreFor = ({
-  corner,
-  orientation,
-}: (typeof DATA_OPTIONS)[number]): Point => {
-  const { w, h } = DATA_SIZE[orientation]
-  return orientation === 'row'
-    ? {
-        x: SCENE.w / 2,
-        y: (SCENE.h - h) / 2 + (corner.startsWith('top') ? h : 0),
-      }
-    : {
-        x: (SCENE.w - w) / 2 + (corner.endsWith('left') ? w : 0),
-        y: SCENE.h / 2,
-      }
-}
-
-const WIDEST_DIGIT = '0'
 
 const overlaps = (a: Rect, b: Rect, padding = 0) =>
   a.x < b.x + b.w + padding &&
   a.x + a.w + padding > b.x &&
   a.y < b.y + b.h + padding &&
   a.y + a.h + padding > b.y
-
-const inside = (r: Rect, b: Rect) =>
-  r.x >= b.x && r.y >= b.y && r.x + r.w <= b.x + b.w && r.y + r.h <= b.y + b.h
 
 const distanceSquared = (r: Rect, p: Point) => {
   const dx = Math.max(r.x - p.x, 0, p.x - r.x - r.w)
@@ -159,23 +83,6 @@ const sideOfPath = (from: Point, to: Point, at: Point, r: Rect) => {
   return (tx * oy - ty * ox) / (Math.hypot(tx, ty) * Math.hypot(ox, oy) || 1)
 }
 
-/** The label is on the other side of the path than the cities (`citySide` is 1 or -1). */
-const onLabelSide = (
-  line: Point[],
-  i: number,
-  marker: Point,
-  r: Rect,
-  citySide: number
-) =>
-  sideOfPath(
-    line[Math.max(i - 1, 0)],
-    line[Math.min(i + 1, line.length - 1)],
-    marker,
-    r
-  ) *
-    citySide <
-  -MIN_SIDE
-
 const clearOfLine = (r: Rect, line: Point[], clearance: number) =>
   line.every((p) => distanceSquared(r, p) >= clearance * clearance)
 
@@ -185,14 +92,6 @@ const dotRect = ({ x, y }: Point): Rect => ({
   w: 2 * DOT_RADIUS,
   h: 2 * DOT_RADIUS,
 })
-
-function cornerRect(corner: Corner, size: { w: number; h: number }): Rect {
-  return {
-    x: corner.endsWith('left') ? SAFE.x : SAFE.x + SAFE.w - size.w,
-    y: corner.startsWith('top') ? SAFE.y : SAFE.y + SAFE.h - size.h,
-    ...size,
-  }
-}
 
 /** City text area relative to the dot's centre. */
 function cityOffset(
@@ -208,64 +107,6 @@ function cityOffset(
     w,
     h,
   }
-}
-
-function labelRect(
-  anchor: LabelAnchor,
-  size: { w: number; h: number },
-  m: Point,
-  gap: number
-): Rect {
-  const { w, h } = size
-  const [side, end] = anchor.split('-')
-  const x =
-    side === 'left'
-      ? m.x - gap - w
-      : side === 'right'
-        ? m.x + gap
-        : end === 'end'
-          ? m.x + DOT_RADIUS - w
-          : m.x - DOT_RADIUS
-  const y =
-    side === 'above'
-      ? m.y - gap - h
-      : side === 'below'
-        ? m.y + gap
-        : end === 'bottom'
-          ? m.y + DOT_RADIUS - h
-          : m.y - DOT_RADIUS
-  return { x, y, w, h }
-}
-
-/** Text hugs the marker side of the label box. */
-const labelAlign = (anchor: LabelAnchor): 'left' | 'right' =>
-  anchor === 'right-top' ||
-  anchor === 'right-bottom' ||
-  anchor === 'above-start' ||
-  anchor === 'below-start'
-    ? 'left'
-    : 'right'
-
-/** Points along the route, evenly spaced by length on screen. */
-function resample(line: Point[], count: number): Point[] {
-  const lengths = [0]
-  for (let i = 1; i < line.length; i++)
-    lengths.push(
-      lengths[i - 1] +
-        Math.hypot(line[i].x - line[i - 1].x, line[i].y - line[i - 1].y)
-    )
-  const total = lengths[lengths.length - 1]
-  let segment = 1
-  return Array.from({ length: count + 1 }, (_, i) => {
-    const target = (i / count) * total
-    while (segment < line.length - 1 && lengths[segment] < target) segment++
-    const span = lengths[segment] - lengths[segment - 1] || 1
-    const t = (target - lengths[segment - 1]) / span
-    return {
-      x: line[segment - 1].x + (line[segment].x - line[segment - 1].x) * t,
-      y: line[segment - 1].y + (line[segment].y - line[segment - 1].y) * t,
-    }
-  })
 }
 
 /**
@@ -294,57 +135,20 @@ function routeOnMap(flight: Flight) {
   return { points, leavesMap: geo.some((p) => Math.abs(p.lat) > MAX_LAT) }
 }
 
-export function computeLayout(
-  flight: Flight,
-  mode: ProgressMode = 'fixed'
-): SceneLayout {
+export function computeLayout(flight: Flight): SceneLayout {
   const { points: mapPoints, leavesMap } = routeOnMap(flight)
   const start = mapPoints[0]
   const end = mapPoints[mapPoints.length - 1]
 
-  // Text sizes: digits differ in width, so size for the widest digit, not for today's value
-  const widest = (text: string) => text.replace(/\d/g, WIDEST_DIGIT)
   const citySize = ({ city, label }: Flight['origin']) => ({
     w: Math.max(textWidth(city, 52, 600), textWidth(label, 36, 600)),
     h: 96,
   })
   const originSize = citySize(flight.origin)
   const destinationSize = citySize(flight.destination)
-  // The label's size follows its text along the flight, so what touches the safe zone is
-  // the text itself. Digits differ in width, so each value is sized for the widest digit.
-  const model = createFlightModel(flight)
-  const labelSizeTable = Array.from({ length: VERIFY_SAMPLES + 1 }, (_, i) => {
-    let low = 0
-    let high = 1
-    for (let k = 0; k < 20; k++) {
-      const mid = (low + high) / 2
-      if (model.distanceProgressAt(mid) < i / VERIFY_SAMPLES) low = mid
-      else high = mid
-    }
-    const { remaining, km, miles } = model.readoutAt(high)
-    const time =
-      textWidth('in', 52, 600) + 12 + textWidth(widest(remaining), 52, 600)
-    const kmWidth = textWidth(widest(`${km} km`), 36, 600)
-    const miWidth = textWidth(widest(`${miles} mi`), 36, 400)
-    return {
-      1: { w: Math.max(time, kmWidth + 16 + miWidth), h: 96 },
-      2: { w: Math.max(time, kmWidth, miWidth), h: 140 },
-    }
-  })
-  const labelSizeAt = (share: number, rows: 1 | 2) =>
-    labelSizeTable[Math.round(share * VERIFY_SAMPLES)][rows]
-  const states = ANCHORS.flatMap((anchor) =>
-    ([1, 2] as const).flatMap((rows) =>
-      LABEL_GAPS.map((gap) => ({ anchor, rows, gap }))
-    )
-  )
 
   /** The largest scale at which route and cities fit this area, and the room left. */
-  const fit = (
-    originOffset: Rect,
-    destinationOffset: Rect,
-    area: Rect = SAFE
-  ) => {
+  const fit = (originOffset: Rect, destinationOffset: Rect, area: Rect) => {
     const extent = (s: number, axis: 'x' | 'y') => {
       const size = axis === 'x' ? 'w' : 'h'
       let lo = Infinity
@@ -387,148 +191,6 @@ export function computeLayout(
     return { maxScale: low, room }
   }
 
-  /** Step 2: where the progress label sits along the whole flight. */
-  const planLabel = (
-    line: Point[],
-    obstacles: Rect[],
-    citySide: number
-  ): { steps: LabelStep[]; sweep: Rect[] } | null => {
-    const samples = resample(line, PLAN_SAMPLES)
-    const costs: number[][] = []
-    for (const [i, marker] of samples.entries()) {
-      let any = false
-      const row = states.map(({ anchor, rows, gap }) => {
-        const r = labelRect(
-          anchor,
-          labelSizeAt(i / PLAN_SAMPLES, rows),
-          marker,
-          gap
-        )
-        const ok =
-          inside(r, SAFE) &&
-          onLabelSide(samples, i, marker, r, citySide) &&
-          clearOfLine(r, line, LABEL_LINE_CLEARANCE) &&
-          !obstacles.some((o) => overlaps(r, o, OBSTACLE_PADDING))
-        if (!ok) return Infinity
-        any = true
-        const toEdge = Math.min(
-          r.x - SAFE.x,
-          r.y - SAFE.y,
-          SAFE.x + SAFE.w - r.x - r.w,
-          SAFE.y + SAFE.h - r.y - r.h
-        )
-        return (
-          ANCHOR_COST[anchor] +
-          (rows === 2 ? 0.1 : 0) +
-          (gap === LABEL_GAPS[0] ? 0 : 0.15) +
-          toEdge / 300
-        )
-      })
-      if (!any) return null
-      costs.push(row)
-    }
-
-    // Cheapest sequence of label positions
-    let best = costs[0].slice()
-    const back: number[][] = []
-    for (let i = 1; i < costs.length; i++) {
-      const next = new Array<number>(states.length).fill(Infinity)
-      const from = new Array<number>(states.length).fill(0)
-      for (let to = 0; to < states.length; to++) {
-        if (costs[i][to] === Infinity) continue
-        for (let f = 0; f < states.length; f++) {
-          if (best[f] === Infinity) continue
-          const change =
-            f === to
-              ? 0
-              : states[f].anchor === states[to].anchor
-                ? SWITCH_ROWS_COST
-                : SWITCH_ANCHOR_COST
-          const cost = best[f] + change + costs[i][to]
-          if (cost < next[to]) {
-            next[to] = cost
-            from[to] = f
-          }
-        }
-      }
-      back.push(from)
-      best = next
-    }
-    let state = best.indexOf(Math.min(...best))
-    if (best[state] === Infinity) return null
-    const chosen = [state]
-    for (let i = back.length - 1; i >= 0; i--) {
-      state = back[i][state]
-      chosen.unshift(state)
-    }
-
-    const steps: LabelStep[] = []
-    const sweep: Rect[] = []
-    chosen.forEach((index, i) => {
-      const { anchor, rows, gap } = states[index]
-      const rect = labelRect(
-        anchor,
-        labelSizeAt(i / PLAN_SAMPLES, rows),
-        samples[i],
-        gap
-      )
-      sweep.push(rect)
-      if (i === 0 || chosen[i - 1] !== index)
-        steps.push({
-          from: i === 0 ? 0 : (i - 0.5) / PLAN_SAMPLES,
-          dx: rect.x - samples[i].x,
-          dy: rect.y - samples[i].y,
-          w: rect.w,
-          h: rect.h,
-          align: labelAlign(anchor),
-          rows,
-        })
-    })
-    return { steps, sweep }
-  }
-
-  /** The plan must also hold between its samples. */
-  const planHolds = (
-    steps: LabelStep[],
-    line: Point[],
-    obstacles: Rect[],
-    citySide: number
-  ) => {
-    const markers = resample(line, VERIFY_SAMPLES)
-    return markers.every((marker, i) => {
-      const share = i / VERIFY_SAMPLES
-      const step = steps.reduce((a, b) => (b.from <= share ? b : a))
-      // The text stays against the marker side of the box as it changes width
-      const { w } = labelSizeAt(share, step.rows)
-      const r = {
-        x: marker.x + step.dx + (step.align === 'right' ? step.w - w : 0),
-        y: marker.y + step.dy,
-        w,
-        h: step.h,
-      }
-      return (
-        inside(r, SAFE) &&
-        onLabelSide(markers, i, marker, r, citySide) &&
-        clearOfLine(r, line, LABEL_LINE_CLEARANCE_DENSE) &&
-        !obstacles.some((o) => overlaps(r, o))
-      )
-    })
-  }
-
-  /** Step 3: the flight data options whose corner is free. */
-  const freeDataOptions = (
-    occupied: Rect[],
-    line: Point[],
-    only: (typeof DATA_OPTIONS)[number][] = DATA_OPTIONS
-  ) => {
-    const isFree = (r: Rect) =>
-      clearOfLine(r, line, CORNER_LINE_CLEARANCE) &&
-      !occupied.some((o) => overlaps(r, o, SWEEP_PADDING))
-    return only.filter((option) =>
-      isFree(cornerRect(option.corner, DATA_SIZE[option.orientation]))
-    )
-  }
-
   // Both cities go on one side of the path: the side is known from the route's direction
   // at each end, whatever the scale
   const lookAhead = Math.min(3, mapPoints.length - 1)
@@ -537,8 +199,6 @@ export function computeLayout(
     const side = sideOfPath(from, to, zero, offset)
     return Math.abs(side) < MIN_SIDE ? 0 : Math.sign(side)
   }
-
-  // Step 1 ↔ 2 ↔ 3: try the largest scale first, and shrink until everything fits
   const combos = CITY_POSITIONS.flatMap((originPosition) =>
     CITY_POSITIONS.flatMap((destinationPosition) => {
       const originOffset = cityOffset(originPosition, originSize)
@@ -552,68 +212,23 @@ export function computeLayout(
             end,
             destinationOffset
           )
-      if (!sameSide) return []
-      return {
-        originPosition,
-        destinationPosition,
-        originOffset,
-        destinationOffset,
-        citySide,
-        ...fit(originOffset, destinationOffset),
-      }
+      return sameSide
+        ? {
+            originPosition,
+            destinationPosition,
+            originOffset,
+            destinationOffset,
+          }
+        : []
     })
   )
-  const scaleTop = Math.max(...combos.map((c) => c.maxScale))
+  type Combo = (typeof combos)[number]
 
   const toScene = (s: number, tx: number, ty: number) =>
     mapPoints.map((p) => ({ x: s * p.x + tx, y: s * p.y + ty }))
-  // Path alignment starts centred in the scene, then is tuned only as far as the clusters
-  // require: the search tries spots at growing distance from the centre.
-  const xs = mapPoints.map((p) => p.x)
-  const ys = mapPoints.map((p) => p.y)
-  const pathMiddle = {
-    x: (Math.min(...xs) + Math.max(...xs)) / 2,
-    y: (Math.min(...ys) + Math.max(...ys)) / 2,
-  }
-  const positions = (
-    [lo, hi]: readonly [number, number],
-    centres: number[],
-    stops: number[]
-  ) => {
-    const list = centres.flatMap((centre) => {
-      const start = Math.min(Math.max(centre, lo), hi)
-      return [
-        start,
-        ...stops.flatMap((f) => [
-          start + (lo - start) * f,
-          start + (hi - start) * f,
-        ]),
-      ]
-    })
-    return list.filter(
-      (v, i) => list.findIndex((other) => Math.abs(other - v) < 1) === i
-    )
-  }
-  const centres = DATA_OPTIONS.map(centreFor)
-  const centreXs = [...new Set(centres.map((c) => c.x))]
-  const centreYs = [...new Set(centres.map((c) => c.y))]
 
-  type Combo = (typeof combos)[number]
-  type Candidate = {
-    s: number
-    tx: number
-    ty: number
-    combo: Combo
-    steps: LabelStep[]
-    flightData: (typeof DATA_OPTIONS)[number]
-    score: number
-  }
-  type FixedCandidate = Pick<Candidate, 's' | 'tx' | 'ty' | 'combo'> & {
-    layout: (typeof FIXED_LAYOUTS)[number]
-  }
-
-  /** Step 1: both city clusters and dots on this line, or null if they collide. */
-  const placeCities = (line: Point[], combo: Combo): Rect[] | null => {
+  /** Whether both city clusters and dots stay clear of each other and of the line. */
+  const citiesClear = (line: Point[], combo: Combo) => {
     const dotA = line[0]
     const dotB = line[line.length - 1]
     const cityA = {
@@ -626,37 +241,45 @@ export function computeLayout(
       x: dotB.x + combo.destinationOffset.x,
       y: dotB.y + combo.destinationOffset.y,
     }
-    const collide =
-      !clearOfLine(cityA, line, CITY_LINE_CLEARANCE) ||
-      !clearOfLine(cityB, line, CITY_LINE_CLEARANCE) ||
-      overlaps(cityA, cityB, OBSTACLE_PADDING) ||
-      overlaps(cityA, dotRect(dotB), OBSTACLE_PADDING) ||
-      overlaps(cityB, dotRect(dotA), OBSTACLE_PADDING)
-    return collide ? null : [cityA, cityB, dotRect(dotA), dotRect(dotB)]
+    return (
+      clearOfLine(cityA, line, CITY_LINE_CLEARANCE) &&
+      clearOfLine(cityB, line, CITY_LINE_CLEARANCE) &&
+      !overlaps(cityA, cityB, OBSTACLE_PADDING) &&
+      !overlaps(cityA, dotRect(dotB), OBSTACLE_PADDING) &&
+      !overlaps(cityB, dotRect(dotA), OBSTACLE_PADDING)
+    )
+  }
+
+  type Placement = {
+    s: number
+    tx: number
+    ty: number
+    combo: Combo
+    layout: (typeof LAYOUTS)[number]
   }
 
   /**
-   * Fixed progress: for both layouts, the route and cities centred in their area at the
-   * largest scale where they do not collide. The larger result wins; on a tie, the row.
+   * For both layouts, the route and cities centred in their area at the largest scale where
+   * they do not collide. The larger result wins; on a tie, the row.
    */
-  const solveFixed = (): FixedCandidate | null => {
-    let best: FixedCandidate | null = null
-    for (const layout of FIXED_LAYOUTS)
+  const solve = (): Placement | null => {
+    let best: Placement | null = null
+    for (const layout of LAYOUTS)
       for (const combo of combos) {
         const { maxScale, room } = fit(
           combo.originOffset,
           combo.destinationOffset,
           layout.area
         )
-        const at = (s: number): FixedCandidate | null => {
+        const at = (s: number): Placement | null => {
           const r = room(s)
           const tx = (r.x[0] + r.x[1]) / 2
           const ty = (r.y[0] + r.y[1]) / 2
-          return placeCities(toScene(s, tx, ty), combo)
+          return citiesClear(toScene(s, tx, ty), combo)
             ? { s, tx, ty, combo, layout }
             : null
         }
-        let found: FixedCandidate | null = null
+        let found: Placement | null = null
         let tooLarge = maxScale
         for (
           let s = maxScale;
@@ -682,117 +305,25 @@ export function computeLayout(
     return best
   }
 
-  let evaluations = 0
-  const rejected = { cities: 0, label: 0, corners: 0, between: 0 }
-
-  const tryLayout = (
-    s: number,
-    combo: Combo,
-    tx: number,
-    ty: number
-  ): Candidate | null => {
-    evaluations++
-    const line = toScene(s, tx, ty)
-    const fixed = placeCities(line, combo)
-    if (!fixed) {
-      rejected.cities++
-      return null
+  /** Nothing fits every rule: the largest sensible layout, centred. */
+  const fallback = (): Placement => {
+    const layout = LAYOUTS[0]
+    const fitted = combos.map((combo) => ({
+      combo,
+      ...fit(combo.originOffset, combo.destinationOffset, layout.area),
+    }))
+    const { combo, maxScale, room } = fitted.reduce((a, b) =>
+      b.maxScale > a.maxScale ? b : a
+    )
+    const s = Math.max(maxScale * 0.7, MIN_SCALE)
+    const r = room(s)
+    return {
+      s,
+      tx: (r.x[0] + r.x[1]) / 2,
+      ty: (r.y[0] + r.y[1]) / 2,
+      combo,
+      layout,
     }
-
-    let plan = planLabel(line, fixed, combo.citySide)
-    if (!plan) {
-      rejected.label++
-      return null
-    }
-    let free = freeDataOptions([...fixed, ...plan.sweep], line)
-    // No free corner: reserve one up front and plan the label around it
-    for (let i = 0; free.length === 0 && i < DATA_OPTIONS.length; i++) {
-      const option = DATA_OPTIONS[i]
-      const reserved = cornerRect(option.corner, DATA_SIZE[option.orientation])
-      const retry = planLabel(line, [...fixed, reserved], combo.citySide)
-      if (!retry) continue
-      const placed = freeDataOptions([...fixed, ...retry.sweep], line, [option])
-      if (placed.length > 0) {
-        plan = retry
-        free = placed
-      }
-    }
-    if (free.length === 0) {
-      rejected.corners++
-      return null
-    }
-    if (!planHolds(plan.steps, line, fixed, combo.citySide)) {
-      rejected.between++
-      return null
-    }
-
-    // The placement of the flight data that leaves the path most centred
-    const costOf = (option: (typeof DATA_OPTIONS)[number]) => {
-      const centre = centreFor(option)
-      return (
-        Math.abs(tx - (centre.x - s * pathMiddle.x)) +
-        Math.abs(ty - (centre.y - s * pathMiddle.y)) +
-        DATA_OPTION_COST * DATA_OPTIONS.indexOf(option)
-      )
-    }
-    const flightData = free.reduce((a, b) => (costOf(b) < costOf(a) ? b : a))
-    const score = costOf(flightData) + LABEL_MOVE_COST * (plan.steps.length - 1)
-    return { s, tx, ty, combo, steps: plan.steps, flightData, score }
-  }
-
-  /** The most centred layout at this scale. */
-  const bestAt = (s: number, options: Combo[], stops: number[]) => {
-    let best: Candidate | null = null
-    for (const combo of options) {
-      if (combo.maxScale < s) continue
-      const room = combo.room(s)
-      const txs = positions(
-        room.x,
-        centreXs.map((x) => x - s * pathMiddle.x),
-        stops
-      )
-      const tys = positions(
-        room.y,
-        centreYs.map((y) => y - s * pathMiddle.y),
-        stops
-      )
-      for (const tx of txs)
-        for (const ty of tys) {
-          if (evaluations >= MAX_EVALUATIONS) return best
-          const candidate = tryLayout(s, combo, tx, ty)
-          if (candidate && (!best || candidate.score < best.score))
-            best = candidate
-        }
-    }
-    return best
-  }
-
-  /** Floating progress: the largest scale that works, in coarse steps... */
-  const solveFloating = (): Candidate | null => {
-    let found: Candidate | null = null
-    let tooLarge = Infinity
-    for (
-      let s = scaleTop;
-      s >= MIN_SCALE && !found && evaluations < MAX_EVALUATIONS;
-      s *= SCALE_STEP
-    ) {
-      found = bestAt(s, combos, COARSE_STOPS)
-      if (!found) tooLarge = s
-    }
-    // ...then closer, until something really touches the safe zone
-    if (found) {
-      let low = found.s
-      let high = Math.min(tooLarge, found.combo.maxScale)
-      for (let i = 0; i < REFINE_STEPS; i++) {
-        const mid = (low + high) / 2
-        const better = bestAt(mid, [found.combo], FINE_STOPS)
-        if (better) {
-          found = better
-          low = mid
-        } else high = mid
-      }
-    }
-    return found
   }
 
   const warnings: string[] = []
@@ -800,26 +331,10 @@ export function computeLayout(
     warnings.push(
       `The route passes beyond ${MAX_LAT.toFixed(0)}° latitude, where the map ends: it is flattened along the map's edge.`
     )
-
-  const floating = mode === 'floating' ? solveFloating() : null
-  if (mode === 'floating' && !floating)
-    warnings.push(
-      'The floating label does not fit: progress stays in a corner.'
-    )
-  const fixed = floating ? null : solveFixed()
-
-  // Nothing fits every rule: keep the largest sensible layout and say so
-  if (!floating && !fixed)
+  const solved = solve()
+  if (!solved)
     warnings.push('No layout satisfies all rules: some components may collide.')
-  const combo =
-    floating?.combo ??
-    fixed?.combo ??
-    combos.reduce((a, b) => (b.maxScale > a.maxScale ? b : a))
-  const s = floating?.s ?? fixed?.s ?? Math.max(combo.maxScale * 0.7, MIN_SCALE)
-  const room = combo.room(s)
-  const tx = floating?.tx ?? fixed?.tx ?? (room.x[0] + room.x[1]) / 2
-  const ty = floating?.ty ?? fixed?.ty ?? (room.y[0] + room.y[1]) / 2
-  const fixedLayout = fixed?.layout ?? FIXED_LAYOUTS[0]
+  const { s, tx, ty, combo, layout } = solved ?? fallback()
   const line = toScene(s, tx, ty)
 
   const place = (
@@ -843,10 +358,8 @@ export function computeLayout(
       line[line.length - 1],
       combo.destinationPosition
     ),
-    progress: floating
-      ? { mode: 'floating', steps: floating.steps }
-      : { mode: 'fixed', ...fixedLayout.progress },
-    flightData: floating?.flightData ?? fixedLayout.flightData,
-    report: { scale: s, evaluations, rejected, warnings },
+    progress: layout.progress,
+    flightData: layout.flightData,
+    report: { scale: s, warnings },
   }
 }
