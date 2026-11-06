@@ -41,7 +41,7 @@ export function Header({
               </option>
             ))}
           </select>
-          <ChevronDown className="pointer-events-none absolute top-3 right-2 text-white" />
+          <ChevronDown className="pointer-events-none absolute top-3 right-3 text-white" />
         </div>
       ) : (
         <h1 className="text-2xl font-semibold">{flight.title}</h1>

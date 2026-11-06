@@ -1,48 +1,42 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import type { SceneLayout } from '../data/types'
-import { WORLD_MAPS } from '../layout/projection'
-import { boxStyle, SCENE } from './scene'
+import { WORLD } from '../layout/projection'
+import { mapView } from './scene'
 
-const contents = new Map<string, string>()
+let content = ''
 
 /**
  * The world map, inline rather than an <img>: only then can its outlines keep their
  * weight when zoomed in. Up to 1× they scale down with the map.
  */
-export function WorldMapView({
-  map: { src, box },
-}: {
-  map: SceneLayout['map']
-}) {
-  const [, setLoaded] = useState(0)
+export function WorldMapView({ map }: { map: SceneLayout['map'] }) {
+  const [, setLoaded] = useState(false)
   useEffect(() => {
-    if (contents.has(src)) return
+    if (content) return
     let cancelled = false
-    fetch(src)
+    fetch(WORLD.src)
       .then((response) => response.text())
       .then((svg) => {
-        contents.set(src, svg.replace(/^[\s\S]*?<svg[^>]*>|<\/svg>\s*$/g, ''))
-        if (!cancelled) setLoaded((n) => n + 1)
+        content = svg.replace(/^[\s\S]*?<svg[^>]*>|<\/svg>\s*$/g, '')
+        if (!cancelled) setLoaded(true)
       })
     return () => {
       cancelled = true
     }
-  }, [src])
+  }, [])
 
-  const world = WORLD_MAPS.find((m) => m.src === src) ?? WORLD_MAPS[0]
-  const scale = ((box.width / 100) * SCENE.w) / world.width
-  const style = {
-    ...boxStyle(box),
-    '--map-stroke': Math.min(1, 1 / scale),
-  } as CSSProperties
+  const { viewBox, copies } = mapView(map)
+  const repeats = copies
+    .filter((copy) => copy !== 0)
+    .map((copy) => `<use href="#world" x="${copy * WORLD.size}"/>`)
+    .join('')
   return (
     <svg
       className="world-map"
-      style={style}
-      viewBox={`0 0 ${world.width} ${world.height}`}
-      preserveAspectRatio="none"
+      style={{ '--map-stroke': Math.min(1, 1 / map.scale) } as CSSProperties}
+      viewBox={viewBox}
       aria-hidden="true"
-      dangerouslySetInnerHTML={{ __html: contents.get(src) ?? '' }}
+      dangerouslySetInnerHTML={{ __html: content + repeats }}
     />
   )
 }

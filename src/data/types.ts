@@ -8,9 +8,6 @@ export type ProfileSample = [
   remainingKm: number,
 ]
 
-/** Position and size in percent of the 4:3 scene. */
-export type Box = { left: number; top: number; width: number; height: number }
-
 /** A point in scene pixels (1024 × 768). */
 export type Point = { x: number; y: number }
 
@@ -86,7 +83,8 @@ export type LabelStep = {
 
 /** Everything the scene needs to know about where things go. */
 export type SceneLayout = {
-  map: { src: string; box: Box }
+  /** The part of the world on screen: map position at the scene's top-left, scene px per map unit */
+  map: { x: number; y: number; scale: number }
   /** SVG path from origin to destination, in scene pixels */
   route: string
   origin: PlacedCity

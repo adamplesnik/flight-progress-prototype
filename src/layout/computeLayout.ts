@@ -13,10 +13,10 @@ import type {
 import { SCENE } from '../partials/scene'
 import {
   greatCircle,
-  projectToSource,
-  WORLD_MAPS,
+  MAX_LAT,
+  project,
+  WORLD,
   type LatLon,
-  type WorldMap,
 } from './projection'
 import { textWidth } from './textMetrics'
 
@@ -60,7 +60,6 @@ const SCALE_STEP = 0.98
 const MAX_SCALE = 12 // Melbourne-Hobart needs about 8
 const MIN_SCALE = 0.25 // the whole world
 const MAX_EVALUATIONS = 60000
-const MAX_MAP_JUMP = 200 // map units between two route points
 const COARSE_STOPS = [1] // shares of the way from the centre to the limit of the room
 const FINE_STOPS = [0.25, 0.5, 0.75, 1]
 const REFINE_STEPS = 7
@@ -269,7 +268,10 @@ function resample(line: Point[], count: number): Point[] {
   })
 }
 
-/** Step 0: the route on the first world map that shows it without a jump. */
+/**
+ * Step 0: the route on the map. The map repeats sideways, so a route crossing the date line
+ * simply carries on into the next copy.
+ */
 function routeOnMap(flight: Flight) {
   const stops: LatLon[] = [
     flight.origin,
@@ -282,44 +284,18 @@ function routeOnMap(flight: Flight) {
     .flatMap((stop, i) =>
       greatCircle(stops[i], stop, legSteps).slice(i === 0 ? 0 : 1)
     )
-  const onMap = (map: WorldMap) => {
-    const points = geo.map((p) => map.fromSource(projectToSource(p)))
-    const steps = points
-      .slice(1)
-      .map((p, i) => Math.hypot(p.x - points[i].x, p.y - points[i].y))
-    return { map, points, jump: Math.max(...steps) }
+  const points: Point[] = []
+  for (const position of geo) {
+    const { x, y } = project(position)
+    const previous = points[points.length - 1]
+    const copies = previous ? Math.round((previous.x - x) / WORLD.size) : 0
+    points.push({ x: x + copies * WORLD.size, y })
   }
-  const options = WORLD_MAPS.map(onMap)
-  const best = options.reduce((a, b) =>
-    a.jump <= MAX_MAP_JUMP || a.jump <= b.jump ? a : b
-  )
-  return { ...best, points: closeSeam(best.points) }
-}
-
-/**
- * The map does not join perfectly at its seam, so a route crossing it jumps. Spread the
- * jump over the part of the route before it, keeping both ends on their real positions.
- */
-function closeSeam(points: Point[]): Point[] {
-  const steps = points
-    .slice(1)
-    .map((p, i) => Math.hypot(p.x - points[i].x, p.y - points[i].y))
-  const typical = steps.slice().sort((a, b) => a - b)[steps.length >> 1]
-  const seam = steps.findIndex((step) => step > Math.max(4 * typical, 8))
-  if (seam < 1) return points
-  const dx =
-    points[seam + 1].x - points[seam].x - (points[seam].x - points[seam - 1].x)
-  const dy =
-    points[seam + 1].y - points[seam].y - (points[seam].y - points[seam - 1].y)
-  return points.map((p, i) => {
-    if (i > seam) return p
-    const t = i / seam
-    return { x: p.x + dx * t, y: p.y + dy * t }
-  })
+  return { points, leavesMap: geo.some((p) => Math.abs(p.lat) > MAX_LAT) }
 }
 
 export function computeLayout(flight: Flight): SceneLayout {
-  const { map, points: mapPoints, jump } = routeOnMap(flight)
+  const { points: mapPoints, leavesMap } = routeOnMap(flight)
   const start = mapPoints[0]
   const end = mapPoints[mapPoints.length - 1]
 
@@ -765,9 +741,9 @@ export function computeLayout(flight: Flight): SceneLayout {
   }
 
   const warnings: string[] = []
-  if (jump > MAX_MAP_JUMP)
+  if (leavesMap)
     warnings.push(
-      'The route crosses the seam of every map: it is bent to bridge a gap in the map.'
+      `The route passes beyond ${MAX_LAT.toFixed(0)}° latitude, where the map ends: it is flattened along the map's edge.`
     )
 
   // Nothing fits every rule: keep the largest sensible layout and say so
@@ -793,17 +769,6 @@ export function computeLayout(flight: Flight): SceneLayout {
 
   const { s, tx, ty, combo, steps, flightData } = found
   const line = toScene(s, tx, ty)
-  const box = {
-    left: (tx / SCENE.w) * 100,
-    top: (ty / SCENE.h) * 100,
-    width: ((s * map.width) / SCENE.w) * 100,
-    height: ((s * map.height) / SCENE.h) * 100,
-  }
-  if (box.left > 0 || box.left + box.width < 100)
-    warnings.push(
-      'The map does not reach the left and right edges of the scene.'
-    )
-
   const place = (
     city: Flight['origin'],
     dot: Point,
@@ -817,7 +782,7 @@ export function computeLayout(flight: Flight): SceneLayout {
   })
 
   return {
-    map: { src: map.src, box },
+    map: { x: -tx / s, y: -ty / s, scale: s },
     route: `M${line.map((p) => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L')}`,
     origin: place(flight.origin, line[0], combo.originPosition),
     destination: place(
