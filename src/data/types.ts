@@ -22,7 +22,7 @@ export type Flight = {
   title: string
   origin: City
   destination: City
-  /** Points the route passes through, for routes that are not a great circle */
+  /** Points the route passes through, joined by a smooth curve instead of a great circle */
   waypoints?: LatLon[]
   profile: {
     samples: ProfileSample[]

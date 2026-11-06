@@ -36,7 +36,9 @@ export function WorldMapView({ map }: { map: SceneLayout['map'] }) {
       style={{ '--map-stroke': Math.min(1, 1 / map.scale) } as CSSProperties}
       viewBox={viewBox}
       aria-hidden="true"
-      dangerouslySetInnerHTML={{ __html: content + repeats }}
+      dangerouslySetInnerHTML={{
+        __html: `<g id="world">${content}</g>${repeats}`,
+      }}
     />
   )
 }

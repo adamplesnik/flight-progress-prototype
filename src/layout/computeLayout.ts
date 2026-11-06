@@ -96,22 +96,47 @@ function cityOffset(
   }
 }
 
+/** A smooth curve through all the points: centripetal Catmull-Rom, so it does not overshoot. */
+function smoothCurve(points: Point[], stepsPerLeg: number): Point[] {
+  const mix = (a: Point, b: Point, ta: number, tb: number, t: number) => {
+    const k = (t - ta) / (tb - ta)
+    return { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k }
+  }
+  const beyond = (a: Point, b: Point) => ({
+    x: 2 * a.x - b.x,
+    y: 2 * a.y - b.y,
+  })
+  const all = [
+    beyond(points[0], points[1]),
+    ...points,
+    beyond(points[points.length - 1], points[points.length - 2]),
+  ]
+  const curve = [points[0]]
+  for (let i = 1; i < all.length - 2; i++) {
+    const [p0, p1, p2, p3] = all.slice(i - 1, i + 3)
+    const t1 = Math.sqrt(Math.hypot(p1.x - p0.x, p1.y - p0.y))
+    const t2 = t1 + Math.sqrt(Math.hypot(p2.x - p1.x, p2.y - p1.y))
+    const t3 = t2 + Math.sqrt(Math.hypot(p3.x - p2.x, p3.y - p2.y))
+    for (let step = 1; step <= stepsPerLeg; step++) {
+      const t = t1 + ((t2 - t1) * step) / stepsPerLeg
+      const a1 = mix(p0, p1, 0, t1, t)
+      const a2 = mix(p1, p2, t1, t2, t)
+      const a3 = mix(p2, p3, t2, t3, t)
+      curve.push(mix(mix(a1, a2, 0, t2, t), mix(a2, a3, t1, t3, t), t1, t2, t))
+    }
+  }
+  return curve
+}
+
 /**
- * Step 0: the route on the map. The map repeats sideways, so a route crossing the date line
- * simply carries on into the next copy.
+ * Step 0: the route on the map: a great circle, or a smooth curve through its waypoints. The
+ * map repeats sideways, so a route crossing the date line simply carries on into the next copy.
  */
 function routeOnMap(flight: Flight) {
-  const stops: LatLon[] = [
-    flight.origin,
-    ...(flight.waypoints ?? []),
-    flight.destination,
-  ]
-  const legSteps = Math.ceil(ROUTE_STEPS / (stops.length - 1))
-  const geo = stops
-    .slice(1)
-    .flatMap((stop, i) =>
-      greatCircle(stops[i], stop, legSteps).slice(i === 0 ? 0 : 1)
-    )
+  const waypoints = flight.waypoints ?? []
+  const geo: LatLon[] = waypoints.length
+    ? [flight.origin, ...waypoints, flight.destination]
+    : greatCircle(flight.origin, flight.destination, ROUTE_STEPS)
   const points: Point[] = []
   for (const position of geo) {
     const { x, y } = project(position)
@@ -119,7 +144,12 @@ function routeOnMap(flight: Flight) {
     const copies = previous ? Math.round((previous.x - x) / WORLD.size) : 0
     points.push({ x: x + copies * WORLD.size, y })
   }
-  return { points, leavesMap: geo.some((p) => Math.abs(p.lat) > MAX_LAT) }
+  return {
+    points: waypoints.length
+      ? smoothCurve(points, Math.ceil(ROUTE_STEPS / (geo.length - 1)))
+      : points,
+    leavesMap: geo.some((p) => Math.abs(p.lat) > MAX_LAT),
+  }
 }
 
 export function computeLayout(flight: Flight): SceneLayout {

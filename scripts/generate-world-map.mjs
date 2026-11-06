@@ -90,10 +90,8 @@ const lines = mesh(topology, topology.objects.countries)
 writeFileSync(
   'public/assets/world-mercator.svg',
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WORLD_SIZE} ${WORLD_SIZE}">
-<g id="world">
 <path fill="#FAFAFA" d="${land}"/>
 <path fill="none" stroke="#B3B3B3" stroke-linecap="round" stroke-linejoin="round" d="${lines}"/>
-</g>
 </svg>
 `
 )
