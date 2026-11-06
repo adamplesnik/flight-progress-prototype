@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { defaultFlight, flights } from './data/flights'
 import { computeLayout } from './layout/computeLayout'
 import { CountryNames } from './partials/CountryNames'
@@ -13,6 +13,15 @@ function App() {
   // Country names on the map (toggle in the header)
   const [showCountryNames, setShowCountryNames] = useState(false)
   const [seek, setSeek] = useState<{ to: number; id: number } | null>(null)
+  const [scrubbing, setScrubbing] = useState(false)
+  const sliderRef = useRef<HTMLInputElement>(null)
+  // Every frame: straight to the slider, so following the animation re-renders nothing
+  const onProgress = useCallback((progress: number) => {
+    const slider = sliderRef.current
+    if (!slider) return
+    slider.value = String(progress * 100)
+    slider.style.setProperty('--value', `${progress * 100}%`)
+  }, [])
   const layout = useMemo(() => computeLayout(flight), [flight])
 
   const selectFlight = (id: string) => {
@@ -30,6 +39,8 @@ function App() {
         showCountryNames={showCountryNames}
         onToggleCountryNames={() => setShowCountryNames((v) => !v)}
         onSeek={(to) => setSeek((prev) => ({ to, id: (prev?.id ?? 0) + 1 }))}
+        onScrubChange={setScrubbing}
+        sliderRef={sliderRef}
       />
       <div className="aspect-4/3 w-full max-w-5xl shrink-0 overflow-hidden rounded-xl border border-gray-300 lg:w-[min(100vw-32px,(100dvh-96px)*4/3)]">
         <div className="scene">
@@ -39,8 +50,9 @@ function App() {
             key={flight.id}
             flight={flight}
             layout={layout}
-            paused={paused}
+            paused={paused || scrubbing}
             seek={seek}
+            onProgress={onProgress}
           />
         </div>
       </div>

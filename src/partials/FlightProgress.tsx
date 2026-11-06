@@ -16,11 +16,13 @@ export function FlightProgress({
   layout,
   paused,
   seek,
+  onProgress,
 }: {
   flight: Flight
   layout: SceneLayout
   paused: boolean
   seek: { to: number; id: number } | null
+  onProgress: (progress: number) => void
 }) {
   const model = useMemo(() => createFlightModel(flight), [flight])
   const [data, setData] = useState(() => model.readoutAt(INITIAL_PROGRESS))
@@ -37,6 +39,7 @@ export function FlightProgress({
         initialProgress={INITIAL_PROGRESS}
         paused={paused}
         seek={seek}
+        onProgress={onProgress}
       />
       <CityCluster {...layout.destination} />
       <CityCluster {...layout.origin} />

@@ -34,6 +34,7 @@ export function AnimatedRoute({
   initialProgress,
   paused,
   seek,
+  onProgress,
 }: {
   layout: SceneLayout
   model: FlightModel
@@ -42,6 +43,8 @@ export function AnimatedRoute({
   paused: boolean
   /** Jump the animation to `to` (0..1); a new `id` triggers a new jump. */
   seek: { to: number; id: number } | null
+  /** Called with the timeline position (0..1) whenever it changes. */
+  onProgress: (progress: number) => void
 }) {
   const routeRef = useRef<SVGPathElement>(null)
   const flownRef = useRef<SVGPathElement>(null)
@@ -76,6 +79,7 @@ export function AnimatedRoute({
       flown.setAttribute('stroke-dasharray', `${flownShare} 1`)
       marker.setAttribute('transform', `translate(${point.x} ${point.y})`)
       onReadout(model.readoutAt(at))
+      onProgress(at)
     }
 
     let progress = initialProgress
@@ -104,7 +108,7 @@ export function AnimatedRoute({
 
     frame = window.requestAnimationFrame(animate)
     return () => window.cancelAnimationFrame(frame)
-  }, [onReadout, initialProgress, model, layout])
+  }, [onReadout, onProgress, initialProgress, model, layout])
 
   return (
     <>
