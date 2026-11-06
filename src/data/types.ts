@@ -53,7 +53,6 @@ export type PlacedCity = {
   align: 'start' | 'end'
 }
 
-export type Corner = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 export type Orientation = 'row' | 'column'
 
 /** Everything the scene needs to know about where things go. */
@@ -64,7 +63,7 @@ export type SceneLayout = {
   route: string
   origin: PlacedCity
   destination: PlacedCity
-  progress: { corner: Corner; rows: 1 | 2 }
-  flightData: { corner: Corner; orientation: Orientation }
+  /** Progress and flight data: in a bottom row or a right column */
+  orientation: Orientation
   report: { scale: number; warnings: string[] }
 }

@@ -1,45 +1,45 @@
+import clsx from 'clsx'
 import type { FlightReadout } from '../data/flightModel'
-import type { Corner, Orientation } from '../data/types'
-import { cornerClasses } from './scene'
+import type { Orientation } from '../data/types'
 
 export function FlightData({
   data,
-  corner,
   orientation,
 }: {
   data: FlightReadout
-  corner: Corner
   orientation: Orientation
 }) {
+  const rows = [
+    [data.kmh, 'km/h', data.mph, 'mph'],
+    [data.meters, 'm', data.feet, 'ft'],
+    [data.celsius, '°C', data.fahrenheit, '°F'],
+  ]
   return (
     <dl
-      className={`flight-data ${orientation} ${cornerClasses(corner)}`}
+      className={clsx(
+        'flex items-start gap-[3.125cqw] text-[3.125cqw] leading-none whitespace-nowrap',
+        orientation == 'row' ? 'flex-row' : 'flex-col'
+      )}
       aria-label="Current flight conditions"
     >
-      <div>
-        <dt>
-          {data.kmh} <span>km/h</span>
-        </dt>
-        <dd>
-          {data.mph} <span>mph</span>
-        </dd>
-      </div>
-      <div>
-        <dt>
-          {data.meters} <span>m</span>
-        </dt>
-        <dd>
-          {data.feet} <span>ft</span>
-        </dd>
-      </div>
-      <div>
-        <dt>
-          {data.celsius} <span>°C</span>
-        </dt>
-        <dd>
-          {data.fahrenheit} <span>°F</span>
-        </dd>
-      </div>
+      {rows.map(([value, unit, other, otherUnit]) => (
+        <div
+          key={unit}
+          className={clsx(
+            'flex w-[14.6484375cqw] flex-col gap-[0.390625cqw]',
+            orientation == 'row'
+              ? 'items-start last:w-[9.765625cqw]'
+              : 'items-end'
+          )}
+        >
+          <dt className="flex items-center justify-center gap-[0.5859375cqw] font-semibold">
+            {value} <span>{unit}</span>
+          </dt>
+          <dd className="flex items-center justify-center gap-[0.78125cqw]">
+            {other} <span>{otherUnit}</span>
+          </dd>
+        </div>
+      ))}
     </dl>
   )
 }

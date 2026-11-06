@@ -1,4 +1,4 @@
-import type { Corner, SceneLayout } from '../data/types'
+import type { SceneLayout } from '../data/types'
 import { WORLD } from '../layout/projection'
 
 /** Design size of the 4:3 scene; route geometry and dots are in these pixels. */
@@ -15,10 +15,3 @@ export function mapView({ x, y, scale }: SceneLayout['map']) {
     copies: Array.from({ length: last - first + 1 }, (_, i) => first + i),
   }
 }
-
-/** Classes that put an absolutely positioned component in a corner of the safe zone. */
-export const cornerClasses = (corner: Corner) =>
-  corner
-    .split('-')
-    .map((side) => `at-${side}`)
-    .join(' ')

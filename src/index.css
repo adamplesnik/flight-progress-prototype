@@ -102,52 +102,6 @@
   stroke-width: 12;
 }
 
-/* Progress in a corner of the safe zone */
-.progress-block {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  gap: 0.78125cqw;
-  color: #090909;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.time-left {
-  display: flex;
-  gap: 1.171875cqw;
-  font-size: 5.078125cqw;
-  font-weight: 600;
-}
-
-.distances {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.78125cqw;
-}
-
-.distance-primary,
-.distance-secondary {
-  font-size: 3.515625cqw;
-}
-
-.distance-primary {
-  font-weight: 600;
-}
-
-.progress-block.at-right,
-.progress-block.at-right .distances {
-  align-items: flex-end;
-}
-
-.progress-block.one-row .distances {
-  flex-direction: row;
-  align-items: baseline;
-  gap: 1.5625cqw;
-}
-
 /* A city cluster is a zero-size anchor at the route dot's centre */
 .city-cluster {
   position: absolute;
@@ -213,74 +167,6 @@
   height: 4.6875cqw;
   border-radius: 999px;
   background: #cc0000;
-}
-
-/* Corners of the 48px safe zone */
-.at-top {
-  top: 6.25%;
-}
-
-.at-bottom {
-  bottom: 6.25%;
-}
-
-.at-left {
-  left: 4.6875%;
-}
-
-.at-right {
-  right: 4.6875%;
-}
-
-.flight-data {
-  position: absolute;
-  display: flex;
-  align-items: flex-start;
-  gap: 3.125cqw;
-  font-size: 3.125cqw;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.flight-data.column {
-  flex-direction: column;
-}
-
-/* A column in a right corner lines up with the safe zone's right edge */
-.flight-data.column.at-right > div {
-  align-items: flex-end;
-}
-
-.flight-data > div {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.390625cqw;
-  width: 14.6484375cqw; /* 150px at the 1024px design width: speed, altitude */
-}
-
-.flight-data > div:last-child {
-  width: 9.765625cqw; /* 100px: temperature */
-}
-
-.flight-data.column > div:last-child {
-  width: 14.6484375cqw; /* stacked: same width as the others, so they share an edge */
-}
-
-.flight-data dt,
-.flight-data dd {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.flight-data dt {
-  gap: 0.5859375cqw;
-  font-weight: 600;
-}
-
-.flight-data dd {
-  gap: 0.78125cqw;
 }
 
 .country-names text {

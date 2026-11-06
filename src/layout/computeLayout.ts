@@ -1,6 +1,5 @@
 import type {
   CitySide,
-  Corner,
   Flight,
   Orientation,
   PlacedCity,
@@ -41,20 +40,14 @@ const CITY_POSITIONS: { placement: CitySide; align: 'start' | 'end' }[] = [
 
 // A bottom row or a right column holds progress and flight data, and the route and cities
 // get the rest of the safe zone, less a 16px gap
-const LAYOUTS: {
-  area: Rect
-  flightData: { corner: Corner; orientation: Orientation }
-  progress: { corner: Corner; rows: 1 | 2 }
-}[] = [
+const LAYOUTS: { area: Rect; orientation: Orientation }[] = [
   {
     area: { x: MARGIN, y: MARGIN, w: 928, h: 560 },
-    flightData: { corner: 'bottom-right', orientation: 'row' },
-    progress: { corner: 'bottom-left', rows: 1 },
+    orientation: 'row',
   },
   {
     area: { x: MARGIN, y: MARGIN, w: 692, h: 672 },
-    flightData: { corner: 'bottom-right', orientation: 'column' },
-    progress: { corner: 'top-right', rows: 2 },
+    orientation: 'column',
   },
 ]
 
@@ -352,8 +345,7 @@ export function computeLayout(flight: Flight): SceneLayout {
       line[line.length - 1],
       combo.destinationPosition
     ),
-    progress: layout.progress,
-    flightData: layout.flightData,
+    orientation: layout.orientation,
     report: { scale: s, warnings },
   }
 }
