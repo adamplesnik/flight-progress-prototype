@@ -42,6 +42,10 @@ function App() {
             paused={paused}
             seek={seek}
           />
+          <div
+            className="pointer-events-none absolute top-[6.25%] right-[4.6875%] bottom-[6.25%] left-[4.6875%] z-10 border border-red-500/50"
+            aria-hidden="true"
+          />
         </div>
       </div>
     </main>
