@@ -153,6 +153,38 @@
   font-weight: 600;
 }
 
+/* Progress fixed in a corner: the same text, in the scene's units */
+.progress-block {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 0.78125cqw;
+  color: #090909;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.progress-block .time-left {
+  gap: 1.171875cqw;
+  font-size: 5.078125cqw;
+}
+
+.progress-block .distances {
+  gap: 0.78125cqw;
+  align-items: flex-start;
+}
+
+.progress-block .distance-primary,
+.progress-block .distance-secondary {
+  font-size: 3.515625cqw;
+}
+
+.progress-block.at-right,
+.progress-block.at-right .distances {
+  align-items: flex-end;
+}
+
 /* A city cluster is a zero-size anchor at the route dot's centre */
 .city-cluster {
   position: absolute;

@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef } from 'react'
 import { flushSync } from 'react-dom'
 import type { FlightModel, FlightReadout } from '../data/flightModel'
 import type { LabelStep, SceneLayout } from '../data/types'
+import { ProgressText } from './ProgressText'
 import { SCENE } from './scene'
 
 const VIEW_BOX = `0 0 ${SCENE.w} ${SCENE.h}`
@@ -52,6 +53,10 @@ export function AnimatedRoute({
   const labelBodyRef = useRef<HTMLDivElement>(null)
   const pausedRef = useRef(paused)
   const jumpRef = useRef<(to: number) => void>(undefined)
+  // Survives a new layout, so switching the progress mode does not restart the flight
+  const progressRef = useRef(initialProgress)
+  const steps =
+    layout.progress.mode === 'floating' ? layout.progress.steps : null
 
   useEffect(() => {
     pausedRef.current = paused
@@ -69,13 +74,14 @@ export function AnimatedRoute({
     const label = labelRef.current
     const labelBody = labelBodyRef.current
 
-    if (!route || !flown || !marker || !label || !labelBody) return
+    if (!route || !flown || !marker) return
 
     fitDashes(route)
     const routeLength = route.getTotalLength()
     let currentStep: LabelStep | undefined
 
     const applyStep = (step: LabelStep) => {
+      if (!label || !labelBody) return
       currentStep = step
       label.setAttribute('x', String(step.dx))
       label.setAttribute('y', String(step.dy))
@@ -92,20 +98,17 @@ export function AnimatedRoute({
       const point = route.getPointAtLength(routeLength * flownShare)
       flown.setAttribute('stroke-dasharray', `${flownShare} 1`)
       marker.setAttribute('transform', `translate(${point.x} ${point.y})`)
-      const step = layout.labelSteps.reduce((a, b) =>
-        b.from <= flownShare ? b : a
-      )
-      if (step !== currentStep) applyStep(step)
+      const step = steps?.reduce((a, b) => (b.from <= flownShare ? b : a))
+      if (step && step !== currentStep) applyStep(step)
       onReadout(model.readoutAt(at))
     }
 
-    let progress = initialProgress
     jumpRef.current = (to) => {
-      progress = to
+      progressRef.current = to
       render(to)
     }
 
-    render(progress)
+    render(progressRef.current)
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     let frame = 0
@@ -114,7 +117,9 @@ export function AnimatedRoute({
       previousTime ??= time
 
       if (!pausedRef.current) {
-        progress = (progress + (time - previousTime) / FLIGHT_DURATION) % 1
+        const progress =
+          (progressRef.current + (time - previousTime) / FLIGHT_DURATION) % 1
+        progressRef.current = progress
         // Text and marker change in the same frame, or the old text flashes at the new spot
         flushSync(() => render(progress))
       }
@@ -125,7 +130,7 @@ export function AnimatedRoute({
 
     frame = window.requestAnimationFrame(animate)
     return () => window.cancelAnimationFrame(frame)
-  }, [onReadout, initialProgress, model, layout])
+  }, [onReadout, model, layout, steps])
 
   return (
     <>
@@ -149,17 +154,13 @@ export function AnimatedRoute({
         aria-hidden="true"
       >
         <g ref={markerRef} className="flight-marker">
-          <foreignObject ref={labelRef}>
-            <div ref={labelBodyRef} className="marker-data">
-              <p className="time-left">
-                <span>in</span> {data.remaining}
-              </p>
-              <div className="distances">
-                <p className="distance-primary">{data.km} km</p>
-                <p className="distance-secondary">{data.miles} mi</p>
+          {steps && (
+            <foreignObject ref={labelRef}>
+              <div ref={labelBodyRef} className="marker-data">
+                <ProgressText data={data} />
               </div>
-            </div>
-          </foreignObject>
+            </foreignObject>
+          )}
           <circle r="18" />
         </g>
       </svg>

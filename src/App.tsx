@@ -12,8 +12,13 @@ function App() {
   const [paused, setPaused] = useState(false)
   // Country names on the map (toggle in the header)
   const [showCountryNames, setShowCountryNames] = useState(false)
+  // Progress follows the marker instead of staying in a corner (toggle in the header)
+  const [floatingLabel, setFloatingLabel] = useState(false)
   const [seek, setSeek] = useState<{ to: number; id: number } | null>(null)
-  const layout = useMemo(() => computeLayout(flight), [flight])
+  const layout = useMemo(
+    () => computeLayout(flight, floatingLabel ? 'floating' : 'fixed'),
+    [flight, floatingLabel]
+  )
 
   const selectFlight = (id: string) => {
     setFlightId(id)
@@ -29,6 +34,8 @@ function App() {
         onToggle={() => setPaused((p) => !p)}
         showCountryNames={showCountryNames}
         onToggleCountryNames={() => setShowCountryNames((v) => !v)}
+        floatingLabel={floatingLabel}
+        onToggleFloatingLabel={() => setFloatingLabel((v) => !v)}
         onSeek={(to) => setSeek((prev) => ({ to, id: (prev?.id ?? 0) + 1 }))}
       />
       <div className="flight-map max-w-5xl rounded-xl border border-gray-300">

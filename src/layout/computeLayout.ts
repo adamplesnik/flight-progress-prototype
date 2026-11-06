@@ -8,16 +8,11 @@ import type {
   Orientation,
   PlacedCity,
   Point,
+  ProgressMode,
   SceneLayout,
 } from '../data/types'
 import { SCENE } from '../partials/scene'
-import {
-  greatCircle,
-  MAX_LAT,
-  project,
-  WORLD,
-  type LatLon,
-} from './projection'
+import { greatCircle, MAX_LAT, project, WORLD, type LatLon } from './projection'
 import { textWidth } from './textMetrics'
 
 type Rect = { x: number; y: number; w: number; h: number }
@@ -48,6 +43,7 @@ const CITY_LINE_CLEARANCE = 10
 const LABEL_LINE_CLEARANCE = 11
 const LABEL_LINE_CLEARANCE_DENSE = 10 // between planning samples
 const CORNER_LINE_CLEARANCE = 16
+const FIXED_CORNER_CLEARANCE = 26 // the marker (radius 18) passes without touching
 const OBSTACLE_PADDING = 8
 const SWEEP_PADDING = 16 // the label moves between planning samples
 const MIN_SIDE = 0.15 // sine of the angle to the path below which a spot is on neither side
@@ -69,7 +65,6 @@ const DATA_OPTION_COST = 1 // px off centre worth accepting per step down DATA_O
 // Label plan costs: stay put unless another spot is better for a long part of the flight
 const SWITCH_ANCHOR_COST = 8
 const SWITCH_ROWS_COST = 3
-const INFEASIBLE_COST = 100
 const ANCHOR_COST: Record<LabelAnchor, number> = {
   'above-end': 0,
   'above-start': 0.1,
@@ -129,6 +124,15 @@ const CLOCK_CORNER: Record<Corner, Corner> = {
   'bottom-left': 'top-right',
   'bottom-right': 'top-left',
 }
+
+// Where the fixed progress block prefers to sit, of the two corners left over
+const PROGRESS_CORNERS: Corner[] = [
+  'top-left',
+  'top-right',
+  'bottom-left',
+  'bottom-right',
+]
+const PROGRESS_HEIGHT = 140
 
 const WIDEST_DIGIT = '0'
 
@@ -294,7 +298,10 @@ function routeOnMap(flight: Flight) {
   return { points, leavesMap: geo.some((p) => Math.abs(p.lat) > MAX_LAT) }
 }
 
-export function computeLayout(flight: Flight): SceneLayout {
+export function computeLayout(
+  flight: Flight,
+  mode: ProgressMode = 'fixed'
+): SceneLayout {
   const { points: mapPoints, leavesMap } = routeOnMap(flight)
   const start = mapPoints[0]
   const end = mapPoints[mapPoints.length - 1]
@@ -331,6 +338,11 @@ export function computeLayout(flight: Flight): SceneLayout {
   })
   const labelSizeAt = (share: number, rows: 1 | 2) =>
     labelSizeTable[Math.round(share * VERIFY_SAMPLES)][rows]
+  // The fixed block keeps one size all flight, so it never reflows
+  const progressSize = {
+    w: Math.max(...labelSizeTable.map((size) => size[2].w)),
+    h: PROGRESS_HEIGHT,
+  }
   const states = ANCHORS.flatMap((anchor) =>
     ([1, 2] as const).flatMap((rows) =>
       LABEL_GAPS.map((gap) => ({ anchor, rows, gap }))
@@ -385,8 +397,7 @@ export function computeLayout(flight: Flight): SceneLayout {
   const planLabel = (
     line: Point[],
     obstacles: Rect[],
-    citySide: number,
-    soft: boolean
+    citySide: number
   ): { steps: LabelStep[]; sweep: Rect[] } | null => {
     const samples = resample(line, PLAN_SAMPLES)
     const costs: number[][] = []
@@ -404,7 +415,7 @@ export function computeLayout(flight: Flight): SceneLayout {
           onLabelSide(samples, i, marker, r, citySide) &&
           clearOfLine(r, line, LABEL_LINE_CLEARANCE) &&
           !obstacles.some((o) => overlaps(r, o, OBSTACLE_PADDING))
-        if (!ok) return soft ? INFEASIBLE_COST : Infinity
+        if (!ok) return Infinity
         any = true
         const toEdge = Math.min(
           r.x - SAFE.x,
@@ -419,7 +430,7 @@ export function computeLayout(flight: Flight): SceneLayout {
           toEdge / 300
         )
       })
-      if (!any && !soft) return null
+      if (!any) return null
       costs.push(row)
     }
 
@@ -605,18 +616,12 @@ export function computeLayout(flight: Flight): SceneLayout {
     flightData: (typeof DATA_OPTIONS)[number]
     score: number
   }
+  type FixedCandidate = Omit<Candidate, 'steps' | 'score'> & {
+    progressCorner: Corner
+  }
 
-  let evaluations = 0
-  const rejected = { cities: 0, label: 0, corners: 0, between: 0 }
-
-  const tryLayout = (
-    s: number,
-    combo: Combo,
-    tx: number,
-    ty: number
-  ): Candidate | null => {
-    evaluations++
-    const line = toScene(s, tx, ty)
+  /** Step 1: both city clusters and dots on this line, or null if they collide. */
+  const placeCities = (line: Point[], combo: Combo): Rect[] | null => {
     const dotA = line[0]
     const dotB = line[line.length - 1]
     const cityA = {
@@ -629,19 +634,97 @@ export function computeLayout(flight: Flight): SceneLayout {
       x: dotB.x + combo.destinationOffset.x,
       y: dotB.y + combo.destinationOffset.y,
     }
-    if (
+    const collide =
       !clearOfLine(cityA, line, CITY_LINE_CLEARANCE) ||
       !clearOfLine(cityB, line, CITY_LINE_CLEARANCE) ||
       overlaps(cityA, cityB, OBSTACLE_PADDING) ||
       overlaps(cityA, dotRect(dotB), OBSTACLE_PADDING) ||
       overlaps(cityB, dotRect(dotA), OBSTACLE_PADDING)
-    ) {
+    return collide ? null : [cityA, cityB, dotRect(dotA), dotRect(dotB)]
+  }
+
+  /**
+   * Fixed progress at this scale: curve and cities exactly centred, then the corners go to
+   * whatever the path leaves free. Null if the flight data, clock and progress do not fit.
+   */
+  const tryFixed = (s: number, combo: Combo): FixedCandidate | null => {
+    const room = combo.room(s)
+    const tx = (room.x[0] + room.x[1]) / 2
+    const ty = (room.y[0] + room.y[1]) / 2
+    const line = toScene(s, tx, ty)
+    const cities = placeCities(line, combo)
+    if (!cities) return null
+    const isFree = (r: Rect) =>
+      clearOfLine(r, line, FIXED_CORNER_CLEARANCE) &&
+      !cities.some((o) => overlaps(r, o, SWEEP_PADDING))
+    for (const flightData of DATA_OPTIONS) {
+      const data = cornerRect(
+        flightData.corner,
+        DATA_SIZE[flightData.orientation]
+      )
+      const clockCorner = CLOCK_CORNER[flightData.corner]
+      if (!isFree(data) || !isFree(cornerRect(clockCorner, clockSize))) continue
+      const progressCorner = PROGRESS_CORNERS.find((corner) => {
+        if (corner === flightData.corner || corner === clockCorner) return false
+        const block = cornerRect(corner, progressSize)
+        return isFree(block) && !overlaps(block, data, OBSTACLE_PADDING)
+      })
+      if (progressCorner)
+        return { s, tx, ty, combo, flightData, progressCorner }
+    }
+    return null
+  }
+
+  /** The largest scale at which curve, cities and all three corner blocks fit. */
+  const solveFixed = (): FixedCandidate | null => {
+    const preference = (c: FixedCandidate) => DATA_OPTIONS.indexOf(c.flightData)
+    const bestAt = (s: number, options: Combo[]) =>
+      options
+        .filter((combo) => combo.maxScale >= s)
+        .map((combo) => tryFixed(s, combo))
+        .reduce<FixedCandidate | null>(
+          (best, c) =>
+            c && (!best || preference(c) < preference(best)) ? c : best,
+          null
+        )
+    let found: FixedCandidate | null = null
+    let tooLarge = Infinity
+    for (let s = scaleTop; s >= MIN_SCALE && !found; s *= SCALE_STEP) {
+      found = bestAt(s, combos)
+      if (!found) tooLarge = s
+    }
+    if (!found) return null
+    let low = found.s
+    let high = Math.min(tooLarge, found.combo.maxScale)
+    for (let i = 0; i < REFINE_STEPS; i++) {
+      const mid = (low + high) / 2
+      const better = bestAt(mid, [found.combo])
+      if (better) {
+        found = better
+        low = mid
+      } else high = mid
+    }
+    return found
+  }
+
+  let evaluations = 0
+  const rejected = { cities: 0, label: 0, corners: 0, between: 0 }
+
+  const tryLayout = (
+    s: number,
+    combo: Combo,
+    tx: number,
+    ty: number
+  ): Candidate | null => {
+    evaluations++
+    const line = toScene(s, tx, ty)
+    const fixed = placeCities(line, combo)
+    if (!fixed) {
       rejected.cities++
       return null
     }
 
-    const fixed = [cityA, cityB, dotRect(dotA), dotRect(dotB)]
-    let plan = planLabel(line, fixed, combo.citySide, false)
+    let plan = planLabel(line, fixed, combo.citySide)
     if (!plan) {
       rejected.label++
       return null
@@ -655,8 +738,7 @@ export function computeLayout(flight: Flight): SceneLayout {
       const retry = planLabel(
         line,
         [...fixed, reserved, reservedClock],
-        combo.citySide,
-        false
+        combo.citySide
       )
       if (!retry) continue
       const placed = freeDataOptions([...fixed, ...retry.sweep], line, [option])
@@ -715,29 +797,32 @@ export function computeLayout(flight: Flight): SceneLayout {
     return best
   }
 
-  // The largest scale that works, in coarse steps
-  let found: Candidate | null = null
-  let tooLarge = Infinity
-  for (
-    let s = scaleTop;
-    s >= MIN_SCALE && !found && evaluations < MAX_EVALUATIONS;
-    s *= SCALE_STEP
-  ) {
-    found = bestAt(s, combos, COARSE_STOPS)
-    if (!found) tooLarge = s
-  }
-  // ...then closer, until something really touches the safe zone
-  if (found) {
-    let low = found.s
-    let high = Math.min(tooLarge, found.combo.maxScale)
-    for (let i = 0; i < REFINE_STEPS; i++) {
-      const mid = (low + high) / 2
-      const better = bestAt(mid, [found.combo], FINE_STOPS)
-      if (better) {
-        found = better
-        low = mid
-      } else high = mid
+  /** Floating progress: the largest scale that works, in coarse steps... */
+  const solveFloating = (): Candidate | null => {
+    let found: Candidate | null = null
+    let tooLarge = Infinity
+    for (
+      let s = scaleTop;
+      s >= MIN_SCALE && !found && evaluations < MAX_EVALUATIONS;
+      s *= SCALE_STEP
+    ) {
+      found = bestAt(s, combos, COARSE_STOPS)
+      if (!found) tooLarge = s
     }
+    // ...then closer, until something really touches the safe zone
+    if (found) {
+      let low = found.s
+      let high = Math.min(tooLarge, found.combo.maxScale)
+      for (let i = 0; i < REFINE_STEPS; i++) {
+        const mid = (low + high) / 2
+        const better = bestAt(mid, [found.combo], FINE_STOPS)
+        if (better) {
+          found = better
+          low = mid
+        } else high = mid
+      }
+    }
+    return found
   }
 
   const warnings: string[] = []
@@ -746,29 +831,28 @@ export function computeLayout(flight: Flight): SceneLayout {
       `The route passes beyond ${MAX_LAT.toFixed(0)}° latitude, where the map ends: it is flattened along the map's edge.`
     )
 
-  // Nothing fits every rule: keep the largest sensible layout and say so
-  if (!found) {
-    warnings.push('No layout satisfies all rules: some components may collide.')
-    const combo = combos.reduce((a, b) => (b.maxScale > a.maxScale ? b : a))
-    const s = Math.max(combo.maxScale * 0.7, MIN_SCALE)
-    const room = combo.room(s)
-    const tx = (room.x[0] + room.x[1]) / 2
-    const ty = (room.y[0] + room.y[1]) / 2
-    const line = toScene(s, tx, ty)
-    const plan = planLabel(line, [], combo.citySide, true)
-    found = {
-      s,
-      tx,
-      ty,
-      combo,
-      steps: plan?.steps ?? [],
-      flightData: DATA_OPTIONS[0],
-      score: 0,
-    }
-  }
+  const floating = mode === 'floating' ? solveFloating() : null
+  if (mode === 'floating' && !floating)
+    warnings.push(
+      'The floating label does not fit: progress stays in a corner.'
+    )
+  const fixed = floating ? null : solveFixed()
 
-  const { s, tx, ty, combo, steps, flightData } = found
+  // Nothing fits every rule: keep the largest sensible layout and say so
+  if (!floating && !fixed)
+    warnings.push('No layout satisfies all rules: some components may collide.')
+  const combo =
+    floating?.combo ??
+    fixed?.combo ??
+    combos.reduce((a, b) => (b.maxScale > a.maxScale ? b : a))
+  const s = floating?.s ?? fixed?.s ?? Math.max(combo.maxScale * 0.7, MIN_SCALE)
+  const room = combo.room(s)
+  const tx = floating?.tx ?? fixed?.tx ?? (room.x[0] + room.x[1]) / 2
+  const ty = floating?.ty ?? fixed?.ty ?? (room.y[0] + room.y[1]) / 2
+  const flightData =
+    floating?.flightData ?? fixed?.flightData ?? DATA_OPTIONS[0]
   const line = toScene(s, tx, ty)
+
   const place = (
     city: Flight['origin'],
     dot: Point,
@@ -790,7 +874,9 @@ export function computeLayout(flight: Flight): SceneLayout {
       line[line.length - 1],
       combo.destinationPosition
     ),
-    labelSteps: steps,
+    progress: floating
+      ? { mode: 'floating', steps: floating.steps }
+      : { mode: 'fixed', corner: fixed?.progressCorner ?? 'top-right' },
     flightData,
     clock: { corner: CLOCK_CORNER[flightData.corner] },
     report: { scale: s, evaluations, rejected, warnings },

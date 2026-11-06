@@ -68,6 +68,9 @@ export type LabelAnchor =
   | 'right-bottom'
   | 'right-top'
 
+/** Fixed: progress stays in a corner and only the marker moves. Floating: it follows the marker. */
+export type ProgressMode = 'fixed' | 'floating'
+
 /** Where the progress label sits, from a share (0..1) of the route onwards. */
 export type LabelStep = {
   from: number
@@ -89,8 +92,10 @@ export type SceneLayout = {
   route: string
   origin: PlacedCity
   destination: PlacedCity
-  /** Where the progress label sits along the whole flight */
-  labelSteps: LabelStep[]
+  progress:
+    | { mode: 'fixed'; corner: Corner }
+    /** Where the label sits along the whole flight */
+    | { mode: 'floating'; steps: LabelStep[] }
   flightData: { corner: Corner; orientation: Orientation }
   clock: { corner: Corner }
   report: {
