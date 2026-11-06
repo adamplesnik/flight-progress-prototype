@@ -3,6 +3,7 @@ import { dubaiLondon } from './dubai-london'
 import { jfkCopenhagen } from './jfk-copenhagen'
 import { jfkSingapore } from './jfk-singapore'
 import { laxAuckland } from './lax-auckland'
+import { lisZurich } from './lis-zurich'
 import { melbourneHobart } from './melbourne-hobart'
 
 /** All available flights. Add new ones here; the first is the default. */
@@ -11,6 +12,7 @@ export const flights: Flight[] = [
   jfkCopenhagen,
   jfkSingapore,
   laxAuckland,
+  lisZurich,
   melbourneHobart,
 ]
 
