@@ -21,7 +21,7 @@ function App() {
   }
 
   return (
-    <main className="wrapper">
+    <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-4 p-4 text-[#090909]">
       <Header
         flight={flight}
         onSelectFlight={selectFlight}
@@ -31,7 +31,7 @@ function App() {
         onToggleCountryNames={() => setShowCountryNames((v) => !v)}
         onSeek={(to) => setSeek((prev) => ({ to, id: (prev?.id ?? 0) + 1 }))}
       />
-      <div className="flight-map max-w-5xl rounded-xl border border-gray-300">
+      <div className="aspect-4/3 w-full max-w-5xl shrink-0 overflow-hidden rounded-xl border border-gray-300 lg:w-[min(100vw-32px,(100dvh-96px)*4/3)]">
         <div className="scene">
           <WorldMapView map={layout.map} />
           {showCountryNames && <CountryNames map={layout.map} />}

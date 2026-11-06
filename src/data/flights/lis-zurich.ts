@@ -5,7 +5,7 @@ export const lisZurich: Flight = {
   title: 'Lisboa - Zürich',
   origin: {
     city: 'Lisboa',
-    label: '15:45 UTC →',
+    label: '15:45 WET →',
     lat: 38.7742,
     lon: -9.1342,
   },

@@ -23,30 +23,8 @@
   }
 
   body {
-    overflow: hidden;
     background: #e9ebed;
   }
-}
-
-.wrapper {
-  /* 4:3 map width: limited by viewport width, or by height minus padding, gap and controls */
-  --map-width: min(100vw - 32px, (100dvh - 32px - 16px - 48px) * 4 / 3);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  width: 100%;
-  min-height: 100dvh;
-  padding: 16px;
-  color: #090909;
-}
-
-.flight-map {
-  width: var(--map-width);
-  aspect-ratio: 4 / 3;
-  flex: 0 0 auto;
-  overflow: hidden;
 }
 
 .scene {
