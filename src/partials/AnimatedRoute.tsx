@@ -2,7 +2,6 @@ import { useEffect, useLayoutEffect, useRef } from 'react'
 import { flushSync } from 'react-dom'
 import type { FlightModel, FlightReadout } from '../data/flightModel'
 import type { LabelStep, SceneLayout } from '../data/types'
-import { createLabelPlacer, LABEL_SIZE } from './labelPlacement'
 import { SCENE } from './scene'
 
 const VIEW_BOX = `0 0 ${SCENE.w} ${SCENE.h}`
@@ -12,9 +11,6 @@ const FLIGHT_DURATION = 40000
 const DASH_LENGTH = 28
 const DASH_GAP = 30
 const DASH_INSET = 10
-// Progress label box, relative to the marker
-const FIXED_LABEL = { x: -150, y: 40, width: 174, height: 150 }
-const PLACED_LABEL = { x: 0, y: 0, width: LABEL_SIZE.w, height: LABEL_SIZE.h }
 
 /**
  * Fits the dash pattern so the first and last dash both sit half inside the
@@ -77,11 +73,6 @@ export function AnimatedRoute({
 
     fitDashes(route)
     const routeLength = route.getTotalLength()
-    const placeLabel =
-      layout.label.kind === 'avoid'
-        ? createLabelPlacer(route, [layout.origin, layout.destination])
-        : null
-    const planSteps = layout.label.kind === 'plan' ? layout.label.steps : null
     let currentStep: LabelStep | undefined
 
     const applyStep = (step: LabelStep) => {
@@ -101,17 +92,10 @@ export function AnimatedRoute({
       const point = route.getPointAtLength(routeLength * flownShare)
       flown.setAttribute('stroke-dasharray', `${flownShare} 1`)
       marker.setAttribute('transform', `translate(${point.x} ${point.y})`)
-      if (placeLabel) {
-        const { rect, side, align } = placeLabel(point)
-        label.setAttribute('x', String(rect.x - point.x))
-        label.setAttribute('y', String(rect.y - point.y))
-        labelBody.classList.toggle('above', side === 'above')
-        labelBody.classList.toggle('left', align === 'left')
-      }
-      if (planSteps) {
-        const step = planSteps.reduce((a, b) => (b.from <= flownShare ? b : a))
-        if (step !== currentStep) applyStep(step)
-      }
+      const step = layout.labelSteps.reduce((a, b) =>
+        b.from <= flownShare ? b : a
+      )
+      if (step !== currentStep) applyStep(step)
       onReadout(model.readoutAt(at))
     }
 
@@ -165,10 +149,7 @@ export function AnimatedRoute({
         aria-hidden="true"
       >
         <g ref={markerRef} className="flight-marker">
-          <foreignObject
-            ref={labelRef}
-            {...(layout.label.kind === 'fixed' ? FIXED_LABEL : PLACED_LABEL)}
-          >
+          <foreignObject ref={labelRef}>
             <div ref={labelBodyRef} className="marker-data">
               <p className="time-left">
                 <span>in</span> {data.remaining}

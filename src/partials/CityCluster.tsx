@@ -5,7 +5,7 @@ export function CityCluster({
   city,
   label,
   dot,
-  align = 'start',
+  align,
   placement,
 }: PlacedCity) {
   return (

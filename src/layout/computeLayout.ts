@@ -825,7 +825,7 @@ export function computeLayout(flight: Flight): SceneLayout {
       line[line.length - 1],
       combo.destinationPosition
     ),
-    label: { kind: 'plan', steps },
+    labelSteps: steps,
     flightData,
     clock: { corner: CLOCK_CORNER[flightData.corner] },
     report: { scale: s, evaluations, rejected, warnings },

@@ -10,22 +10,6 @@ export const dubaiLondon: Flight = {
     lat: 51.47,
     lon: -0.4543,
   },
-  manual: {
-    cities: 'above',
-    origin: { dot: { x: 772, y: 548 } },
-    destination: { dot: { x: 164, y: 184 } },
-    map: {
-      src: '/assets/150bf.svg',
-      box: {
-        left: -177.5390625,
-        top: -20.1653646,
-        width: 390.9231445,
-        height: 224.1361979,
-      },
-    },
-    route:
-      'M772 548 C763.8 551.3 744.6 554.5 719.5 547.9 C689 539.9 615 499.9 559 465.4 C540.6 454.1 513.6 433.1 487.8 413.1 C439.9 374.7 391.2 337.1 341.9 300.3 C292.1 264.2 242.2 228.3 164 184',
-  },
   profile: {
     stepMin: 5,
     // Sampled every 5 minutes from take-off (03:40 GST), total flight 7h10 (430 min)

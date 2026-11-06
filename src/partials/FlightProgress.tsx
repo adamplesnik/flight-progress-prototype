@@ -11,7 +11,7 @@ const INITIAL_PROGRESS = 0.2
 const sameReadout = (a: FlightReadout, b: FlightReadout) =>
   (Object.keys(a) as (keyof FlightReadout)[]).every((k) => a[k] === b[k])
 
-/** Everything in the scene that follows the flight. Render with a key per flight and layout. */
+/** Everything in the scene that follows the flight. Render with `key={flight.id}`. */
 export function FlightProgress({
   flight,
   layout,

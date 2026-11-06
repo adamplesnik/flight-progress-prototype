@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { defaultFlight, flights } from './data/flights'
 import { computeLayout } from './layout/computeLayout'
-import { manualLayout } from './layout/manualLayout'
 import { Controls } from './partials/Controls'
 import { CountryNames } from './partials/CountryNames'
 import { FlightProgress } from './partials/FlightProgress'
@@ -14,11 +13,7 @@ function App() {
   // Country names on the map (toggle in the controls)
   const [showCountryNames, setShowCountryNames] = useState(false)
   const [seek, setSeek] = useState<{ to: number; id: number } | null>(null)
-  const [autoLayout, setAutoLayout] = useState(true)
-  const manual = useMemo(() => manualLayout(flight), [flight])
-  const auto = useMemo(() => computeLayout(flight), [flight])
-  const useManual = !autoLayout && manual !== null
-  const layout = useManual ? manual : auto
+  const layout = useMemo(() => computeLayout(flight), [flight])
 
   const selectFlight = (id: string) => {
     setFlightId(id)
@@ -49,15 +44,6 @@ function App() {
           showCountryNames={showCountryNames}
           onToggleCountryNames={() => setShowCountryNames((v) => !v)}
           onSeek={(to) => setSeek((prev) => ({ to, id: (prev?.id ?? 0) + 1 }))}
-          autoLayout={!useManual}
-          onToggleAutoLayout={
-            manual
-              ? () => {
-                  setAutoLayout((v) => !v)
-                  setSeek(null)
-                }
-              : undefined
-          }
         />
       </div>
       <div className="flight-map max-w-5xl rounded-xl border border-gray-300">
@@ -65,7 +51,7 @@ function App() {
           <WorldMapView map={layout.map} />
           {showCountryNames && <CountryNames map={layout.map} />}
           <FlightProgress
-            key={`${flight.id}:${useManual ? 'manual' : 'auto'}`}
+            key={flight.id}
             flight={flight}
             layout={layout}
             paused={paused}
