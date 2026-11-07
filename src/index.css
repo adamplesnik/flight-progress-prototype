@@ -51,9 +51,13 @@
   overflow: visible;
 }
 
-/* The sea: its colour goes with the map style (see WorldMapView) */
+/* Land and sea colours go with the map style (see WorldMapView) */
 .world-map:not(.country-names) {
   background: var(--sea, #e9ebed);
+}
+
+.world-map path:not([fill='none']) {
+  fill: var(--land, #fafafa);
 }
 
 .world-map path {
