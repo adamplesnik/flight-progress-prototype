@@ -61,6 +61,12 @@ export type SceneLayout = {
   map: { x: number; y: number; scale: number }
   /** SVG path from origin to destination, in scene pixels */
   route: string
+  /**
+   * For each route vertex, the share of the drawn length (`path`) and of the real, geographic
+   * distance (`geo`) up to it, both 0..1. Mercator stretches the far north and south, so the
+   * marker uses these to sit where the aircraft really is.
+   */
+  routeShares: { path: number[]; geo: number[] }
   origin: PlacedCity
   destination: PlacedCity
   /** Progress and flight data: in a bottom row or a right column */
