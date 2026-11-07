@@ -51,9 +51,9 @@
   overflow: visible;
 }
 
-/* The sea */
+/* The sea: its colour goes with the map style (see WorldMapView) */
 .world-map:not(.country-names) {
-  background: #e9ebed;
+  background: var(--sea, #e9ebed);
 }
 
 .world-map path {

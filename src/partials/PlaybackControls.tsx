@@ -1,16 +1,21 @@
 import clsx from 'clsx'
 import type { RefObject } from 'react'
 
-/** Play/pause and the slider that follows the flight and scrubs through it. */
+/** Play/pause, the map style switch and the slider that follows the flight and scrubs through it. */
 export function PlaybackControls({
   paused,
   onToggle,
+  grayMap,
+  onToggleGrayMap,
   onSeek,
   onScrubChange,
   sliderRef,
 }: {
   paused: boolean
   onToggle: () => void
+  /** Gray land on a white sea instead of light land on a gray sea */
+  grayMap: boolean
+  onToggleGrayMap: () => void
   onSeek: (to: number) => void
   /** The slider is being dragged: the flight holds still meanwhile. */
   onScrubChange: (scrubbing: boolean) => void
@@ -30,13 +35,37 @@ export function PlaybackControls({
 
   return (
     <div className="flex w-full flex-col gap-2 sm:flex-row">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="h-12 w-24 shrink-0 cursor-pointer rounded-xl bg-gray-900 px-4 font-medium text-white hover:bg-gray-700"
-      >
-        {paused ? 'Play' : 'Pause'}
-      </button>
+      <div className="flex shrink-0 gap-2">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="h-12 w-24 shrink-0 cursor-pointer rounded-xl bg-gray-900 px-4 font-medium text-white hover:bg-gray-700"
+        >
+          {paused ? 'Play' : 'Pause'}
+        </button>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={grayMap}
+          onClick={onToggleGrayMap}
+          className="group flex h-12 shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-gray-400/60 px-3 font-medium hover:bg-gray-300/60"
+        >
+          <span
+            className={clsx(
+              'relative h-6 w-10 rounded-full transition-colors',
+              grayMap ? 'bg-gray-900' : 'bg-gray-400/60'
+            )}
+          >
+            <span
+              className={clsx(
+                'absolute top-1 left-1 size-4 rounded-full bg-white transition-transform',
+                grayMap && 'translate-x-4'
+              )}
+            />
+          </span>
+          Gray land
+        </button>
+      </div>
       <div className="h-12 min-w-0 flex-1 rounded-xl border border-gray-400/60">
         <input
           ref={sliderRef}

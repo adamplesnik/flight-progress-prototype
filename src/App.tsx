@@ -5,7 +5,7 @@ import { CountryNames } from './partials/CountryNames'
 import { FlightProgress } from './partials/FlightProgress'
 import { Header } from './partials/Header'
 import { PlaybackControls } from './partials/PlaybackControls'
-import { WorldMapView } from './partials/WorldMapView'
+import { WorldMapView, type MapStyle } from './partials/WorldMapView'
 
 function App() {
   const [flightId, setFlightId] = useState(defaultFlight.id)
@@ -13,6 +13,8 @@ function App() {
   const [paused, setPaused] = useState(false)
   // Country names on the map (toggle in the header)
   const [showCountryNames, setShowCountryNames] = useState(false)
+  // Light land on a gray sea, or gray land on a white sea (switch beside Play)
+  const [mapStyle, setMapStyle] = useState<MapStyle>('light')
   const [seek, setSeek] = useState<{ to: number; id: number } | null>(null)
   const [scrubbing, setScrubbing] = useState(false)
   const sliderRef = useRef<HTMLInputElement>(null)
@@ -41,7 +43,7 @@ function App() {
         />
         <div className="aspect-4/3 w-full shrink-0 overflow-hidden rounded-xl border border-gray-300">
           <div className="scene">
-            <WorldMapView map={layout.map} />
+            <WorldMapView map={layout.map} mapStyle={mapStyle} />
             {showCountryNames && <CountryNames map={layout.map} />}
             <FlightProgress
               key={flight.id}
@@ -56,6 +58,10 @@ function App() {
         <PlaybackControls
           paused={paused}
           onToggle={() => setPaused((p) => !p)}
+          grayMap={mapStyle === 'gray'}
+          onToggleGrayMap={() =>
+            setMapStyle((style) => (style === 'gray' ? 'light' : 'gray'))
+          }
           onSeek={(to) => setSeek((prev) => ({ to, id: (prev?.id ?? 0) + 1 }))}
           onScrubChange={setScrubbing}
           sliderRef={sliderRef}
