@@ -3,6 +3,7 @@ import { detroitShanghai } from './detroit-shanghai'
 import { dubaiLondon } from './dubai-london'
 import { jfkCopenhagen } from './jfk-copenhagen'
 import { jfkSingapore } from './jfk-singapore'
+import { johannesburgSydney } from './johannesburg-sydney'
 import { laxAuckland } from './lax-auckland'
 import { lisZurich } from './lis-zurich'
 import { melbourneHobart } from './melbourne-hobart'
@@ -18,6 +19,7 @@ export const flights: Flight[] = [
   melbourneHobart,
   seoulHelsinki,
   detroitShanghai,
+  johannesburgSydney,
 ]
 
 export const defaultFlight = flights[0]
