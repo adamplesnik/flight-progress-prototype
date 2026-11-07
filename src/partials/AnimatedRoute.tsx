@@ -27,6 +27,18 @@ function fitDashes(route: SVGPathElement) {
   route.setAttribute('stroke-dashoffset', String(-DASH_INSET))
 }
 
+/** Share of the drawn route at a share of the real distance flown (both 0..1). */
+function pathShareAt(
+  { path, geo }: SceneLayout['routeShares'],
+  flownShare: number
+) {
+  let i = 1
+  while (i < geo.length - 1 && geo[i] < flownShare) i++
+  const span = geo[i] - geo[i - 1]
+  const t = span > 0 ? (flownShare - geo[i - 1]) / span : 0
+  return path[i - 1] + (path[i] - path[i - 1]) * Math.min(Math.max(t, 0), 1)
+}
+
 export function AnimatedRoute({
   layout,
   model,
@@ -74,7 +86,10 @@ export function AnimatedRoute({
     // `at` is timeline time (0..1); the marker follows distance flown,
     // so it stays put until take-off and moves slowly while the aircraft is slow.
     const render = (at: number) => {
-      const flownShare = model.distanceProgressAt(at)
+      const flownShare = pathShareAt(
+        layout.routeShares,
+        model.distanceProgressAt(at)
+      )
       const point = route.getPointAtLength(routeLength * flownShare)
       flown.setAttribute('stroke-dasharray', `${flownShare} 1`)
       marker.setAttribute('transform', `translate(${point.x} ${point.y})`)

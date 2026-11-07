@@ -6,7 +6,15 @@ import type {
   Point,
   SceneLayout,
 } from '../data/types'
-import { greatCircle, MAX_LAT, project, WORLD, type LatLon } from './projection'
+import {
+  distanceKm,
+  greatCircle,
+  MAX_LAT,
+  project,
+  unproject,
+  WORLD,
+  type LatLon,
+} from './projection'
 import { textWidth } from './textMetrics'
 
 type Rect = { x: number; y: number; w: number; h: number }
@@ -337,9 +345,27 @@ export function computeLayout(flight: Flight): SceneLayout {
     align: position.align,
   })
 
+  /** Running totals along the line, as shares of the whole. */
+  const shares = (lengths: number[]) => {
+    const totals = lengths.reduce<number[]>(
+      (acc, length) => [...acc, acc[acc.length - 1] + length],
+      [0]
+    )
+    const whole = totals[totals.length - 1] || 1
+    return totals.map((total) => total / whole)
+  }
+  const geoPoints = mapPoints.map(unproject)
+  const routeShares = {
+    path: shares(
+      line.slice(1).map((p, i) => Math.hypot(p.x - line[i].x, p.y - line[i].y))
+    ),
+    geo: shares(geoPoints.slice(1).map((p, i) => distanceKm(geoPoints[i], p))),
+  }
+
   return {
     map: { x: -tx / s, y: -ty / s, scale: s },
     route: `M${line.map((p) => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L')}`,
+    routeShares,
     origin: place(flight.origin, line[0], combo.originPosition),
     destination: place(
       flight.destination,

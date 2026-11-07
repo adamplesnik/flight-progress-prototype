@@ -23,6 +23,15 @@ export function project({ lat, lon }: LatLon) {
   }
 }
 
+/** World map units → geographic coordinates; the inverse of `project`. */
+export function unproject({ x, y }: { x: number; y: number }): LatLon {
+  const north = 2 * Math.PI * (0.5 - y / WORLD.size)
+  return {
+    lat: (2 * Math.atan(Math.exp(north)) - Math.PI / 2) / RAD,
+    lon: (x / WORLD.size) * 360 - 180,
+  }
+}
+
 /** Great-circle positions from `a` to `b`, `steps + 1` points including both ends. */
 export function greatCircle(a: LatLon, b: LatLon, steps: number): LatLon[] {
   const toVector = ({ lat, lon }: LatLon) => [
