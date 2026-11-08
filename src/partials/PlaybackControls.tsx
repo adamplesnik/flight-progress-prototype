@@ -37,7 +37,7 @@ export function PlaybackControls({
       >
         {paused ? 'Play' : 'Pause'}
       </button>
-      <div className="h-12 min-w-0 flex-1 rounded-xl border border-gray-400/60">
+      <div className="h-12 min-h-0 min-w-0 rounded-xl border border-gray-400/60 sm:flex-1">
         <input
           ref={sliderRef}
           type="range"
