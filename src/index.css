@@ -20,6 +20,7 @@
   --color-border: light-dark(#b2b2b2, #424242);
   --color-subtle: light-dark(#555555, #c4c4c4);
   --color-main: light-dark(#090909, #e0e0e0);
+  --color-product: light-dark(#cc0000, #cc0000);
 }
 
 @layer base {
@@ -85,13 +86,13 @@
 
 .route-segment {
   fill: none;
-  stroke: #cc0000;
+  stroke: var(--color-product);
   stroke-width: 16;
 }
 
 .flight-marker circle {
   fill: var(--color-background);
-  stroke: #cc0000;
+  stroke: var(--color-product);
   stroke-width: 12;
 }
 
@@ -159,7 +160,7 @@
   width: 4.6875cqw;
   height: 4.6875cqw;
   border-radius: 999px;
-  background: #cc0000;
+  background: var(--color-product);
 }
 
 .country-names text {
