@@ -6,6 +6,16 @@ import { mapView } from './scene'
 let content = ''
 
 /**
+ * Safari draws a line that follows a closepath (`zl`, as SVGO writes it) from the wrong point,
+ * leaving long stray lines. An explicit move to the subpath's start (`m0 0`) is equivalent.
+ */
+const safariSafe = (svg: string) =>
+  svg.replace(
+    /\bd="([^"]*)"/g,
+    (_, d: string) => `d="${d.replace(/z(?=[^mz])/gi, 'z m0 0')}"`
+  )
+
+/**
  * The world map, inline rather than an <img>: only then can its outlines keep their
  * weight when zoomed in. Up to 1× they scale down with the map.
  */
@@ -17,7 +27,9 @@ export function WorldMapView({ map }: { map: SceneLayout['map'] }) {
     fetch(WORLD.src)
       .then((response) => response.text())
       .then((svg) => {
-        content = svg.replace(/^[\s\S]*?<svg[^>]*>|<\/svg>\s*$/g, '')
+        content = safariSafe(
+          svg.replace(/^[\s\S]*?<svg[^>]*>|<\/svg>\s*$/g, '')
+        )
         if (!cancelled) setLoaded(true)
       })
     return () => {
