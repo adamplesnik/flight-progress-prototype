@@ -31,7 +31,7 @@ function App() {
   }
 
   return (
-    <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-4 p-4 text-[#090909]">
+    <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-4 p-4 text-main">
       <div className="flex w-full max-w-5xl flex-col gap-4 lg:w-[min(100vw-32px,(100dvh-160px)*4/3)]">
         <Header
           flight={flight}
@@ -39,7 +39,7 @@ function App() {
           showCountryNames={showCountryNames}
           onToggleCountryNames={() => setShowCountryNames((v) => !v)}
         />
-        <div className="aspect-4/3 w-full shrink-0 overflow-hidden rounded-xl border border-gray-300">
+        <div className="aspect-4/3 w-full shrink-0 overflow-hidden rounded-xl border border-border">
           <div className="scene">
             <WorldMapView map={layout.map} />
             {showCountryNames && <CountryNames map={layout.map} />}

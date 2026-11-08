@@ -14,6 +14,14 @@
   font-weight: 600;
 }
 
+@theme {
+  --color-background: light-dark(#fafafa, #141414);
+  --color-container: light-dark(#e9ebed, #212427);
+  --color-border: light-dark(#b2b2b2, #424242);
+  --color-subtle: light-dark(#555555, #c4c4c4);
+  --color-main: light-dark(#090909, #e0e0e0);
+}
+
 @layer base {
   html,
   body,
@@ -23,7 +31,7 @@
   }
 
   body {
-    background: #e9ebed;
+    background: var(--color-container);
   }
 }
 
@@ -53,11 +61,18 @@
 
 /* The sea */
 .world-map:not(.country-names) {
-  background: #e9ebed;
+  background: var(--color-container);
 }
 
+/* Land and outlines: the colours in the file are only a fallback */
 .world-map path {
+  fill: var(--color-background);
   stroke-width: var(--map-stroke);
+}
+
+.world-map path[stroke] {
+  fill: none;
+  stroke: var(--color-border);
 }
 
 .route-lines {
@@ -75,7 +90,7 @@
 }
 
 .flight-marker circle {
-  fill: #fafafa;
+  fill: var(--color-background);
   stroke: #cc0000;
   stroke-width: 12;
 }

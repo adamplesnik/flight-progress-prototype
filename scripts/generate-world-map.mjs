@@ -87,11 +87,12 @@ const lines = mesh(topology, topology.objects.countries)
   .coordinates.map((line) => pathData(continuous(line).map(project), false))
   .join('')
 
+// Fallback colours: the page styles the map with --color-background and --color-border
 writeFileSync(
   'public/assets/world-mercator.svg',
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WORLD_SIZE} ${WORLD_SIZE}">
-<path fill="#FAFAFA" d="${land}"/>
-<path fill="none" stroke="#B3B3B3" stroke-linecap="round" stroke-linejoin="round" d="${lines}"/>
+<path fill="#fafafa" d="${land}"/>
+<path fill="none" stroke="#b2b2b2" stroke-linecap="round" stroke-linejoin="round" d="${lines}"/>
 </svg>
 `
 )

@@ -33,11 +33,11 @@ export function PlaybackControls({
       <button
         type="button"
         onClick={onToggle}
-        className="h-12 w-24 shrink-0 cursor-pointer rounded-xl bg-gray-900 px-4 font-medium text-white hover:bg-gray-700"
+        className="h-12 w-24 shrink-0 cursor-pointer rounded-xl bg-main px-4 font-medium text-background hover:bg-subtle"
       >
         {paused ? 'Play' : 'Pause'}
       </button>
-      <div className="h-12 min-h-0 min-w-0 rounded-xl border border-gray-400/60 sm:flex-1">
+      <div className="h-12 min-h-0 min-w-0 rounded-xl border border-border sm:flex-1">
         <input
           ref={sliderRef}
           type="range"
@@ -51,26 +51,26 @@ export function PlaybackControls({
           className={clsx(
             'h-full w-full cursor-pointer touch-pan-y appearance-none bg-transparent px-2',
             // The track's filled part: --value is set by the animation
-            '[--fill:linear-gradient(90deg,var(--color-gray-900)_var(--value),transparent_0)]',
+            '[--fill:linear-gradient(90deg,var(--color-main)_var(--value),transparent_0)]',
             '[&::-webkit-slider-runnable-track]:h-2',
             '[&::-webkit-slider-runnable-track]:rounded-full',
-            '[&::-webkit-slider-runnable-track]:bg-gray-400/60',
+            '[&::-webkit-slider-runnable-track]:bg-border',
             '[&::-webkit-slider-runnable-track]:bg-(image:--fill)',
             '[&::-webkit-slider-thumb]:-mt-2.5',
             '[&::-webkit-slider-thumb]:size-7',
             '[&::-webkit-slider-thumb]:appearance-none',
             '[&::-webkit-slider-thumb]:rounded-full',
-            '[&::-webkit-slider-thumb]:bg-gray-900',
+            '[&::-webkit-slider-thumb]:bg-main',
             '[&::-moz-range-track]:h-2',
             '[&::-moz-range-track]:rounded-full',
-            '[&::-moz-range-track]:bg-gray-400/60',
+            '[&::-moz-range-track]:bg-border',
             '[&::-moz-range-progress]:h-2',
             '[&::-moz-range-progress]:rounded-full',
-            '[&::-moz-range-progress]:bg-gray-900',
+            '[&::-moz-range-progress]:bg-main',
             '[&::-moz-range-thumb]:size-7',
             '[&::-moz-range-thumb]:rounded-full',
             '[&::-moz-range-thumb]:border-0',
-            '[&::-moz-range-thumb]:bg-gray-900'
+            '[&::-moz-range-thumb]:bg-main'
           )}
         />
       </div>

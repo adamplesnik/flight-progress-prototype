@@ -25,7 +25,7 @@ export function DataPanel({
     >
       <div
         className={clsx(
-          'flex flex-col gap-[0.78125cqw] leading-none whitespace-nowrap text-[#090909]',
+          'flex flex-col gap-[0.78125cqw] leading-none whitespace-nowrap text-main',
           orientation == 'column' && 'items-end'
         )}
       >

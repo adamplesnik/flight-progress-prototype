@@ -23,7 +23,7 @@ export function Header({
           <select
             value={flight.id}
             onChange={(e) => onSelectFlight(e.target.value)}
-            className="h-12 w-full cursor-pointer appearance-none rounded-xl bg-gray-900 px-4 pr-12 text-xl font-medium text-white hover:bg-gray-700 lg:w-auto"
+            className="h-12 w-full cursor-pointer appearance-none rounded-xl bg-main px-4 pr-12 text-xl font-medium text-background hover:bg-subtle lg:w-auto"
           >
             {flights.map((f) => (
               <option key={f.id} value={f.id}>
@@ -31,7 +31,7 @@ export function Header({
               </option>
             ))}
           </select>
-          <ChevronDown className="pointer-events-none absolute top-3 right-3 text-white" />
+          <ChevronDown className="pointer-events-none absolute top-3 right-3 text-background" />
         </div>
       ) : (
         <h1 className="text-2xl font-semibold">{flight.title}</h1>
@@ -41,7 +41,7 @@ export function Header({
           type="button"
           aria-pressed={showCountryNames}
           onClick={onToggleCountryNames}
-          className="flex cursor-pointer justify-center gap-1 rounded-lg px-3 py-2 hover:bg-gray-300"
+          className="flex cursor-pointer justify-center gap-1 rounded-lg px-3 py-2 hover:bg-border/50"
         >
           {showCountryNames ? (
             <SquareCheck className="w-4" />
