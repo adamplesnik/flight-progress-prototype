@@ -16,6 +16,21 @@ const safariSafe = (svg: string) =>
   )
 
 /**
+ * The map's copies beside the first are `<use>` clones, which page styles do not reach: only
+ * what they inherit from the map's <svg>. So the paths lose their own colours (the file's
+ * fallback) and take fill, stroke and stroke-width from it (see index.css). The land keeps no
+ * outline of its own; the outlines are the path drawn with `fill="none"`.
+ */
+const inheritColours = (svg: string) =>
+  svg.replace(/<path\b[^>]*>/g, (tag) => {
+    const filled = /\bfill="(?!none")[^"]*"/.test(tag)
+    const stroked = /\bstroke="(?!none")[^"]*"/.test(tag)
+    let out = tag.replace(/\s(fill|stroke)="(?!none")[^"]*"/g, '')
+    if (filled && !stroked) out = out.replace('<path', '<path stroke="none"')
+    return out
+  })
+
+/**
  * The world map, inline rather than an <img>: only then can its outlines keep their
  * weight when zoomed in. Up to 1× they scale down with the map.
  */
@@ -27,8 +42,8 @@ export function WorldMapView({ map }: { map: SceneLayout['map'] }) {
     fetch(WORLD.src)
       .then((response) => response.text())
       .then((svg) => {
-        content = safariSafe(
-          svg.replace(/^[\s\S]*?<svg[^>]*>|<\/svg>\s*$/g, '')
+        content = inheritColours(
+          safariSafe(svg.replace(/^[\s\S]*?<svg[^>]*>|<\/svg>\s*$/g, ''))
         )
         if (!cancelled) setLoaded(true)
       })
