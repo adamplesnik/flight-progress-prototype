@@ -60,20 +60,15 @@
   overflow: visible;
 }
 
-/* The sea */
+/*
+ * The sea, and the land and outlines: set on the map itself, for its paths to inherit. Rules
+ * on the paths would miss the map's <use> copies (see WorldMapView).
+ */
 .world-map:not(.country-names) {
   background: var(--color-container);
-}
-
-/* Land and outlines: the colours in the file are only a fallback */
-.world-map path {
   fill: var(--color-background);
-  stroke-width: var(--map-stroke);
-}
-
-.world-map path[stroke] {
-  fill: none;
   stroke: var(--color-border);
+  stroke-width: var(--map-stroke);
 }
 
 .route-lines {
