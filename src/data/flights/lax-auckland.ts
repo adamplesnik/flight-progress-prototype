@@ -20,7 +20,7 @@ export const laxAuckland: Flight = {
     // SYNTHETIC placeholder, no real table yet: a typical climb/cruise/descent fitted to the
     // reference image (12h35 flight; 10 min after take-off: 740 km/h, 17,500 ft, -20 °C, 10,450 km left)
     samples: [
-      [0, 0, 18, 10520],
+      [0, 128, 18, 10520],
       [470, 7400, 2, 10500],
       [740, 17500, -20, 10450],
       [780, 24000, -34, 10387],
@@ -170,7 +170,7 @@ export const laxAuckland: Flight = {
       [495, 11000, -7, 96],
       [430, 6600, 1, 58],
       [354, 3200, 8, 25],
-      [250, 0, 14, 0],
+      [250, 23, 14, 0],
     ],
   },
   timeline: {

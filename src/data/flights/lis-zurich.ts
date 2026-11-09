@@ -25,7 +25,7 @@ export const lisZurich: Flight = {
     stepMin: 4,
     // SYNTHETIC mock, not real flight data: a typical climb/cruise/descent for a 2h28 flight
     samples: [
-      [0, 0, 17, 1720],
+      [0, 374, 17, 1720],
       [430, 6000, 6, 1706],
       [640, 14000, -10, 1670],
       [740, 23000, -29, 1624],
@@ -62,7 +62,7 @@ export const lisZurich: Flight = {
       [520, 11000, -7, 81],
       [450, 7000, 0, 49],
       [380, 3500, 6, 21],
-      [250, 0, 9, 0],
+      [250, 1416, 9, 0],
     ],
   },
   timeline: {

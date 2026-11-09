@@ -14,7 +14,7 @@ export const dubaiLondon: Flight = {
     stepMin: 5,
     // Sampled every 5 minutes from take-off (03:40 GST), total flight 7h10 (430 min)
     samples: [
-      [0, 0, 25, 5490],
+      [0, 62, 25, 5490],
       [466, 7400, 10, 5462],
       [554, 15800, -7, 5420],
       [640, 22400, -20, 5370],
@@ -100,7 +100,7 @@ export const dubaiLondon: Flight = {
       [495, 11000, -14, 97],
       [429, 6600, -6, 58],
       [354, 3200, 1, 26],
-      [250, 0, 7, 0],
+      [250, 83, 7, 0],
     ],
   },
   timeline: {

@@ -19,7 +19,7 @@ export const jfkCopenhagen: Flight = {
     stepMin: 5,
     // Sampled every 5 minutes from take-off (18:00 EST), total flight 6h50 (410 min)
     samples: [
-      [0, 0, 10, 6190],
+      [0, 13, 10, 6190],
       [460, 7400, -5, 6163],
       [553, 15500, -21, 6121],
       [634, 22200, -34, 6072],
@@ -101,7 +101,7 @@ export const jfkCopenhagen: Flight = {
       [503, 9700, -13, 92],
       [412, 6000, -6, 54],
       [323, 3000, 0, 23],
-      [240, 0, 6, 0],
+      [240, 17, 6, 0],
     ],
   },
   timeline: {

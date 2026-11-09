@@ -23,7 +23,7 @@ export const johannesburgSydney: Flight = {
     // fitted to a tracked snapshot: 4h55 after take-off east of Kerguelen, 5,250 km flown,
     // 35,000 ft and 587 kt (1,087 km/h) with a strong westerly tailwind
     samples: [
-      [0, 0, 22, 11020],
+      [0, 5558, 22, 11020],
       [470, 7400, 2, 11000],
       [740, 17500, -22, 10950],
       [780, 24000, -35, 10887],
@@ -155,7 +155,7 @@ export const johannesburgSydney: Flight = {
       [495, 11000, -8, 96],
       [429, 6600, 5, 58],
       [354, 3200, 15, 25],
-      [250, 0, 24, 0],
+      [250, 21, 24, 0],
     ],
   },
   timeline: {

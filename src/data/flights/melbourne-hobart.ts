@@ -20,7 +20,7 @@ export const melbourneHobart: Flight = {
     // SYNTHETIC placeholder, no real table yet: fitted to the reference image
     // (61 min flight; at 19:47: 842 km/h, 37,000 ft, -56 °C, 310 km left)
     samples: [
-      [0, 0, 14, 724],
+      [0, 434, 14, 724],
       [300, 2900, 8, 722],
       [470, 5700, 3, 715],
       [507, 8500, -3, 707],
@@ -81,7 +81,7 @@ export const melbourneHobart: Flight = {
       [354, 6500, -1, 15],
       [320, 4400, 3, 10],
       [285, 2200, 8, 4],
-      [250, 0, 12, 0],
+      [250, 13, 12, 0],
     ],
   },
   timeline: {

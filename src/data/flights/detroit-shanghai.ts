@@ -39,7 +39,7 @@ export const detroitShanghai: Flight = {
     // fitted to a tracked snapshot: 5h45 after take-off over central Alaska, 4,930 km flown,
     // 36,800 ft in a step climb and 500 kt (926 km/h)
     samples: [
-      [0, 0, 6, 12110],
+      [0, 645, 6, 12110],
       [470, 7400, -4, 12090],
       [740, 17500, -22, 12040],
       [780, 24000, -35, 11977],
@@ -210,7 +210,7 @@ export const detroitShanghai: Flight = {
       [495, 11000, -8, 96],
       [429, 6600, 2, 58],
       [354, 3200, 10, 25],
-      [250, 0, 17, 0],
+      [250, 13, 17, 0],
     ],
   },
   timeline: {

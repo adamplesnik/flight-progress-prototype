@@ -34,7 +34,7 @@ export const seoulHelsinki: Flight = {
     // SYNTHETIC mock, not real flight data: a 13h15 flight over 12,050 km (the polar route),
     // fitted to a tracked snapshot: 39,000 ft and 484 kt (896 km/h) 7h05 after take-off
     samples: [
-      [0, 0, 8, 12050],
+      [0, 23, 8, 12050],
       [470, 7400, -5, 12030],
       [740, 17500, -24, 11980],
       [780, 24000, -37, 11917],
@@ -193,7 +193,7 @@ export const seoulHelsinki: Flight = {
       [495, 11000, -12, 96],
       [429, 6600, -7, 58],
       [354, 3200, -4, 25],
-      [250, 0, -1, 0],
+      [250, 179, -1, 0],
     ],
   },
   timeline: {

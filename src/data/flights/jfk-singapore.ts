@@ -30,7 +30,7 @@ export const jfkSingapore: Flight = {
     stepMin: 5,
     // SYNTHETIC mock, not real flight data: a typical climb/cruise/descent for an 18h50 flight
     samples: [
-      [0, 0, 20, 15349],
+      [0, 13, 20, 15349],
       [470, 7400, 4, 15329],
       [740, 17500, -20, 15279],
       [780, 24000, -34, 15216],
@@ -256,7 +256,7 @@ export const jfkSingapore: Flight = {
       [495, 11000, -7, 96],
       [430, 6600, 3, 58],
       [354, 3200, 14, 25],
-      [250, 0, 27, 0],
+      [250, 22, 27, 0],
     ],
   },
   timeline: {

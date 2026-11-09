@@ -67,8 +67,9 @@ export function createFlightModel(flight: Flight) {
       : taxiing
         ? taxiKnots
         : roundTo(kmh / KMH_PER_KNOT, 5)
-    // altitude: nearest 100 ft
-    const feet = roundTo(ft, 100)
+    // altitude: the airport's elevation on the ground, nearest 100 ft in the air
+    const onGround = minutes <= 0 || minutes >= flightMin
+    const feet = onGround ? Math.round(ft) : roundTo(ft, 100)
     // distance: nearest 10 km
     const km = roundTo(d, 10)
     const celsius = Math.round(c)
