@@ -1,18 +1,6 @@
 @import 'tailwindcss';
-
-@font-face {
-  font-family: 'Inter';
-  src: url('https://static.figma.com/font/Inter_1') format('woff2');
-  font-style: normal;
-  font-weight: 400;
-}
-
-@font-face {
-  font-family: 'Inter';
-  src: url('https://static.figma.com/font/Inter_1') format('woff2');
-  font-style: normal;
-  font-weight: 600;
-}
+@import '@fontsource/inter';
+@import '@fontsource/inter/600.css';
 
 @theme {
   --color-background: light-dark(#fafafa, #141414);
@@ -33,6 +21,8 @@
 
   body {
     background: var(--color-background);
+    font-family: 'Inter', serif;
+    font-variant-numeric: tabular-nums;
   }
 }
 
@@ -41,7 +31,6 @@
   width: 100%;
   height: 100%;
   container-type: size;
-  font-family: Inter, sans-serif;
 }
 
 /* The map and route SVGs cover the scene */
