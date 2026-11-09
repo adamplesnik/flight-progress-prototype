@@ -5,7 +5,7 @@ import { SCENE } from './scene'
 
 export function CityCluster({
   city,
-  label,
+  time,
   isDestination,
   dot,
   align,
@@ -28,7 +28,7 @@ export function CityCluster({
             isDestination && 'flex-row-reverse'
           )}
         >
-          {label}
+          {time}
           <ArrowRight size={'3.3cqw'} strokeWidth="3" />
         </p>
       </div>

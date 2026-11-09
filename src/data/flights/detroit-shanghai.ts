@@ -4,13 +4,13 @@ export const detroitShanghai: Flight = {
   id: 'detroit-shanghai',
   origin: {
     city: 'Detroit',
-    label: '10:24 EST',
+    time: '10:24 EST',
     lat: 42.2124,
     lon: -83.3534,
   },
   destination: {
     city: 'Shanghai',
-    label: '13:39 CST',
+    time: '13:39 CST',
     lat: 31.1443,
     lon: 121.8083,
   },

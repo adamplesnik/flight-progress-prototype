@@ -4,13 +4,13 @@ export const lisZurich: Flight = {
   id: 'lis-zurich',
   origin: {
     city: 'Lisboa',
-    label: '15:45 WET',
+    time: '15:45 WET',
     lat: 38.7742,
     lon: -9.1342,
   },
   destination: {
     city: 'Zürich',
-    label: '19:13 CET',
+    time: '19:13 CET',
     lat: 47.4581,
     lon: 8.5481,
   },

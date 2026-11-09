@@ -159,10 +159,10 @@ export function computeLayout(flight: Flight): SceneLayout {
   const start = mapPoints[0]
   const end = mapPoints[mapPoints.length - 1]
 
-  // The label's arrow icon: 3.3cqw plus a 4px gap
-  const ARROW_W = 38
-  const citySize = ({ city, label }: Flight['origin']) => ({
-    w: Math.max(textWidth(city, 52, 600), textWidth(label, 36, 600) + ARROW_W),
+  // The time's arrow icon: 3.3cqw plus a 0.5cqw gap
+  const ARROW_W = 39
+  const citySize = ({ city, time }: Flight['origin']) => ({
+    w: Math.max(textWidth(city, 52, 600), textWidth(time, 36, 600) + ARROW_W),
     h: 96,
   })
   const originSize = citySize(flight.origin)
@@ -342,7 +342,7 @@ export function computeLayout(flight: Flight): SceneLayout {
     isDestination: boolean
   ): PlacedCity => ({
     city: city.city,
-    label: city.label,
+    time: city.time,
     isDestination,
     dot,
     placement: position.placement,

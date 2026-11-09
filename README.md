@@ -42,7 +42,7 @@ The app runs at http://localhost:8443 (or the port in `PORT`).
 Each flight is a file in `src/data/flights/`, listed in `src/data/flights/index.ts`; the menu
 sorts them by title, and `defaultFlight` sets the one shown first. A flight has:
 
-- `origin` and `destination` — city name, time label and coordinates
+- `origin` and `destination` — `city`, local `time` and coordinates
 - `waypoints` (optional) — points the route passes through, joined by a smooth curve
 - `profile` — speed, altitude, temperature and remaining distance at a fixed time step
 - `timeline` — minutes on the ground before take-off and after landing, and taxiing

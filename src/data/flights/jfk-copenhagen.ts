@@ -4,13 +4,13 @@ export const jfkCopenhagen: Flight = {
   id: 'jfk-copenhagen',
   origin: {
     city: 'New York',
-    label: '18:00 EST',
+    time: '18:00 EST',
     lat: 40.6413,
     lon: -73.7781,
   },
   destination: {
     city: 'Copenhagen',
-    label: '06:50 CET',
+    time: '06:50 CET',
     lat: 55.618,
     lon: 12.6561,
   },

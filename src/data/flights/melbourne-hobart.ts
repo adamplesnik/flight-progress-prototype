@@ -4,13 +4,13 @@ export const melbourneHobart: Flight = {
   id: 'melbourne-hobart',
   origin: {
     city: 'Melbourne',
-    label: '19:14 AEST',
+    time: '19:14 AEST',
     lat: -37.6733,
     lon: 144.8433,
   },
   destination: {
     city: 'Hobart',
-    label: '20:15 AEST',
+    time: '20:15 AEST',
     lat: -42.8361,
     lon: 147.5103,
   },
