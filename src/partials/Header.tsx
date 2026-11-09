@@ -1,5 +1,5 @@
 import { ChevronDown, Square, SquareCheck } from 'lucide-react'
-import { flights } from '../data/flights'
+import { flights, flightTitle } from '../data/flights'
 import type { Flight } from '../data/types'
 
 // Hidden for now: set to true to bring the switch back
@@ -27,14 +27,14 @@ export function Header({
           >
             {flights.map((f) => (
               <option key={f.id} value={f.id}>
-                {f.title}
+                {flightTitle(f)}
               </option>
             ))}
           </select>
           <ChevronDown className="pointer-events-none absolute top-3 right-3 text-main" />
         </div>
       ) : (
-        <h1 className="text-2xl font-semibold">{flight.title}</h1>
+        <h1 className="text-2xl font-semibold">{flightTitle(flight)}</h1>
       )}
       {SHOW_COUNTRY_NAMES_SWITCH && (
         <button

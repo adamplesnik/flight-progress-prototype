@@ -19,7 +19,6 @@ export type City = LatLon & {
 
 export type Flight = {
   id: string
-  title: string
   origin: City
   destination: City
   /** Points the route passes through, joined by a smooth curve instead of a great circle */

@@ -10,6 +10,10 @@ import { melbourneHobart } from './melbourne-hobart'
 import { mexicoCityToronto } from './mexico-city-toronto'
 import { seoulHelsinki } from './seoul-helsinki'
 
+/** A flight's name, e.g. "Lisboa – Zürich" */
+export const flightTitle = (flight: Flight) =>
+  `${flight.origin.city} – ${flight.destination.city}`
+
 /** All available flights, sorted by title. Add new ones here in any order. */
 export const flights: Flight[] = [
   dubaiLondon,
@@ -22,6 +26,6 @@ export const flights: Flight[] = [
   detroitShanghai,
   johannesburgSydney,
   mexicoCityToronto,
-].sort((a, b) => a.title.localeCompare(b.title))
+].sort((a, b) => flightTitle(a).localeCompare(flightTitle(b)))
 
 export const defaultFlight = lisZurich

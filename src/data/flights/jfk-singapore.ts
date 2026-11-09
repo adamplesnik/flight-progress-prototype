@@ -2,7 +2,6 @@ import type { Flight } from '../types'
 
 export const jfkSingapore: Flight = {
   id: 'jfk-singapore',
-  title: 'New York - Singapore',
   origin: {
     city: 'New York',
     label: '22:25 EST →',
