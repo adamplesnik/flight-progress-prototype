@@ -23,7 +23,7 @@ export function Header({
           <select
             value={flight.id}
             onChange={(e) => onSelectFlight(e.target.value)}
-            className="h-12 w-full cursor-pointer appearance-none rounded-xl bg-main px-4 pr-12 text-xl font-medium text-background hover:bg-subtle lg:w-auto"
+            className="h-12 w-full cursor-pointer appearance-none rounded-xl px-4 pr-12 text-2xl font-semibold hover:bg-container lg:w-auto"
           >
             {flights.map((f) => (
               <option key={f.id} value={f.id}>
@@ -31,7 +31,7 @@ export function Header({
               </option>
             ))}
           </select>
-          <ChevronDown className="pointer-events-none absolute top-3 right-3 text-background" />
+          <ChevronDown className="pointer-events-none absolute top-3 right-3 text-main" />
         </div>
       ) : (
         <h1 className="text-2xl font-semibold">{flight.title}</h1>

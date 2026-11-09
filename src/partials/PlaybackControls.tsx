@@ -30,14 +30,7 @@ export function PlaybackControls({
 
   return (
     <div className="flex w-full flex-col gap-2 sm:flex-row">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="h-12 w-24 shrink-0 cursor-pointer rounded-xl bg-main px-4 font-medium text-background hover:bg-subtle"
-      >
-        {paused ? 'Play' : 'Pause'}
-      </button>
-      <div className="h-12 min-h-0 min-w-0 rounded-xl border border-border sm:flex-1">
+      <div className="h-12 min-h-0 min-w-0 sm:flex-1">
         <input
           ref={sliderRef}
           type="range"
@@ -74,6 +67,13 @@ export function PlaybackControls({
           )}
         />
       </div>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="h-12 w-24 shrink-0 cursor-pointer rounded-xl border border-border bg-container px-4 font-medium text-main hover:bg-subtle hover:text-white"
+      >
+        {paused ? 'Play' : 'Pause'}
+      </button>
     </div>
   )
 }
