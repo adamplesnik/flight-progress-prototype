@@ -10,7 +10,7 @@ import { melbourneHobart } from './melbourne-hobart'
 import { mexicoCityToronto } from './mexico-city-toronto'
 import { seoulHelsinki } from './seoul-helsinki'
 
-/** All available flights. Add new ones here; the first is the default. */
+/** All available flights, sorted by title. Add new ones here in any order. */
 export const flights: Flight[] = [
   dubaiLondon,
   jfkCopenhagen,
@@ -22,6 +22,6 @@ export const flights: Flight[] = [
   detroitShanghai,
   johannesburgSydney,
   mexicoCityToronto,
-]
+].sort((a, b) => a.title.localeCompare(b.title))
 
-export const defaultFlight = flights[0]
+export const defaultFlight = lisZurich

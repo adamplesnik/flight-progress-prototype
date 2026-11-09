@@ -39,8 +39,8 @@ The app runs at http://localhost:8443 (or the port in `PORT`).
 
 ## Adding a flight
 
-Each flight is a file in `src/data/flights/`, listed in `src/data/flights/index.ts`; the first
-one in the list is the default. A flight has:
+Each flight is a file in `src/data/flights/`, listed in `src/data/flights/index.ts`; the menu
+sorts them by title, and `defaultFlight` sets the one shown first. A flight has:
 
 - `origin` and `destination` — city name, time label and coordinates
 - `waypoints` (optional) — points the route passes through, joined by a smooth curve
