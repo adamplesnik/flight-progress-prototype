@@ -4,13 +4,13 @@ export const mexicoCityToronto: Flight = {
   id: 'mexico-city-toronto',
   origin: {
     city: 'Mexico City',
-    label: '12:25 CST →',
+    label: '12:25 CST',
     lat: 19.4363,
     lon: -99.0721,
   },
   destination: {
     city: 'Toronto',
-    label: '→ 18:35 EDT',
+    label: '18:35 EDT',
     lat: 43.6777,
     lon: -79.6248,
   },

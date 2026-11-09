@@ -159,8 +159,10 @@ export function computeLayout(flight: Flight): SceneLayout {
   const start = mapPoints[0]
   const end = mapPoints[mapPoints.length - 1]
 
+  // The label's arrow icon: 3.3cqw plus a 4px gap
+  const ARROW_W = 38
   const citySize = ({ city, label }: Flight['origin']) => ({
-    w: Math.max(textWidth(city, 52, 600), textWidth(label, 36, 600)),
+    w: Math.max(textWidth(city, 52, 600), textWidth(label, 36, 600) + ARROW_W),
     h: 96,
   })
   const originSize = citySize(flight.origin)
@@ -336,10 +338,12 @@ export function computeLayout(flight: Flight): SceneLayout {
   const place = (
     city: Flight['origin'],
     dot: Point,
-    position: (typeof CITY_POSITIONS)[number]
+    position: (typeof CITY_POSITIONS)[number],
+    isDestination: boolean
   ): PlacedCity => ({
     city: city.city,
     label: city.label,
+    isDestination,
     dot,
     placement: position.placement,
     align: position.align,
@@ -366,11 +370,12 @@ export function computeLayout(flight: Flight): SceneLayout {
     map: { x: -tx / s, y: -ty / s, scale: s },
     route: `M${line.map((p) => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L')}`,
     routeShares,
-    origin: place(flight.origin, line[0], combo.originPosition),
+    origin: place(flight.origin, line[0], combo.originPosition, false),
     destination: place(
       flight.destination,
       line[line.length - 1],
-      combo.destinationPosition
+      combo.destinationPosition,
+      true
     ),
     orientation: layout.orientation,
     report: { scale: s, warnings },

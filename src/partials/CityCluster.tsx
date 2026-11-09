@@ -1,9 +1,12 @@
+import clsx from 'clsx'
+import { ArrowRight } from 'lucide-react'
 import type { PlacedCity } from '../data/types'
 import { SCENE } from './scene'
 
 export function CityCluster({
   city,
   label,
+  isDestination,
   dot,
   align,
   placement,
@@ -19,7 +22,15 @@ export function CityCluster({
       <span className="route-dot" aria-hidden="true" />
       <div className="city-copy">
         <h1>{city}</h1>
-        <p>{label}</p>
+        <p
+          className={clsx(
+            'flex items-center gap-[0.5cqw]',
+            isDestination && 'flex-row-reverse'
+          )}
+        >
+          {label}
+          <ArrowRight size={'3.3cqw'} strokeWidth="3" />
+        </p>
       </div>
     </section>
   )

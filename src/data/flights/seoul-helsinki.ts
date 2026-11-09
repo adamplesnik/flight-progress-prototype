@@ -2,10 +2,10 @@ import type { Flight } from '../types'
 
 export const seoulHelsinki: Flight = {
   id: 'seoul-helsinki',
-  origin: { city: 'Seoul', label: '23:07 KST →', lat: 37.4602, lon: 126.4407 },
+  origin: { city: 'Seoul', label: '23:07 KST', lat: 37.4602, lon: 126.4407 },
   destination: {
     city: 'Helsinki',
-    label: '→ 05:22 EET',
+    label: '05:22 EET',
     lat: 60.3172,
     lon: 24.9633,
   },

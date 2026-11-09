@@ -13,7 +13,7 @@ export type Point = { x: number; y: number }
 
 export type City = LatLon & {
   city: string
-  /** Time label under the city name, e.g. "03:40 GST →" */
+  /** Time label under the city name, e.g. "03:40 GST"; the arrow is added by the scene */
   label: string
 }
 
@@ -45,6 +45,8 @@ export type CitySide = 'above' | 'below' | 'left' | 'right'
 export type PlacedCity = {
   city: string
   label: string
+  /** The arrow comes before the label at the destination, after it at the origin */
+  isDestination: boolean
   /** Centre of the route dot; the route starts or ends here */
   dot: Point
   placement: CitySide
