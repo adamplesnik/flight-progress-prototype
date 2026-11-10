@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { flightPath, flightTitle } from './data/flights'
@@ -15,7 +16,11 @@ function App({ flight }: { flight: Flight }) {
   // Country names on the map (toggle in the header)
   const [showCountryNames, setShowCountryNames] = useState(false)
   // A seek belongs to the flight it was made on, so a new flight starts from the beginning
-  const [seekState, setSeek] = useState<{ to: number; id: number; flight: string } | null>(null)
+  const [seekState, setSeek] = useState<{
+    to: number
+    id: number
+    flight: string
+  } | null>(null)
   const seek = seekState?.flight === flight.id ? seekState : null
   const [scrubbing, setScrubbing] = useState(false)
   const sliderRef = useRef<HTMLInputElement>(null)
@@ -56,12 +61,17 @@ function App({ flight }: { flight: Flight }) {
           paused={paused}
           onToggle={() => setPaused((p) => !p)}
           onSeek={(to) =>
-            setSeek((prev) => ({ to, id: (prev?.id ?? 0) + 1, flight: flight.id }))
+            setSeek((prev) => ({
+              to,
+              id: (prev?.id ?? 0) + 1,
+              flight: flight.id,
+            }))
           }
           onScrubChange={setScrubbing}
           sliderRef={sliderRef}
         />
       </div>
+      <Analytics />
     </main>
   )
 }
