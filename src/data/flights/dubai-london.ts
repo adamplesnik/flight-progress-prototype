@@ -2,9 +2,10 @@ import type { Flight } from '../types'
 
 export const dubaiLondon: Flight = {
   id: 'dubai-london',
-  origin: { city: 'Dubai', time: '03:40 GST', lat: 25.2528, lon: 55.3644 },
+  origin: { city: 'Dubai', icao: 'OMDB', time: '03:40 GST', lat: 25.2528, lon: 55.3644 },
   destination: {
     city: 'London',
+    icao: 'EGLL',
     time: '06:50 GMT',
     lat: 51.47,
     lon: -0.4543,

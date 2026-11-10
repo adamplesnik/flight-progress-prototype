@@ -13,6 +13,8 @@ export type Point = { x: number; y: number }
 
 export type City = LatLon & {
   city: string
+  /** The airport's ICAO code, e.g. "LPPT"; flights are routed at /ORIG-DEST */
+  icao: string
   /** Local time under the city name, e.g. "03:40 GST"; the arrow is added by the scene */
   time: string
 }

@@ -4,12 +4,14 @@ export const laxAuckland: Flight = {
   id: 'lax-auckland',
   origin: {
     city: 'Los Angeles',
+    icao: 'KLAX',
     time: '22:35 PDT',
     lat: 33.9416,
     lon: -118.4085,
   },
   destination: {
     city: 'Auckland',
+    icao: 'NZAA',
     time: '06:10 NZST',
     lat: -37.0082,
     lon: 174.785,

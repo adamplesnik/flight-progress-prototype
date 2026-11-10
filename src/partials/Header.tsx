@@ -1,5 +1,5 @@
 import { ChevronDown, Square, SquareCheck } from 'lucide-react'
-import { flights, flightTitle } from '../data/flights'
+import { flightPath, flights, flightTitle } from '../data/flights'
 import type { Flight } from '../data/types'
 
 // Hidden for now: set to true to bring the switch back
@@ -12,7 +12,7 @@ export function Header({
   onToggleCountryNames,
 }: {
   flight: Flight
-  onSelectFlight: (id: string) => void
+  onSelectFlight: (flight: Flight) => void
   showCountryNames: boolean
   onToggleCountryNames: () => void
 }) {
@@ -21,12 +21,12 @@ export function Header({
       {flights.length > 1 ? (
         <div className="relative">
           <select
-            value={flight.id}
-            onChange={(e) => onSelectFlight(e.target.value)}
+            value={flightPath(flight)}
+            onChange={(e) => onSelectFlight(flights[e.target.selectedIndex])}
             className="h-12 w-full cursor-pointer appearance-none rounded-xl px-4 pr-12 text-2xl font-semibold hover:bg-container lg:w-auto"
           >
             {flights.map((f) => (
-              <option key={f.id} value={f.id}>
+              <option key={f.id} value={flightPath(f)}>
                 {flightTitle(f)}
               </option>
             ))}

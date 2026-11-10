@@ -4,12 +4,14 @@ export const jfkSingapore: Flight = {
   id: 'jfk-singapore',
   origin: {
     city: 'New York',
+    icao: 'KJFK',
     time: '22:25 EST',
     lat: 40.6413,
     lon: -73.7781,
   },
   destination: {
     city: 'Singapore',
+    icao: 'WSSS',
     time: '06:15 SGT',
     lat: 1.3644,
     lon: 103.9915,

@@ -4,12 +4,14 @@ export const johannesburgSydney: Flight = {
   id: 'johannesburg-sydney',
   origin: {
     city: 'Johannesburg',
+    icao: 'FAOR',
     time: '18:20 SAST',
     lat: -26.1392,
     lon: 28.246,
   },
   destination: {
     city: 'Sydney',
+    icao: 'YSSY',
     time: '14:20 AEDT',
     lat: -33.9461,
     lon: 151.1772,

@@ -40,9 +40,11 @@ The app runs at http://localhost:8443 (or the port in `PORT`).
 ## Adding a flight
 
 Each flight is a file in `src/data/flights/`, listed in `src/data/flights/index.ts`; the menu
-sorts them by title, and `defaultFlight` sets the one shown first. A flight has:
+sorts them by title, and `defaultFlight` sets the one shown first. Each flight has its own
+address from its airports' ICAO codes, like `/LPPT-LSZH`; any other address opens the default.
+A flight has:
 
-- `origin` and `destination` — `city`, local `time` and coordinates
+- `origin` and `destination` — `city`, airport `icao` code, local `time` and coordinates
 - `waypoints` (optional) — points the route passes through, joined by a smooth curve
 - `profile` — speed, altitude, temperature and remaining distance at a fixed time step
 - `timeline` — minutes on the ground before take-off and after landing, and taxiing

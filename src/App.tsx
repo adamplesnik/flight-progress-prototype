@@ -1,5 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { defaultFlight, flights } from './data/flights'
+import { useNavigate } from 'react-router'
+import { flightPath, flightTitle } from './data/flights'
+import type { Flight } from './data/types'
 import { computeLayout } from './layout/computeLayout'
 import { CountryNames } from './partials/CountryNames'
 import { FlightProgress } from './partials/FlightProgress'
@@ -7,13 +9,14 @@ import { Header } from './partials/Header'
 import { PlaybackControls } from './partials/PlaybackControls'
 import { WorldMapView } from './partials/WorldMapView'
 
-function App() {
-  const [flightId, setFlightId] = useState(defaultFlight.id)
-  const flight = flights.find((f) => f.id === flightId) ?? defaultFlight
+function App({ flight }: { flight: Flight }) {
+  const navigate = useNavigate()
   const [paused, setPaused] = useState(false)
   // Country names on the map (toggle in the header)
   const [showCountryNames, setShowCountryNames] = useState(false)
-  const [seek, setSeek] = useState<{ to: number; id: number } | null>(null)
+  // A seek belongs to the flight it was made on, so a new flight starts from the beginning
+  const [seekState, setSeek] = useState<{ to: number; id: number; flight: string } | null>(null)
+  const seek = seekState?.flight === flight.id ? seekState : null
   const [scrubbing, setScrubbing] = useState(false)
   const sliderRef = useRef<HTMLInputElement>(null)
   // Every frame: straight to the slider, so following the animation re-renders nothing
@@ -25,17 +28,13 @@ function App() {
   }, [])
   const layout = useMemo(() => computeLayout(flight), [flight])
 
-  const selectFlight = (id: string) => {
-    setFlightId(id)
-    setSeek(null)
-  }
-
   return (
     <main className="flex min-h-dvh w-full flex-col items-center justify-center gap-4 p-4 text-main">
+      <title>{`${flightTitle(flight)} · Flight progress prototype`}</title>
       <div className="flex w-full max-w-5xl flex-col gap-4 lg:w-[min(100vw-32px,(100dvh-160px)*4/3)]">
         <Header
           flight={flight}
-          onSelectFlight={selectFlight}
+          onSelectFlight={(f) => navigate(flightPath(f))}
           showCountryNames={showCountryNames}
           onToggleCountryNames={() => setShowCountryNames((v) => !v)}
         />
@@ -56,7 +55,9 @@ function App() {
         <PlaybackControls
           paused={paused}
           onToggle={() => setPaused((p) => !p)}
-          onSeek={(to) => setSeek((prev) => ({ to, id: (prev?.id ?? 0) + 1 }))}
+          onSeek={(to) =>
+            setSeek((prev) => ({ to, id: (prev?.id ?? 0) + 1, flight: flight.id }))
+          }
           onScrubChange={setScrubbing}
           sliderRef={sliderRef}
         />

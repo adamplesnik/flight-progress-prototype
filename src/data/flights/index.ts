@@ -29,3 +29,11 @@ export const flights: Flight[] = [
 ].sort((a, b) => flightTitle(a).localeCompare(flightTitle(b)))
 
 export const defaultFlight = lisZurich
+
+/** A flight's URL path from its airports' ICAO codes, e.g. "/LPPT-LSZH" */
+export const flightPath = (flight: Flight) =>
+  `/${flight.origin.icao}-${flight.destination.icao}`
+
+/** The flight at a path segment like "LPPT-LSZH", in any letter case */
+export const findFlight = (route: string) =>
+  flights.find((f) => flightPath(f) === `/${route.toUpperCase()}`)
