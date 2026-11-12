@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import 'tailwindcss' prefix(fp);
 @import '@fontsource/inter';
 @import '@fontsource/inter/600.css';
 @import './lib/scene.css';
@@ -12,7 +12,7 @@
   }
 
   body {
-    background: var(--color-background);
+    background: var(--fp-color-background);
     font-family: 'Inter', serif;
     font-variant-numeric: tabular-nums;
   }

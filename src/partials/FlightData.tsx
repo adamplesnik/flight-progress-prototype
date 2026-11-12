@@ -17,8 +17,8 @@ export function FlightData({
   return (
     <dl
       className={clsx(
-        'flex items-start gap-[3.125cqw] text-[3.125cqw] leading-none whitespace-nowrap',
-        orientation == 'row' ? 'flex-row' : 'flex-col'
+        'fp:flex fp:items-start fp:gap-[3.125cqw] fp:text-[3.125cqw] fp:leading-none fp:whitespace-nowrap',
+        orientation == 'row' ? 'fp:flex-row' : 'fp:flex-col'
       )}
       aria-label="Current flight conditions"
     >
@@ -26,16 +26,16 @@ export function FlightData({
         <div
           key={unit}
           className={clsx(
-            'flex w-[14.6484375cqw] flex-col gap-[0.390625cqw]',
+            'fp:flex fp:w-[14.6484375cqw] fp:flex-col fp:gap-[0.390625cqw]',
             orientation == 'row'
-              ? 'items-start last:w-[9.765625cqw]'
-              : 'items-end'
+              ? 'fp:items-start fp:last:w-[9.765625cqw]'
+              : 'fp:items-end'
           )}
         >
-          <dt className="flex items-center justify-center gap-[0.5859375cqw] font-semibold">
+          <dt className="fp:flex fp:items-center fp:justify-center fp:gap-[0.5859375cqw] fp:font-semibold">
             {value} <span>{unit}</span>
           </dt>
-          <dd className="flex items-center justify-center gap-[0.78125cqw]">
+          <dd className="fp:flex fp:items-center fp:justify-center fp:gap-[0.78125cqw]">
             {other} <span>{otherUnit}</span>
           </dd>
         </div>

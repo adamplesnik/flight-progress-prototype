@@ -17,31 +17,31 @@ export function DataPanel({
   return (
     <div
       className={clsx(
-        'absolute right-[4.6875%] bottom-[6.25%] flex items-end justify-between',
+        'fp:absolute fp:right-[4.6875%] fp:bottom-[6.25%] fp:flex fp:items-end fp:justify-between',
         orientation == 'row'
-          ? 'left-[4.6875%] flex-row'
-          : 'top-[6.25%] w-[21.484375cqw] flex-col'
+          ? 'fp:left-[4.6875%] fp:flex-row'
+          : 'fp:top-[6.25%] fp:w-[21.484375cqw] fp:flex-col'
       )}
     >
       <div
         className={clsx(
-          'flex flex-col gap-[0.78125cqw] leading-none whitespace-nowrap text-main',
-          orientation == 'column' && 'items-end'
+          'fp:flex fp:flex-col fp:gap-[0.78125cqw] fp:leading-none fp:whitespace-nowrap fp:text-main',
+          orientation == 'column' && 'fp:items-end'
         )}
       >
-        <p className="flex gap-[1.171875cqw] text-[5.078125cqw] font-semibold">
+        <p className="fp:flex fp:gap-[1.171875cqw] fp:text-[5.078125cqw] fp:font-semibold">
           <span>in</span> {data.remaining}
         </p>
         <div
           className={clsx(
-            'flex',
+            'fp:flex',
             orientation == 'row'
-              ? 'flex-row items-baseline gap-[1.5625cqw]'
-              : 'flex-col items-end gap-[0.78125cqw]'
+              ? 'fp:flex-row fp:items-baseline fp:gap-[1.5625cqw]'
+              : 'fp:flex-col fp:items-end fp:gap-[0.78125cqw]'
           )}
         >
-          <p className="text-[3.515625cqw] font-semibold">{data.km} km</p>
-          <p className="text-[3.515625cqw]">{data.miles} mi</p>
+          <p className="fp:text-[3.515625cqw] fp:font-semibold">{data.km} km</p>
+          <p className="fp:text-[3.515625cqw]">{data.miles} mi</p>
         </div>
       </div>
       <FlightData data={data} orientation={orientation} />

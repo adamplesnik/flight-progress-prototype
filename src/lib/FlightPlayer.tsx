@@ -57,7 +57,10 @@ export function FlightPlayer({
 
   return (
     <div
-      className={clsx('flight-progress flex w-full flex-col gap-4', className)}
+      className={clsx(
+        'flight-progress fp:flex fp:w-full fp:flex-col fp:gap-4',
+        className
+      )}
       {...themeAttribute(theme)}
     >
       {header && (
@@ -69,7 +72,7 @@ export function FlightPlayer({
           onToggleCountryNames={() => {}}
         />
       )}
-      <div className="aspect-4/3 w-full shrink-0 overflow-hidden rounded-md border border-outline">
+      <div className="fp:aspect-4/3 fp:w-full fp:shrink-0 fp:overflow-hidden fp:rounded-md fp:border fp:border-outline">
         <MapScene
           flight={flight}
           paused={paused || scrubbing}
