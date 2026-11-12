@@ -5,8 +5,6 @@ import { AnimatedRoute } from './AnimatedRoute'
 import { CityCluster } from './CityCluster'
 import { DataPanel } from './DataPanel'
 
-const INITIAL_PROGRESS = 0.2
-
 const sameReadout = (a: FlightReadout, b: FlightReadout) =>
   (Object.keys(a) as (keyof FlightReadout)[]).every((k) => a[k] === b[k])
 
@@ -17,15 +15,18 @@ export function FlightProgress({
   paused,
   seek,
   onProgress,
+  initialProgress = 0.2,
 }: {
   flight: Flight
   layout: SceneLayout
   paused: boolean
   seek: { to: number; id: number } | null
   onProgress: (progress: number) => void
+  /** Where on the timeline (0..1) the flight starts */
+  initialProgress?: number
 }) {
   const model = useMemo(() => createFlightModel(flight), [flight])
-  const [data, setData] = useState(() => model.readoutAt(INITIAL_PROGRESS))
+  const [data, setData] = useState(() => model.readoutAt(initialProgress))
   const onReadout = useCallback((next: FlightReadout) => {
     setData((prev) => (sameReadout(prev, next) ? prev : next))
   }, [])
@@ -36,7 +37,7 @@ export function FlightProgress({
         layout={layout}
         model={model}
         onReadout={onReadout}
-        initialProgress={INITIAL_PROGRESS}
+        initialProgress={initialProgress}
         paused={paused}
         seek={seek}
         onProgress={onProgress}

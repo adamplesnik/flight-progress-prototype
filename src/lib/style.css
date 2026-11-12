@@ -1,0 +1,38 @@
+/*
+ * The package's stylesheet: import 'flight-progress/style.css' once. Tailwind's theme and the
+ * utilities the components use, but not its Preflight: a reset of its own, scoped to the
+ * components, leaves the rest of the page alone. The font is in fonts.css.
+ */
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities) source(none);
+@source '../partials';
+@source '../lib';
+
+@import './scene.css';
+
+@layer base {
+  .flight-progress,
+  .flight-progress :where(*, ::before, ::after) {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+  }
+
+  .flight-progress :where(h1, h2, h3, p) {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  .flight-progress :where(button, input, select) {
+    font: inherit;
+    color: inherit;
+    background-color: transparent;
+    border-radius: 0;
+  }
+
+  .flight-progress :where(svg) {
+    display: block;
+  }
+}

@@ -1,6 +1,6 @@
 // Generates the Web Mercator world map and the country names that go on it, from Natural
 // Earth (public domain, through the world-atlas package):
-//   public/assets/world-mercator.svg
+//   src/assets/world-mercator.svg
 //   src/data/countryLabels.ts
 // Run: node scripts/generate-world-map.mjs
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -17,7 +17,8 @@ const project = ([lon, lat]) => {
   return [
     ((lon + 180) / 360) * WORLD_SIZE,
     WORLD_SIZE *
-      (0.5 - Math.log(Math.tan(Math.PI / 4 + (clamped * RAD) / 2)) / (2 * Math.PI)),
+      (0.5 -
+        Math.log(Math.tan(Math.PI / 4 + (clamped * RAD) / 2)) / (2 * Math.PI)),
   ]
 }
 
@@ -33,7 +34,10 @@ const polygonsOf = ({ geometry: { type, coordinates } }) =>
 
 /** Relative coordinates in hundredths of a unit: small, with no rounding drift. */
 function pathData(line, close) {
-  const hundredths = line.map(([x, y]) => [Math.round(x * 100), Math.round(y * 100)])
+  const hundredths = line.map(([x, y]) => [
+    Math.round(x * 100),
+    Math.round(y * 100),
+  ])
   const [[startX, startY]] = hundredths
   let [x, y] = [startX, startY]
   const moves = []
@@ -43,7 +47,10 @@ function pathData(line, close) {
     x = nx
     y = ny
   }
-  return `M${startX / 100} ${startY / 100}l${moves.join(' ')}${close ? 'z' : ''}`.replace(/ -/g, '-')
+  return `M${startX / 100} ${startY / 100}l${moves.join(' ')}${close ? 'z' : ''}`.replace(
+    / -/g,
+    '-'
+  )
 }
 
 /**
@@ -89,7 +96,7 @@ const lines = mesh(topology, topology.objects.countries)
 
 // Fallback colours: the page styles the map with --color-background and --color-border
 writeFileSync(
-  'public/assets/world-mercator.svg',
+  'src/assets/world-mercator.svg',
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WORLD_SIZE} ${WORLD_SIZE}">
 <path fill="#fafafa" d="${land}"/>
 <path fill="none" stroke="#b2b2b2" stroke-linecap="round" stroke-linejoin="round" d="${lines}"/>
@@ -109,8 +116,8 @@ const NAMES = {
   'Bosnia and Herz.': 'Bosnia & Herz.',
   'S. Sudan': 'South Sudan',
   'United Arab Emirates': 'UAE',
-  'Macedonia': 'North Macedonia',
-  'eSwatini': 'Eswatini',
+  Macedonia: 'North Macedonia',
+  eSwatini: 'Eswatini',
 }
 
 // Rough Inter Regular advance widths in em
@@ -173,7 +180,11 @@ function labelPosition(rings, width) {
             slack = -1
             break
           }
-          slack = Math.min(slack, cx - width / 2 - hit[0], hit[1] - cx - width / 2)
+          slack = Math.min(
+            slack,
+            cx - width / 2 - hit[0],
+            hit[1] - cx - width / 2
+          )
         }
         if (slack < PAD) continue
         const score = slack - 0.02 * Math.hypot(cx - middle[0], cy - middle[1])

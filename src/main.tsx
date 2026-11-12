@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router'
 import App from './App'
+import { Capture } from './Capture'
 import { defaultFlight, findFlight, flightPath } from './data/flights'
 import './index.css'
 
@@ -20,8 +21,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
+        <Route path="/capture" element={<Capture />} />
         <Route path="/:route" element={<FlightRoute />} />
-        <Route path="*" element={<Navigate to={flightPath(defaultFlight)} replace />} />
+        <Route
+          path="*"
+          element={<Navigate to={flightPath(defaultFlight)} replace />}
+        />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -1,10 +1,10 @@
 /**
- * Geographic coordinates → world map units of /assets/world-mercator.svg: Web Mercator, the
+ * Geographic coordinates → world map units of src/assets/world-mercator.svg: Web Mercator, the
  * projection of Google's and Apple's flat maps. The map is a square that repeats sideways.
  */
 export type LatLon = { lat: number; lon: number }
 
-export const WORLD = { src: '/assets/world-mercator.svg', size: 4096 }
+export const WORLD = { size: 4096 }
 
 /** Where Web Mercator ends. Keep in sync with scripts/generate-world-map.mjs */
 export const MAX_LAT = 85.05113

@@ -1,35 +1,70 @@
 {
-  "name": "Flight progress",
-  "private": true,
-  "version": "0.0.1",
+  "name": "flight-progress",
+  "version": "0.1.0",
+  "description": "React components that show a flight's progress on a world map, with playback controls, and screenshots of every flight",
+  "license": "MIT",
+  "author": "Adam Plesnik (https://adamplesnik.com)",
   "type": "module",
+  "keywords": [
+    "flight",
+    "map",
+    "react",
+    "progress",
+    "aviation"
+  ],
   "packageManager": "pnpm@10.34.3",
+  "main": "./dist-lib/index.js",
+  "module": "./dist-lib/index.js",
+  "types": "./dist-lib/types/lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist-lib/types/lib/index.d.ts",
+      "import": "./dist-lib/index.js"
+    },
+    "./style.css": "./dist-lib/style.css",
+    "./fonts.css": "./dist-lib/fonts.css",
+    "./screens/*": "./screens/images/*",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist-lib",
+    "screens/images"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "format": "prettier --write src",
-    "screens": "node screens/shoot.mjs"
+    "build:lib": "vite build -c vite.lib.config.ts && tsc -p tsconfig.lib.json && node scripts/finish-lib-build.mjs",
+    "screens": "node screens/shoot.mjs",
+    "prepublishOnly": "pnpm build:lib",
+    "format": "prettier --write src screens scripts"
+  },
+  "peerDependencies": {
+    "react": ">=19",
+    "react-dom": ">=19"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",
     "@tabler/icons-react": "^3.51.0",
-    "@vercel/analytics": "^2.0.1",
-    "clsx": "^2.1.1",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1",
-    "react-router": "^8.5.1"
+    "clsx": "^2.1.1"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@vercel/analytics": "^2.0.1",
     "@vitejs/plugin-react": "^6.0.0",
     "oxfmt": "^0.2.0",
     "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "puppeteer-core": "^25.17.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router": "^8.5.1",
     "tailwindcss": "^4.0.0",
     "topojson-client": "^3.1.0",
     "typescript": "^5.7.0",

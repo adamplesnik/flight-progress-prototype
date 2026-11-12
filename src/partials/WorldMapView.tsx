@@ -39,14 +39,13 @@ export function WorldMapView({ map }: { map: SceneLayout['map'] }) {
   useEffect(() => {
     if (content) return
     let cancelled = false
-    fetch(WORLD.src)
-      .then((response) => response.text())
-      .then((svg) => {
-        content = inheritColours(
-          safariSafe(svg.replace(/^[\s\S]*?<svg[^>]*>|<\/svg>\s*$/g, ''))
-        )
-        if (!cancelled) setLoaded(true)
-      })
+    // A chunk of its own: the map is large, and loads after the scene's first paint
+    import('../assets/world-mercator.svg?raw').then(({ default: svg }) => {
+      content = inheritColours(
+        safariSafe(svg.replace(/^[\s\S]*?<svg[^>]*>|<\/svg>\s*$/g, ''))
+      )
+      if (!cancelled) setLoaded(true)
+    })
     return () => {
       cancelled = true
     }

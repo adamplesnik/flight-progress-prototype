@@ -1,0 +1,9 @@
+/*
+ * Inter, which the text layout is measured for: import 'flight-progress/fonts.css' unless
+ * the page loads Inter (400 and 600) already. Copied to the package as is, so the app's
+ * bundler resolves these from @fontsource/inter.
+ */
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-ext-400.css';
+@import '@fontsource/inter/latin-600.css';
+@import '@fontsource/inter/latin-ext-600.css';

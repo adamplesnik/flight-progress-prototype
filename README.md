@@ -34,8 +34,50 @@ The app runs at http://localhost:8443 (or the port in `PORT`).
 | `pnpm dev` | Development server with hot reload |
 | `pnpm build` | Production build into `dist/` |
 | `pnpm preview` | Serve the production build |
-| `pnpm format` | Format `src/` with Prettier |
+| `pnpm build:lib` | Build the package into `dist-lib/` |
+| `pnpm screens` | Remake `screens/images/` from `screens/positions.mjs`, with the dev server running |
+| `pnpm format` | Format the sources with Prettier |
 | `node scripts/generate-world-map.mjs` | Regenerate the world map and country names |
+
+## Using the package
+
+The components are published as [`flight-progress`](https://www.npmjs.com/package/flight-progress),
+for React 19.
+
+```sh
+npm install flight-progress
+```
+
+```tsx
+import { FlightMap, FlightPlayer, flights, lisZurich } from 'flight-progress'
+import 'flight-progress/style.css'
+import 'flight-progress/fonts.css' // unless the page loads Inter 400 and 600 already
+
+// The whole view: the flight's name, the map in a rounded frame, play/pause and a slider
+<FlightPlayer flight={lisZurich} />
+<FlightPlayer flight={flight} flights={flights} onSelectFlight={setFlight} />
+
+// Only the map, without border or rounded corners: animated, or held at a position
+<FlightMap flight={lisZurich} />
+<FlightMap flight={lisZurich} progress={0.4} theme="dark" />
+```
+
+Both take the full width of their parent, with the map at 4:3. `theme` is `'system'` (the
+default), `'light'` or `'dark'`. `progress` and `initialProgress` are shares (0..1) of the
+flight's timeline, which includes the time on the ground before take-off and after landing.
+The world map, about 1.4 MB, loads as a chunk of its own after the first paint.
+
+The package also exports the flights (`flights`, each by name, `flightById`, `findFlight`),
+`flightTitle`, `flightPath` and the `Flight` type, so you can pass in flights of your own.
+
+### Screenshots
+
+Screenshots of every flight, 2048 × 1536, are in the package at
+`flight-progress/screens/<flight id>.png`.
+
+They are made in this repo: `screens/positions.mjs` sets where each flight is caught, in
+percent of its timeline, and `pnpm screens` (with the dev server running and Google Chrome
+installed) remakes `screens/images/` from the `/capture` page.
 
 ## Adding a flight
 
@@ -59,6 +101,8 @@ each route's distance and duration, not recorded flight data.
   centres the route and city labels in the space left, and keeps the larger zoom
 - `src/layout/textMetrics.ts` — text widths for the solver, measured from the Inter font
 - `src/partials/` — the scene's components: map, route, city labels, data panel and controls
+- `src/lib/` — the package: its entry, `FlightMap`, `FlightPlayer` and stylesheets
+- `src/Capture.tsx` and `screens/` — the page and script that make the screenshots
 
 ## Built with
 

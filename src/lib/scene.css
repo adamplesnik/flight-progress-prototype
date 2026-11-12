@@ -1,0 +1,183 @@
+/* The scene's colours and styles, shared by the package (style.css) and the demo (index.css) */
+
+/*
+ * Plain light and dark values rather than light-dark(): CSS tools that compile light-dark()
+ * away tie it to a color-scheme written in the stylesheet, which the theme prop is not.
+ * The @theme values are what Tailwind's utilities refer to; .flight-progress sets the theme.
+ */
+@theme {
+  --color-background: #fafafa;
+  --color-container: #e9ebed;
+  --color-outline: #b2b2b2;
+  --color-subtle: #555555;
+  --color-main: #090909;
+  --color-product: #cc0000;
+}
+
+.flight-progress {
+  color-scheme: light;
+  --color-background: #fafafa;
+  --color-container: #e9ebed;
+  --color-outline: #b2b2b2;
+  --color-subtle: #555555;
+  --color-main: #090909;
+  --color-product: #cc0000;
+}
+
+@media (prefers-color-scheme: dark) {
+  .flight-progress:not([data-theme='light']) {
+    color-scheme: dark;
+    --color-background: #141414;
+    --color-container: #212427;
+    --color-outline: #424242;
+    --color-subtle: #c4c4c4;
+    --color-main: #e0e0e0;
+    --color-product: #cc0000;
+  }
+}
+
+.flight-progress[data-theme='dark'] {
+  color-scheme: dark;
+  --color-background: #141414;
+  --color-container: #212427;
+  --color-outline: #424242;
+  --color-subtle: #c4c4c4;
+  --color-main: #e0e0e0;
+  --color-product: #cc0000;
+}
+
+/* The root of FlightMap and FlightPlayer */
+.flight-progress {
+  color: var(--color-main);
+  font-family: 'Inter', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: size;
+}
+
+/* The map and route SVGs cover the scene */
+.world-map,
+.route-path {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.route-path {
+  overflow: visible;
+}
+
+/*
+ * The sea, and the land and outlines: set on the map itself, for its paths to inherit. Rules
+ * on the paths would miss the map's <use> copies (see WorldMapView).
+ */
+.world-map:not(.country-names) {
+  background: var(--color-container);
+  fill: var(--color-background);
+  stroke: var(--color-outline);
+  stroke-width: var(--map-stroke);
+}
+
+.route-lines {
+  z-index: 1;
+}
+
+.marker-layer {
+  z-index: 5;
+}
+
+.route-segment {
+  fill: none;
+  stroke: var(--color-product);
+  stroke-width: 16;
+}
+
+.flight-marker circle {
+  fill: var(--color-background);
+  stroke: var(--color-product);
+  stroke-width: 12;
+}
+
+/* A city cluster is a zero-size anchor at the route dot's centre */
+.city-cluster {
+  position: absolute;
+  width: 0;
+  height: 0;
+  white-space: nowrap;
+}
+
+.city-copy {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 0.78125cqw;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* dot radius 24px + 16px gap */
+.city-cluster.above .city-copy {
+  bottom: 3.90625cqw;
+}
+
+.city-cluster.below .city-copy {
+  top: 3.90625cqw;
+}
+
+.city-cluster.align-start .city-copy {
+  left: -2.34375cqw;
+  align-items: flex-start;
+}
+
+.city-cluster.align-end .city-copy {
+  right: -2.34375cqw;
+  align-items: flex-end;
+  text-align: right;
+}
+
+/* Beside the dot, lined up with its top */
+.city-cluster.right.align-start .city-copy {
+  top: -2.34375cqw;
+  left: 3.90625cqw;
+}
+
+.city-cluster.left.align-end .city-copy {
+  top: -2.34375cqw;
+  right: 3.90625cqw;
+}
+
+.city-copy h1 {
+  font-size: 5.078125cqw;
+}
+
+.city-copy p {
+  font-size: 3.515625cqw;
+}
+
+.route-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  translate: -50% -50%;
+  width: 4.6875cqw;
+  height: 4.6875cqw;
+  border-radius: 999px;
+  background: var(--color-product);
+}
+
+.country-names text {
+  fill: currentColor;
+  font-weight: 400;
+  text-anchor: middle;
+  dominant-baseline: central;
+  opacity: 0.25;
+}

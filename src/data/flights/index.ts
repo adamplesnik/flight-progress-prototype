@@ -39,3 +39,20 @@ export const flightPath = (flight: Flight) =>
 /** The flight at a path segment like 'LPPT-LSZH', in any letter case */
 export const findFlight = (route: string) =>
   flights.find((f) => flightPath(f) === `/${route.toUpperCase()}`)
+
+/** The flight with this id (its file name), e.g. 'lis-zurich' */
+export const flightById = (id: string) => flights.find((f) => f.id === id)
+
+export {
+  detroitShanghai,
+  dubaiLondon,
+  jfkCopenhagen,
+  jfkSingapore,
+  johannesburgSydney,
+  laxAuckland,
+  lisZurich,
+  melbourneToulouse,
+  mexicoCityToronto,
+  seoulHelsinki,
+  sydneyHobart,
+}
