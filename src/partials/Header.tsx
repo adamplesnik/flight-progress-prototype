@@ -1,4 +1,8 @@
-import { ChevronDown, Square, SquareCheck } from 'lucide-react'
+import {
+  IconChevronDown,
+  IconSquare,
+  IconSquareCheckFilled,
+} from '@tabler/icons-react'
 import { flightPath, flights, flightTitle } from '../data/flights'
 import type { Flight } from '../data/types'
 
@@ -17,13 +21,13 @@ export function Header({
   onToggleCountryNames: () => void
 }) {
   return (
-    <header className="flex w-full flex-col gap-2 rounded-xl md:flex-row md:justify-between lg:items-center">
+    <header className="flex w-full flex-col gap-2 rounded-md md:flex-row md:justify-between lg:items-center">
       {flights.length > 1 ? (
         <div className="relative">
           <select
             value={flightPath(flight)}
             onChange={(e) => onSelectFlight(flights[e.target.selectedIndex])}
-            className="h-12 w-full cursor-pointer appearance-none rounded-xl px-4 pr-12 text-2xl font-semibold hover:bg-container lg:w-auto"
+            className="h-12 w-full cursor-pointer appearance-none rounded-md px-4 pr-12 text-2xl font-semibold hover:bg-container lg:w-auto"
           >
             {flights.map((f) => (
               <option key={f.id} value={flightPath(f)}>
@@ -31,7 +35,7 @@ export function Header({
               </option>
             ))}
           </select>
-          <ChevronDown className="pointer-events-none absolute top-3 right-3 text-main" />
+          <IconChevronDown className="pointer-events-none absolute top-3 right-3 text-main" />
         </div>
       ) : (
         <h1 className="text-2xl font-semibold">{flightTitle(flight)}</h1>
@@ -41,12 +45,12 @@ export function Header({
           type="button"
           aria-pressed={showCountryNames}
           onClick={onToggleCountryNames}
-          className="flex cursor-pointer justify-center gap-1 rounded-lg px-3 py-2 hover:bg-border/50"
+          className="flex cursor-pointer justify-center gap-1 rounded-lg px-3 py-2 hover:bg-outline/50"
         >
           {showCountryNames ? (
-            <SquareCheck className="w-4" />
+            <IconSquareCheckFilled className="w-8" />
           ) : (
-            <Square className="w-4" />
+            <IconSquare className="w-8" />
           )}
           Country names
         </button>

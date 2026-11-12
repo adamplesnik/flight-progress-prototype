@@ -5,7 +5,7 @@
 @theme {
   --color-background: light-dark(#fafafa, #141414);
   --color-container: light-dark(#e9ebed, #212427);
-  --color-border: light-dark(#b2b2b2, #424242);
+  --color-outline: light-dark(#b2b2b2, #424242);
   --color-subtle: light-dark(#555555, #c4c4c4);
   --color-main: light-dark(#090909, #e0e0e0);
   --color-product: light-dark(#cc0000, #cc0000);
@@ -56,7 +56,7 @@
 .world-map:not(.country-names) {
   background: var(--color-container);
   fill: var(--color-background);
-  stroke: var(--color-border);
+  stroke: var(--color-outline);
   stroke-width: var(--map-stroke);
 }
 

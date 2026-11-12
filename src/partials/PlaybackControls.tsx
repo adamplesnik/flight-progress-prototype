@@ -1,4 +1,9 @@
+import {
+  IconPlayerPauseFilled,
+  IconPlayerPlayFilled,
+} from '@tabler/icons-react'
 import clsx from 'clsx'
+import { Pause, Play } from 'lucide-react'
 import type { RefObject } from 'react'
 
 /** Play/pause and the slider that follows the flight and scrubs through it. */
@@ -29,8 +34,8 @@ export function PlaybackControls({
   }
 
   return (
-    <div className="flex w-full flex-col gap-2 sm:flex-row">
-      <div className="h-12 min-h-0 min-w-0 sm:flex-1">
+    <div className="flex w-full items-center gap-2">
+      <div className="h-16 min-h-0 w-full min-w-0 sm:flex-1">
         <input
           ref={sliderRef}
           type="range"
@@ -47,7 +52,7 @@ export function PlaybackControls({
             '[--fill:linear-gradient(90deg,var(--color-main)_var(--value),transparent_0)]',
             '[&::-webkit-slider-runnable-track]:h-2',
             '[&::-webkit-slider-runnable-track]:rounded-full',
-            '[&::-webkit-slider-runnable-track]:bg-border',
+            '[&::-webkit-slider-runnable-track]:bg-container',
             '[&::-webkit-slider-runnable-track]:bg-(image:--fill)',
             '[&::-webkit-slider-thumb]:-mt-2.5',
             '[&::-webkit-slider-thumb]:size-7',
@@ -56,7 +61,7 @@ export function PlaybackControls({
             '[&::-webkit-slider-thumb]:bg-main',
             '[&::-moz-range-track]:h-2',
             '[&::-moz-range-track]:rounded-full',
-            '[&::-moz-range-track]:bg-border',
+            '[&::-moz-range-track]:bg-container',
             '[&::-moz-range-progress]:h-2',
             '[&::-moz-range-progress]:rounded-full',
             '[&::-moz-range-progress]:bg-main',
@@ -70,9 +75,13 @@ export function PlaybackControls({
       <button
         type="button"
         onClick={onToggle}
-        className="h-12 w-24 shrink-0 cursor-pointer rounded-xl border border-border bg-container px-4 font-medium text-main hover:bg-subtle hover:text-white"
+        className="flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-full font-medium text-main hover:bg-container"
       >
-        {paused ? 'Play' : 'Pause'}
+        {paused ? (
+          <IconPlayerPlayFilled size={36} />
+        ) : (
+          <IconPlayerPauseFilled size={36} />
+        )}
       </button>
     </div>
   )

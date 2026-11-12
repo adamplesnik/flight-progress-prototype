@@ -43,7 +43,7 @@ function App({ flight }: { flight: Flight }) {
           showCountryNames={showCountryNames}
           onToggleCountryNames={() => setShowCountryNames((v) => !v)}
         />
-        <div className="aspect-4/3 w-full shrink-0 overflow-hidden rounded-xl border border-border">
+        <div className="aspect-4/3 w-full shrink-0 overflow-hidden rounded-md border border-outline">
           <div className="scene">
             <WorldMapView map={layout.map} />
             {showCountryNames && <CountryNames map={layout.map} />}
