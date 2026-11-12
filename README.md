@@ -83,6 +83,19 @@ the npm package.
 `pnpm screens` (with the dev server running and Google Chrome installed) remakes
 `public/screens/` from the `/capture` page.
 
+## Releasing
+
+Bump `version` in `package.json` (`npm version patch --no-git-tag-version`, or `minor`/`major`)
+and merge it to `main`. The [Publish](.github/workflows/publish.yml) workflow then publishes
+that version to npm, with provenance, and makes a GitHub release `v<version>` with notes from
+the commits since the last one. A prerelease such as `1.0.0-beta.1` goes out under the `next`
+tag. Pushes that don't change the version do nothing.
+
+It publishes through npm trusted publishing, without a token. The package has to exist on npm
+for that, so the first version is published by hand (`npm publish`), and then a trusted
+publisher is added on npmjs.com, in the package's settings: GitHub Actions, this repository,
+workflow `publish.yml`.
+
 ## Adding a flight
 
 Each flight is a file in `src/data/flights/`, listed in `src/data/flights/index.ts`; the menu

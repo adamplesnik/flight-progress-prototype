@@ -1,0 +1,93 @@
+# Publishes the package to npm, and makes a GitHub release, whenever main has a version in
+# package.json that is not on npm yet. Bump the version, merge to main, and this does the rest.
+#
+# It publishes with npm trusted publishing: no token, and npm adds provenance. That needs the
+# package to exist on npm first, set up once by hand: publish the first version from your
+# machine, then on npmjs.com, in the package's Settings, add a trusted publisher for GitHub
+# Actions with this repository and the workflow file name publish.yml.
+name: Publish
+
+on:
+  push:
+    branches: [main]
+    paths: [package.json]
+  # To run it again by hand, e.g. after a failed publish
+  workflow_dispatch:
+
+# One run at a time, so two quick merges can't publish the same version twice
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # the tag and the release
+      id-token: write # npm trusted publishing
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # the release notes list the commits since the last tag
+
+      - uses: pnpm/action-setup@v4 # the version is package.json's packageManager
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing needs npm 11.5.1 or later
+      - run: npm install -g npm@latest
+
+      - name: Check what is new
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          if npm view "$name@$version" version --silent >/dev/null 2>&1; then
+            echo "$name@$version is on npm already"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "$name@$version is new: publishing"
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          if gh release view "v$version" >/dev/null 2>&1; then
+            echo "Release v$version exists already"
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.check.outputs.publish == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - if: steps.check.outputs.publish == 'true'
+        run: pnpm build:lib
+
+      # Built in the step above, so prepublishOnly needn't build it again. A prerelease
+      # (1.2.0-beta.1) goes out as next, so npm install keeps getting the latest stable one
+      - if: steps.check.outputs.publish == 'true'
+        env:
+          VERSION: ${{ steps.check.outputs.version }}
+        run: |
+          tag=latest
+          [[ "$VERSION" == *-* ]] && tag=next
+          npm publish --access public --ignore-scripts --tag "$tag"
+
+      - if: steps.check.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.check.outputs.version }}
+        run: |
+          gh release create "v$VERSION" \
+            --target "$GITHUB_SHA" \
+            --title "v$VERSION" \
+            --generate-notes \
+            $([[ "$VERSION" == *-* ]] && echo --prerelease)
