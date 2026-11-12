@@ -1,6 +1,6 @@
 {
   "name": "flight-progress",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React components that show a flight's progress on a world map, with playback controls",
   "license": "MIT",
   "author": "Adam Plesnik (https://adamplesnik.com)",
