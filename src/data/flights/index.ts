@@ -1,17 +1,17 @@
-import type { Flight } from "../types"
-import { detroitShanghai } from "./detroit-shanghai"
-import { dubaiLondon } from "./dubai-london"
-import { jfkCopenhagen } from "./jfk-copenhagen"
-import { jfkSingapore } from "./jfk-singapore"
-import { johannesburgSydney } from "./johannesburg-sydney"
-import { laxAuckland } from "./lax-auckland"
-import { lisZurich } from "./lis-zurich"
-import { melbourneHobart } from "./melbourne-hobart"
-import { melbourneToulouse } from "./melbourne-toulouse"
-import { mexicoCityToronto } from "./mexico-city-toronto"
-import { seoulHelsinki } from "./seoul-helsinki"
+import type { Flight } from '../types'
+import { detroitShanghai } from './detroit-shanghai'
+import { dubaiLondon } from './dubai-london'
+import { jfkCopenhagen } from './jfk-copenhagen'
+import { jfkSingapore } from './jfk-singapore'
+import { johannesburgSydney } from './johannesburg-sydney'
+import { laxAuckland } from './lax-auckland'
+import { lisZurich } from './lis-zurich'
+import { sydneyHobart } from './sydney-hobart'
+import { melbourneToulouse } from './melbourne-toulouse'
+import { mexicoCityToronto } from './mexico-city-toronto'
+import { seoulHelsinki } from './seoul-helsinki'
 
-/** A flight's name, e.g. "Lisboa – Zürich" */
+/** A flight's name, e.g. 'Lisboa – Zürich' */
 export const flightTitle = (flight: Flight) =>
   `${flight.origin.city} – ${flight.destination.city}`
 
@@ -22,7 +22,7 @@ export const flights: Flight[] = [
   jfkSingapore,
   laxAuckland,
   lisZurich,
-  melbourneHobart,
+  sydneyHobart,
   melbourneToulouse,
   seoulHelsinki,
   detroitShanghai,
@@ -32,10 +32,10 @@ export const flights: Flight[] = [
 
 export const defaultFlight = lisZurich
 
-/** A flight's URL path from its airports' ICAO codes, e.g. "/LPPT-LSZH" */
+/** A flight's URL path from its airports' ICAO codes, e.g. '/LPPT-LSZH' */
 export const flightPath = (flight: Flight) =>
   `/${flight.origin.icao}-${flight.destination.icao}`
 
-/** The flight at a path segment like "LPPT-LSZH", in any letter case */
+/** The flight at a path segment like 'LPPT-LSZH', in any letter case */
 export const findFlight = (route: string) =>
   flights.find((f) => flightPath(f) === `/${route.toUpperCase()}`)

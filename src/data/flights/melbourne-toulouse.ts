@@ -1,18 +1,18 @@
-import type { Flight } from "../types"
+import type { Flight } from '../types'
 
 export const melbourneToulouse: Flight = {
-  id: "melbourne-toulouse",
+  id: 'melbourne-toulouse',
   origin: {
-    city: "Melbourne",
-    icao: "YMML",
-    time: "08:30 AEDT",
+    city: 'Melbourne',
+    icao: 'YMML',
+    time: '08:30 AEDT',
     lat: -37.6733,
     lon: 144.8433,
   },
   destination: {
-    city: "Toulouse",
-    icao: "LFBO",
-    time: "22:54 CET",
+    city: 'Toulouse',
+    icao: 'LFBO',
+    time: '22:54 CET',
     lat: 43.6293,
     lon: 1.3638,
   },
