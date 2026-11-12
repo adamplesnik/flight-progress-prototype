@@ -1,14 +1,15 @@
-import type { Flight } from '../types'
-import { detroitShanghai } from './detroit-shanghai'
-import { dubaiLondon } from './dubai-london'
-import { jfkCopenhagen } from './jfk-copenhagen'
-import { jfkSingapore } from './jfk-singapore'
-import { johannesburgSydney } from './johannesburg-sydney'
-import { laxAuckland } from './lax-auckland'
-import { lisZurich } from './lis-zurich'
-import { melbourneHobart } from './melbourne-hobart'
-import { mexicoCityToronto } from './mexico-city-toronto'
-import { seoulHelsinki } from './seoul-helsinki'
+import type { Flight } from "../types"
+import { detroitShanghai } from "./detroit-shanghai"
+import { dubaiLondon } from "./dubai-london"
+import { jfkCopenhagen } from "./jfk-copenhagen"
+import { jfkSingapore } from "./jfk-singapore"
+import { johannesburgSydney } from "./johannesburg-sydney"
+import { laxAuckland } from "./lax-auckland"
+import { lisZurich } from "./lis-zurich"
+import { melbourneHobart } from "./melbourne-hobart"
+import { melbourneToulouse } from "./melbourne-toulouse"
+import { mexicoCityToronto } from "./mexico-city-toronto"
+import { seoulHelsinki } from "./seoul-helsinki"
 
 /** A flight's name, e.g. "Lisboa – Zürich" */
 export const flightTitle = (flight: Flight) =>
@@ -22,6 +23,7 @@ export const flights: Flight[] = [
   laxAuckland,
   lisZurich,
   melbourneHobart,
+  melbourneToulouse,
   seoulHelsinki,
   detroitShanghai,
   johannesburgSydney,
