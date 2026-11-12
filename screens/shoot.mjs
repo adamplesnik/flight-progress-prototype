@@ -1,6 +1,7 @@
 /**
  * Captures the map of each flight in positions.mjs at 1024 × 768, 2× (2048 × 1536 px),
- * into screens/images/<flight id>.png, from the dev server's /capture page.
+ * into public/screens/<flight id>.png, from the dev server's /capture page. The site
+ * serves them at /screens/<flight id>.png.
  *
  * Needs the dev server running and Google Chrome installed:
  *   pnpm screens
@@ -13,7 +14,7 @@ import puppeteer from 'puppeteer-core'
 import { positions } from './positions.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
-const outDir = path.join(here, 'images')
+const outDir = path.join(here, '..', 'public', 'screens')
 const baseUrl = `http://localhost:${process.env.PORT ?? 8443}`
 const chrome =
   process.env.CHROME_PATH ??

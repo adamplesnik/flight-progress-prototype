@@ -35,7 +35,7 @@ The app runs at http://localhost:8443 (or the port in `PORT`).
 | `pnpm build` | Production build into `dist/` |
 | `pnpm preview` | Serve the production build |
 | `pnpm build:lib` | Build the package into `dist-lib/` |
-| `pnpm screens` | Remake `screens/images/` from `screens/positions.mjs`, with the dev server running |
+| `pnpm screens` | Remake `public/screens/` from `screens/positions.mjs`, with the dev server running |
 | `pnpm format` | Format the sources with Prettier |
 | `node scripts/generate-world-map.mjs` | Regenerate the world map and country names |
 
@@ -70,14 +70,14 @@ The world map, about 1.4 MB, loads as a chunk of its own after the first paint.
 The package also exports the flights (`flights`, each by name, `flightById`, `findFlight`),
 `flightTitle`, `flightPath` and the `Flight` type, so you can pass in flights of your own.
 
-### Screenshots
+## Screenshots
 
-Screenshots of every flight, 2048 × 1536, are in the package at
-`flight-progress/screens/<flight id>.png`.
+Screenshots of every flight, 2048 × 1536, are in `public/screens/`, so the deployed site serves
+them at `/screens/<flight id>.png`. They are not part of the npm package.
 
-They are made in this repo: `screens/positions.mjs` sets where each flight is caught, in
-percent of its timeline, and `pnpm screens` (with the dev server running and Google Chrome
-installed) remakes `screens/images/` from the `/capture` page.
+`screens/positions.mjs` sets where each flight is caught, in percent of its timeline, and
+`pnpm screens` (with the dev server running and Google Chrome installed) remakes
+`public/screens/` from the `/capture` page.
 
 ## Adding a flight
 
