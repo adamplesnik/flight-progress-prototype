@@ -86,15 +86,15 @@ the npm package.
 ## Releasing
 
 Bump `version` in `package.json` (`npm version patch --no-git-tag-version`, or `minor`/`major`)
-and merge it to `main`. The [Publish](.github/workflows/publish.yml) workflow then publishes
-that version to npm, with provenance, and makes a GitHub release `v<version>` with notes from
-the commits since the last one. A prerelease such as `1.0.0-beta.1` goes out under the `next`
-tag. Pushes that don't change the version do nothing.
+and merge it to `main`. The [Publish](.github/workflows/publish.yml) workflow then stages that
+version on npm, with provenance, and makes a GitHub release `v<version>` with notes from the
+commits since the last one. Pushes that don't change the version do nothing.
 
-It publishes through npm trusted publishing, without a token. The package has to exist on npm
-for that, so the first version is published by hand (`npm publish`), and then a trusted
-publisher is added on npmjs.com, in the package's settings: GitHub Actions, this repository,
-workflow `publish.yml`.
+A staged version goes live only once approved with 2FA, with `npm stage approve <stage-id>` or
+on npmjs.com, so the GitHub release can be up before the version is on npm.
+
+It publishes through npm trusted publishing, without a token: on npmjs.com, in the package's
+settings, a trusted publisher for GitHub Actions, this repository and workflow `publish.yml`.
 
 ## Adding a flight
 

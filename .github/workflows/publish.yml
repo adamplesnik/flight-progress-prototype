@@ -1,10 +1,9 @@
-# Publishes the package to npm, and makes a GitHub release, whenever main has a version in
-# package.json that is not on npm yet. Bump the version, merge to main, and this does the rest.
+# Stages the package on npm and creates a GitHub release whenever the version in package.json
+# changes on main. Bump the version, merge to main, then approve the staged version with 2FA:
+# `npm stage approve <stage-id>`, or on npmjs.com.
 #
-# It publishes with npm trusted publishing: no token, and npm adds provenance. That needs the
-# package to exist on npm first, set up once by hand: publish the first version from your
-# machine, then on npmjs.com, in the package's Settings, add a trusted publisher for GitHub
-# Actions with this repository and the workflow file name publish.yml.
+# It publishes with npm trusted publishing (no token, with provenance), set up on npmjs.com in
+# the package's settings: GitHub Actions, this repository, workflow publish.yml.
 name: Publish
 
 on:
@@ -14,17 +13,19 @@ on:
   # To run it again by hand, e.g. after a failed publish
   workflow_dispatch:
 
-# One run at a time, so two quick merges can't publish the same version twice
+# One run at a time, so two quick merges can't stage the same version twice
 concurrency:
   group: publish
   cancel-in-progress: false
 
+permissions:
+  contents: write # create the tag and GitHub release
+  id-token: write # npm trusted publishing (OIDC) and provenance
+
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # the tag and the release
-      id-token: write # npm trusted publishing
+
     steps:
       - uses: actions/checkout@v5
         with:
@@ -32,33 +33,32 @@ jobs:
 
       - uses: pnpm/action-setup@v4 # the version is package.json's packageManager
 
+      # No registry-url: it writes a placeholder token to .npmrc, which gets in the way of OIDC
       - uses: actions/setup-node@v5
         with:
-          node-version: 24
-          registry-url: https://registry.npmjs.org
+          node-version: 24.x
 
-      # Trusted publishing needs npm 11.5.1 or later
+      # Trusted publishing and `npm stage` need a recent npm
       - run: npm install -g npm@latest
 
-      - name: Check what is new
+      - name: Check what needs releasing
         id: check
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          name=$(node -p "require('./package.json').name")
-          version=$(node -p "require('./package.json').version")
-          echo "version=$version" >> "$GITHUB_OUTPUT"
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-          if npm view "$name@$version" version --silent >/dev/null 2>&1; then
-            echo "$name@$version is on npm already"
+          if npm view "$NAME@$VERSION" version > /dev/null 2>&1; then
+            echo "$NAME@$VERSION is already on npm"
             echo "publish=false" >> "$GITHUB_OUTPUT"
           else
-            echo "$name@$version is new: publishing"
             echo "publish=true" >> "$GITHUB_OUTPUT"
           fi
 
-          if gh release view "v$version" >/dev/null 2>&1; then
-            echo "Release v$version exists already"
+          if gh release view "v$VERSION" > /dev/null 2>&1; then
+            echo "Release v$VERSION already exists"
             echo "release=false" >> "$GITHUB_OUTPUT"
           else
             echo "release=true" >> "$GITHUB_OUTPUT"
@@ -67,26 +67,22 @@ jobs:
       - if: steps.check.outputs.publish == 'true'
         run: pnpm install --frozen-lockfile
 
+      # Type-checks too (tsc), so a broken package fails here rather than on npm
       - if: steps.check.outputs.publish == 'true'
         run: pnpm build:lib
 
-      # Built in the step above, so prepublishOnly needn't build it again. A prerelease
-      # (1.2.0-beta.1) goes out as next, so npm install keeps getting the latest stable one
-      - if: steps.check.outputs.publish == 'true'
-        env:
-          VERSION: ${{ steps.check.outputs.version }}
-        run: |
-          tag=latest
-          [[ "$VERSION" == *-* ]] && tag=next
-          npm stage publish --access public --ignore-scripts --tag "$tag"
+      # Staged versions go live only after approval with 2FA:
+      # `npm stage approve <stage-id>` or on npmjs.com
+      - name: Stage npm publish
+        if: steps.check.outputs.publish == 'true'
+        run: npm stage publish --access public
 
-      - if: steps.check.outputs.release == 'true'
+      - name: Create GitHub release
+        if: steps.check.outputs.release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.check.outputs.version }}
         run: |
-          gh release create "v$VERSION" \
+          gh release create "v${{ steps.check.outputs.version }}" \
             --target "$GITHUB_SHA" \
-            --title "v$VERSION" \
-            --generate-notes \
-            $([[ "$VERSION" == *-* ]] && echo --prerelease)
+            --title "v${{ steps.check.outputs.version }}" \
+            --generate-notes
