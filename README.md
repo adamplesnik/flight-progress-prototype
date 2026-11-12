@@ -4,6 +4,8 @@ A prototype of an in-flight map: the route between two cities on a world map, wi
 moving along it and live flight data beside it — time and distance left, speed, altitude and
 outside temperature.
 
+**Demo:** [flights.adamplesnik.com](https://flights.adamplesnik.com)
+
 Every flight is laid out automatically. The route is drawn on a Web Mercator map, the same
 projection as Google's and Apple's flat maps, and a solver decides how far to zoom, where the
 route sits and where the city names and data go, so that nothing overlaps.
@@ -72,8 +74,10 @@ The package also exports the flights (`flights`, each by name, `flightById`, `fi
 
 ## Screenshots
 
-Screenshots of every flight, 2048 × 1536, are in `public/screens/`, so the deployed site serves
-them at `/screens/<flight id>.png`. They are not part of the npm package.
+Screenshots of every flight, 2048 × 1536, are in `public/screens/`, so the demo serves them at
+`https://flights.adamplesnik.com/screens/<flight id>.png`, for example
+[lis-zurich.png](https://flights.adamplesnik.com/screens/lis-zurich.png). They are not part of
+the npm package.
 
 `screens/positions.mjs` sets where each flight is caught, in percent of its timeline, and
 `pnpm screens` (with the dev server running and Google Chrome installed) remakes
