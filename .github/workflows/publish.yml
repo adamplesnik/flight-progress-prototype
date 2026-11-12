@@ -79,7 +79,7 @@ jobs:
         run: |
           tag=latest
           [[ "$VERSION" == *-* ]] && tag=next
-          npm publish --access public --ignore-scripts --tag "$tag"
+          npm stage publish --access public --ignore-scripts --tag "$tag"
 
       - if: steps.check.outputs.release == 'true'
         env:
