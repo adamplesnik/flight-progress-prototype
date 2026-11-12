@@ -1,6 +1,8 @@
-# figma-make-app
+# flight-progress
 
-React + Vite + Tailwind CSS project running inside Figma Make.
+React components that show a flight's progress on a world map, published to npm as
+`flight-progress`, and the demo site built from the same components. React 19 + Vite +
+Tailwind CSS v4. The README covers features, commands and how the layout works.
 
 ## Development Server
 
@@ -11,27 +13,31 @@ A Vite development server is **already running** on `$PORT` (default 8443). You 
 
 ## Project Structure
 
-This is the canonical project structure. Start with task-relevant files below. Only follow imports or inspect other files when required, when a documented path is missing, or when the repository contradicts this guide.
+Start with task-relevant files below. Only follow imports or inspect other files when required, when a documented path is missing, or when the repository contradicts this guide.
 
-- `src/main.tsx` - React entrypoint; imports `src/index.css` and mounts `src/App.tsx` into the `#root` element
-- `src/App.tsx` - Primary application component and the usual starting point for UI work
-- `src/index.css` - Global CSS entrypoint and Tailwind CSS v4 import
-- `index.html` - Vite HTML shell containing the `#root` element and loading `src/main.tsx`
-- `package.json` - Project dependencies and the Vite build, development, preview, and formatting scripts
-- `vite.config.ts` - Vite configuration with React, Tailwind CSS v4, and Figma Make plugins plus the `@` alias for `src`
+- `src/lib/` - The npm package: `index.ts` (its exports), `FlightMap`, `FlightPlayer`, `theme.ts`, and the stylesheets (`style.css` for the package, `scene.css` shared with the demo, `fonts.css`)
+- `src/partials/` - The scene's components, used by both the package and the demo
+- `src/layout/` - Projection, the layout solver and text metrics
+- `src/data/` - Flight data (`flights/`, one file per flight, listed in `flights/index.ts`) and types
+- `src/main.tsx` - Demo entrypoint and router: `/:ORIG-DEST` shows a flight, `/capture` is for screenshots
+- `src/App.tsx` - The demo page; `src/Capture.tsx` - the screenshot page
+- `src/index.css` - The demo's CSS entrypoint
+- `screens/` - `pnpm screens` writes screenshots into `public/screens/`, which the site serves at `/screens/<flight id>.png`; they are not in the npm package
+- `vite.config.ts` - The demo build; `vite.lib.config.ts`, `tsconfig.lib.json` and `scripts/finish-lib-build.mjs` - the package build (`pnpm build:lib` into `dist-lib/`)
 - `.mise.toml` - Toolchain versions for Node.js and pnpm
 
 ## Dependencies
 
-- Runtime: React 19 and React DOM 19
+- Runtime: React 19 and React DOM 19 (peer dependencies of the package), `@tabler/icons-react`, `clsx`, `@fontsource/inter`
 - Styling: Tailwind CSS v4 with the `@tailwindcss/vite` plugin
-- Build tooling: Vite 8, TypeScript 5.7, and `@vitejs/plugin-react`
-- Formatting: oxfmt
+- Build tooling: Vite 8, TypeScript 5, and `@vitejs/plugin-react`
+- Formatting: Prettier with `prettier-plugin-tailwindcss` (`pnpm format`)
 
 ## Styling
 
-This project uses **Tailwind CSS v4** through the `@tailwindcss/vite` plugin configured in `vite.config.ts`. `src/index.css` imports Tailwind with `@import 'tailwindcss';`. Use Tailwind utility classes directly in JSX and put global CSS or Tailwind v4 theme customization in `src/index.css`. This scaffold does not need a Tailwind config file or PostCSS config.
+Tailwind runs with **`prefix(fp)`**, in both the package (`src/lib/style.css`) and the demo (`src/index.css`), so the package's CSS never meets a host app's own Tailwind:
 
-`src/main.tsx` imports `src/index.css`, so global font wiring belongs in `src/index.css`. Keep CSS `@import` statements first, then add any `@font-face` rules and font-family defaults there.
-
-Tailwind emits utility classes in `@layer utilities`, and CSS outside any cascade layer overrides every layer regardless of specificity. Put global element styles, such as resets and defaults for `body`, headings, `button`, or `input`, inside `@layer base { ... }` so utility classes on those elements still apply. Tailwind's Preflight already applies `box-sizing: border-box`, removes default margins, and sets `font: inherit` on form controls, so do not repeat those rules.
+- Write every utility with the prefix first: `fp:flex`, `fp:md:flex-row`, `fp:hover:bg-container`, `fp:[&::-moz-range-thumb]:size-7`
+- Theme colours are defined unprefixed in `@theme` in `src/lib/scene.css` (`--color-main`), but Tailwind writes them as `--fp-color-main`. Refer to them as `var(--fp-color-main)` in CSS and arbitrary values. `.flight-progress` sets them for the light and dark theme
+- Plain CSS for the scene goes in `src/lib/scene.css`, nested in `.flight-progress`, so no class name reaches the rest of the page
+- The package's stylesheet has no Preflight; its reset in `src/lib/style.css` is scoped to `.flight-progress`. Global element styles for the demo go in `@layer base` in `src/index.css`
