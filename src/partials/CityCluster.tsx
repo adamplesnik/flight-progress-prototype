@@ -24,8 +24,8 @@ export function CityCluster({
         <h1>{city}</h1>
         <p
           className={clsx(
-            'flex items-center gap-[0.5cqw]',
-            isDestination && 'flex-row-reverse'
+            'fp:flex fp:items-center fp:gap-[0.5cqw]',
+            isDestination && 'fp:flex-row-reverse'
           )}
         >
           {time}

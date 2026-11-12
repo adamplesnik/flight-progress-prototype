@@ -24,13 +24,13 @@ export function Header({
   onToggleCountryNames: () => void
 }) {
   return (
-    <header className="flex w-full flex-col gap-2 rounded-md md:flex-row md:justify-between lg:items-center">
+    <header className="fp:flex fp:w-full fp:flex-col fp:gap-2 fp:rounded-md fp:md:flex-row fp:md:justify-between fp:lg:items-center">
       {onSelectFlight && flights.length > 1 ? (
-        <div className="relative">
+        <div className="fp:relative">
           <select
             value={flight.id}
             onChange={(e) => onSelectFlight(flights[e.target.selectedIndex])}
-            className="h-12 w-full cursor-pointer appearance-none rounded-md px-4 pr-12 text-2xl font-semibold hover:bg-container lg:w-auto"
+            className="fp:h-12 fp:w-full fp:cursor-pointer fp:appearance-none fp:rounded-md fp:px-4 fp:pr-12 fp:text-2xl fp:font-semibold fp:hover:bg-container fp:lg:w-auto"
           >
             {flights.map((f) => (
               <option key={f.id} value={f.id}>
@@ -38,22 +38,22 @@ export function Header({
               </option>
             ))}
           </select>
-          <IconChevronDown className="pointer-events-none absolute top-3 right-3 text-main" />
+          <IconChevronDown className="fp:pointer-events-none fp:absolute fp:top-3 fp:right-3 fp:text-main" />
         </div>
       ) : (
-        <h1 className="text-2xl font-semibold">{flightTitle(flight)}</h1>
+        <h1 className="fp:text-2xl fp:font-semibold">{flightTitle(flight)}</h1>
       )}
       {SHOW_COUNTRY_NAMES_SWITCH && (
         <button
           type="button"
           aria-pressed={showCountryNames}
           onClick={onToggleCountryNames}
-          className="flex cursor-pointer justify-center gap-1 rounded-lg px-3 py-2 hover:bg-outline/50"
+          className="fp:flex fp:cursor-pointer fp:justify-center fp:gap-1 fp:rounded-lg fp:px-3 fp:py-2 fp:hover:bg-outline/50"
         >
           {showCountryNames ? (
-            <IconSquareCheckFilled className="w-8" />
+            <IconSquareCheckFilled className="fp:w-8" />
           ) : (
-            <IconSquare className="w-8" />
+            <IconSquare className="fp:w-8" />
           )}
           Country names
         </button>

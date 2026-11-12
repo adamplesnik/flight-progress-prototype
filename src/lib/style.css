@@ -4,7 +4,7 @@
  * components, leaves the rest of the page alone. The font is in fonts.css.
  */
 @layer theme, base, components, utilities;
-@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/theme.css' layer(theme) prefix(fp);
 @import 'tailwindcss/utilities.css' layer(utilities) source(none);
 @source '../partials';
 @source '../lib';

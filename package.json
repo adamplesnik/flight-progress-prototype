@@ -1,9 +1,17 @@
 {
   "name": "flight-progress",
   "version": "0.1.0",
-  "description": "React components that show a flight's progress on a world map, with playback controls, and screenshots of every flight",
+  "description": "React components that show a flight's progress on a world map, with playback controls",
   "license": "MIT",
   "author": "Adam Plesnik (https://adamplesnik.com)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adamplesnik/flight-progress-prototype.git"
+  },
+  "homepage": "https://flights.adamplesnik.com",
+  "bugs": {
+    "url": "https://github.com/adamplesnik/flight-progress-prototype/issues"
+  },
   "type": "module",
   "keywords": [
     "flight",
@@ -23,15 +31,13 @@
     },
     "./style.css": "./dist-lib/style.css",
     "./fonts.css": "./dist-lib/fonts.css",
-    "./screens/*": "./screens/images/*",
     "./package.json": "./package.json"
   },
   "sideEffects": [
     "**/*.css"
   ],
   "files": [
-    "dist-lib",
-    "screens/images"
+    "dist-lib"
   ],
   "scripts": {
     "dev": "vite",
@@ -58,7 +64,6 @@
     "@types/react-dom": "^19.3.0",
     "@vercel/analytics": "^2.0.1",
     "@vitejs/plugin-react": "^6.0.0",
-    "oxfmt": "^0.2.0",
     "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "puppeteer-core": "^25.17.0",

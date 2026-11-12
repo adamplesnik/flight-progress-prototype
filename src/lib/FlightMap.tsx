@@ -50,7 +50,7 @@ export function FlightMap({
 
   return (
     <div
-      className={clsx('flight-progress aspect-4/3 w-full', className)}
+      className={clsx('flight-progress fp:aspect-4/3 fp:w-full', className)}
       {...themeAttribute(theme)}
     >
       <MapScene

@@ -4,6 +4,8 @@ A prototype of an in-flight map: the route between two cities on a world map, wi
 moving along it and live flight data beside it — time and distance left, speed, altitude and
 outside temperature.
 
+**Demo:** [flights.adamplesnik.com](https://flights.adamplesnik.com)
+
 Every flight is laid out automatically. The route is drawn on a Web Mercator map, the same
 projection as Google's and Apple's flat maps, and a solver decides how far to zoom, where the
 route sits and where the city names and data go, so that nothing overlaps.
@@ -35,7 +37,7 @@ The app runs at http://localhost:8443 (or the port in `PORT`).
 | `pnpm build` | Production build into `dist/` |
 | `pnpm preview` | Serve the production build |
 | `pnpm build:lib` | Build the package into `dist-lib/` |
-| `pnpm screens` | Remake `screens/images/` from `screens/positions.mjs`, with the dev server running |
+| `pnpm screens` | Remake `public/screens/` from `screens/positions.mjs`, with the dev server running |
 | `pnpm format` | Format the sources with Prettier |
 | `node scripts/generate-world-map.mjs` | Regenerate the world map and country names |
 
@@ -70,14 +72,29 @@ The world map, about 1.4 MB, loads as a chunk of its own after the first paint.
 The package also exports the flights (`flights`, each by name, `flightById`, `findFlight`),
 `flightTitle`, `flightPath` and the `Flight` type, so you can pass in flights of your own.
 
-### Screenshots
+## Screenshots
 
-Screenshots of every flight, 2048 × 1536, are in the package at
-`flight-progress/screens/<flight id>.png`.
+Screenshots of every flight, 2048 × 1536, are in `public/screens/`, so the demo serves them at
+`https://flights.adamplesnik.com/screens/<flight id>.png`, for example
+[lis-zurich.png](https://flights.adamplesnik.com/screens/lis-zurich.png). They are not part of
+the npm package.
 
-They are made in this repo: `screens/positions.mjs` sets where each flight is caught, in
-percent of its timeline, and `pnpm screens` (with the dev server running and Google Chrome
-installed) remakes `screens/images/` from the `/capture` page.
+`screens/positions.mjs` sets where each flight is caught, in percent of its timeline, and
+`pnpm screens` (with the dev server running and Google Chrome installed) remakes
+`public/screens/` from the `/capture` page.
+
+## Releasing
+
+Bump `version` in `package.json` (`npm version patch --no-git-tag-version`, or `minor`/`major`)
+and merge it to `main`. The [Publish](.github/workflows/publish.yml) workflow then publishes
+that version to npm, with provenance, and makes a GitHub release `v<version>` with notes from
+the commits since the last one. A prerelease such as `1.0.0-beta.1` goes out under the `next`
+tag. Pushes that don't change the version do nothing.
+
+It publishes through npm trusted publishing, without a token. The package has to exist on npm
+for that, so the first version is published by hand (`npm publish`), and then a trusted
+publisher is added on npmjs.com, in the package's settings: GitHub Actions, this repository,
+workflow `publish.yml`.
 
 ## Adding a flight
 
@@ -102,6 +119,9 @@ each route's distance and duration, not recorded flight data.
 - `src/layout/textMetrics.ts` — text widths for the solver, measured from the Inter font
 - `src/partials/` — the scene's components: map, route, city labels, data panel and controls
 - `src/lib/` — the package: its entry, `FlightMap`, `FlightPlayer` and stylesheets
+- Tailwind runs with `prefix(fp)`: utilities are written `fp:flex`, `fp:md:flex-row`, and the
+  theme colours are `--fp-color-*`. With the scene's own classes nested in `.flight-progress`,
+  the package's stylesheet leaves the rest of the page, and its own Tailwind, alone
 - `src/Capture.tsx` and `screens/` — the page and script that make the screenshots
 
 ## Built with
