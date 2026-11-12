@@ -3,7 +3,6 @@ import {
   IconPlayerPlayFilled,
 } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { Pause, Play } from 'lucide-react'
 import type { RefObject } from 'react'
 
 /** Play/pause and the slider that follows the flight and scrubs through it. */

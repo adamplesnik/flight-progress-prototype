@@ -1,5 +1,5 @@
+import { IconArrowRight } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { ArrowRight } from 'lucide-react'
 import type { PlacedCity } from '../data/types'
 import { SCENE } from './scene'
 
@@ -29,7 +29,7 @@ export function CityCluster({
           )}
         >
           {time}
-          <ArrowRight size={'3.3cqw'} strokeWidth="3" />
+          <IconArrowRight size={'3.3cqw'} strokeWidth="3" />
         </p>
       </div>
     </section>
