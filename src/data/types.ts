@@ -1,7 +1,11 @@
 import type { LatLon } from '../layout/projection'
 
-/** One row of a flight profile: [speed km/h, altitude ft, temperature °C, remaining km]. */
+/**
+ * One row of a flight profile:
+ * [minutes after take-off, speed km/h, altitude ft, temperature °C, remaining km].
+ */
 export type ProfileSample = [
+  min: number,
   kmh: number,
   feet: number,
   celsius: number,
@@ -25,11 +29,11 @@ export type Flight = {
   destination: City
   /** Points the route passes through, joined by a smooth curve instead of a great circle */
   waypoints?: LatLon[]
-  profile: {
-    samples: ProfileSample[]
-    /** Minutes between two samples */
-    stepMin: number
-  }
+  /**
+   * From take-off (minute 0) to landing, in order of time. Values between two rows are
+   * interpolated linearly, so a row is only needed where one of them changes its course.
+   */
+  profile: ProfileSample[]
   timeline: {
     /** Minutes on the ground before take-off (the animation starts here) */
     preDepartureMin: number

@@ -105,7 +105,8 @@ A flight has:
 
 - `origin` and `destination` — `city`, airport `icao` code, local `time` and coordinates
 - `waypoints` (optional) — points the route passes through, joined by a smooth curve
-- `profile` — speed, altitude, temperature and remaining distance at a fixed time step
+- `profile` — rows of minutes after take-off, speed, altitude, temperature and remaining
+  distance, one wherever a value changes its course; the values between are interpolated
 - `timeline` — minutes on the ground before take-off and after landing, and taxiing
 
 The flight profiles included are synthetic: plausible climbs, cruises and descents fitted to
