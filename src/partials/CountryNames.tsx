@@ -7,7 +7,11 @@ import { mapView } from './scene'
 export function CountryNames({ map }: { map: SceneLayout['map'] }) {
   const { viewBox, copies } = mapView(map)
   return (
-    <svg className="world-map country-names" viewBox={viewBox} aria-hidden="true">
+    <svg
+      className="world-map country-names"
+      viewBox={viewBox}
+      aria-hidden="true"
+    >
       {copies.flatMap((copy) =>
         countryLabels.map(({ name, x, y }) => (
           <text
