@@ -32,16 +32,15 @@ export const flights: Flight[] = [
 
 export const defaultFlight = lisZurich
 
-/** A flight's URL path from its airports' ICAO codes, e.g. '/LPPT-LSZH' */
-export const flightPath = (flight: Flight) =>
-  `/${flight.origin.icao}-${flight.destination.icao}`
+/** A flight's URL path, its id, e.g. '/LPPT-LSZH' */
+export const flightPath = (flight: Flight) => `/${flight.id}`
 
-/** The flight at a path segment like 'LPPT-LSZH', in any letter case */
-export const findFlight = (route: string) =>
-  flights.find((f) => flightPath(f) === `/${route.toUpperCase()}`)
+/** The flight with this id, its airports' ICAO codes like 'LPPT-LSZH', in any letter case */
+export const flightById = (id: string) =>
+  flights.find((f) => f.id === id.toUpperCase())
 
-/** The flight with this id (its file name), e.g. 'lis-zurich' */
-export const flightById = (id: string) => flights.find((f) => f.id === id)
+/** The flight at a path segment like 'LPPT-LSZH': the same as flightById */
+export const findFlight = flightById
 
 export {
   detroitShanghai,

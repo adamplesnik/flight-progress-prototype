@@ -1,7 +1,7 @@
 import type { Flight } from '../types'
 
 export const detroitShanghai: Flight = {
-  id: 'detroit-shanghai',
+  id: 'KDTW-ZSPD',
   origin: {
     city: 'Detroit',
     icao: 'KDTW',

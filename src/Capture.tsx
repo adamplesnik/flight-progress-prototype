@@ -3,7 +3,7 @@ import { FlightMap } from './lib/FlightMap'
 
 /**
  * One flight's map, held at one position and 1024px wide, for screens/shoot.mjs:
- * /capture?flight=lis-zurich&progress=0.305
+ * /capture?flight=LPPT-LSZH&progress=0.305
  */
 export function Capture() {
   const params = new URLSearchParams(location.search)

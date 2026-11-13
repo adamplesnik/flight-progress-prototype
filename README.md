@@ -76,7 +76,7 @@ The package also exports the flights (`flights`, each by name, `flightById`, `fi
 
 Screenshots of every flight, 2048 × 1536, are in `public/screens/`, so the demo serves them at
 `https://flights.adamplesnik.com/screens/<flight id>.png`, for example
-[lis-zurich.png](https://flights.adamplesnik.com/screens/lis-zurich.png). They are not part of
+[LPPT-LSZH.png](https://flights.adamplesnik.com/screens/LPPT-LSZH.png). They are not part of
 the npm package.
 
 `screens/positions.mjs` sets where each flight is caught, in percent of its timeline, and
@@ -100,9 +100,10 @@ workflow `publish.yml`.
 
 Each flight is a file in `src/data/flights/`, listed in `src/data/flights/index.ts`; the menu
 sorts them by title, and `defaultFlight` sets the one shown first. Each flight has its own
-address from its airports' ICAO codes, like `/LPPT-LSZH`; any other address opens the default.
-A flight has:
+address, its id, like `/LPPT-LSZH`; any other address opens the default. A flight has:
 
+- `id` — the origin's and destination's ICAO codes joined by a hyphen, like `LPPT-LSZH`; it is
+  also the flight's address and its screenshot's file name
 - `origin` and `destination` — `city`, airport `icao` code, local `time` and coordinates
 - `waypoints` (optional) — points the route passes through, joined by a smooth curve
 - `profile` — speed, altitude, temperature and remaining distance at a fixed time step

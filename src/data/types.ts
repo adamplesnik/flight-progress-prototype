@@ -20,6 +20,7 @@ export type City = LatLon & {
 }
 
 export type Flight = {
+  /** The origin's and destination's ICAO codes, e.g. 'LPPT-LSZH'. Also the demo's address */
   id: string
   origin: City
   destination: City
