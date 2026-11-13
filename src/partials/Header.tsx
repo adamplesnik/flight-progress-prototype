@@ -1,4 +1,4 @@
-import { IconChevronDown } from '@tabler/icons-react'
+import { IconChevronDown } from './icons'
 import { flightTitle } from '../data/flights'
 import type { Flight } from '../data/types'
 

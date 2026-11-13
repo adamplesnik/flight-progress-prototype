@@ -1,4 +1,4 @@
-import { IconArrowRight } from '@tabler/icons-react'
+import { IconArrowRight } from './icons'
 import type { PlacedCity } from '../data/types'
 import { SCENE } from './scene'
 

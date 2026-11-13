@@ -28,7 +28,7 @@ Start with task-relevant files below. Only follow imports or inspect other files
 
 ## Dependencies
 
-- Runtime: React 19 and React DOM 19 (peer dependencies of the package), `@tabler/icons-react`, `@fontsource/inter`
+- Runtime: React 19 and React DOM 19 (peer dependencies of the package), `@fontsource/inter`; the four icons are inline SVGs in `src/partials/icons.tsx`
 - Build tooling: Vite 8, TypeScript 5, and `@vitejs/plugin-react`
 - Formatting: Prettier (`pnpm format`)
 

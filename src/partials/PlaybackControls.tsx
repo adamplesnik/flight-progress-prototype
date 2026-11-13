@@ -1,7 +1,4 @@
-import {
-  IconPlayerPauseFilled,
-  IconPlayerPlayFilled,
-} from '@tabler/icons-react'
+import { IconPlayerPauseFilled, IconPlayerPlayFilled } from './icons'
 import type { RefObject } from 'react'
 
 /** Play/pause and the slider that follows the flight and scrubs through it. */

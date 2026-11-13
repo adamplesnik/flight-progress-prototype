@@ -17,7 +17,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: [/^react($|\/)/, /^react-dom($|\/)/, '@tabler/icons-react'],
+      external: [/^react($|\/)/, /^react-dom($|\/)/],
     },
   },
 })
