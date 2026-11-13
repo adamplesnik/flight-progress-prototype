@@ -119,14 +119,14 @@ each route's distance and duration, not recorded flight data.
 - `src/layout/textMetrics.ts` — text widths for the solver, measured from the Inter font
 - `src/partials/` — the scene's components: map, route, city labels, data panel and controls
 - `src/lib/` — the package: its entry, `FlightMap`, `FlightPlayer` and stylesheets
-- Tailwind runs with `prefix(fp)`: utilities are written `fp:flex`, `fp:md:flex-row`, and the
-  theme colours are `--fp-color-*`. With the scene's own classes nested in `.flight-progress`,
-  the package's stylesheet leaves the rest of the page, and its own Tailwind, alone
+- `src/lib/style.css` — all the styles, in plain CSS nested in `.flight-progress`, so the
+  package's stylesheet leaves the rest of the page alone. The theme is five `--fp-color-*`
+  colours, each a `light-dark()` pair
 - `src/Capture.tsx` and `screens/` — the page and script that make the screenshots
 
 ## Built with
 
-React 19, TypeScript, Vite and Tailwind CSS v4.
+React 19, TypeScript and Vite.
 
 ## Credits
 

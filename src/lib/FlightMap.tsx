@@ -1,9 +1,8 @@
-import clsx from 'clsx'
 import { useEffect, useRef } from 'react'
 import type { Flight } from '../data/types'
 import type { SceneHandle } from '../partials/AnimatedRoute'
 import { MapScene } from '../partials/MapScene'
-import { themeAttribute, type Theme } from './theme'
+import { rootProps, type Theme } from './theme'
 
 export type FlightMapProps = {
   flight: Flight
@@ -45,10 +44,7 @@ export function FlightMap({
   }, [progress])
 
   return (
-    <div
-      className={clsx('flight-progress fp:aspect-4/3 fp:w-full', className)}
-      {...themeAttribute(theme)}
-    >
+    <div {...rootProps('flight-map', theme, className)}>
       <MapScene
         ref={scene}
         flight={flight}

@@ -1,8 +1,8 @@
 # flight-progress
 
 React components that show a flight's progress on a world map, published to npm as
-`flight-progress`, and the demo site built from the same components. React 19 + Vite +
-Tailwind CSS v4. The README covers features, commands and how the layout works.
+`flight-progress`, and the demo site built from the same components. React 19 + Vite,
+styled with plain CSS. The README covers features, commands and how the layout works.
 
 ## Development Server
 
@@ -15,29 +15,29 @@ A Vite development server is **already running** on `$PORT` (default 8443). You 
 
 Start with task-relevant files below. Only follow imports or inspect other files when required, when a documented path is missing, or when the repository contradicts this guide.
 
-- `src/lib/` - The npm package: `index.ts` (its exports), `FlightMap`, `FlightPlayer`, `theme.ts`, and the stylesheets (`style.css` for the package, `scene.css` shared with the demo, `public/fonts.css` copied to the package as it is); `build.ts` is the package build's entry
+- `src/lib/` - The npm package: `index.ts` (its exports), `FlightMap`, `FlightPlayer`, `theme.ts`, and the stylesheets (`style.css`, all the package's styles, which the demo imports too, and `public/fonts.css`, copied to the package as it is); `build.ts` is the package build's entry
 - `src/partials/` - The scene's components, used by both the package and the demo
 - `src/layout/` - Projection, the layout solver and text metrics
 - `src/data/` - Flight data (`flights/`, one file per flight, listed in `flights/index.ts`) and types
 - `src/main.tsx` - Demo entrypoint and router: `/:ORIG-DEST` shows a flight, `/capture` is for screenshots
 - `src/App.tsx` - The demo page; `src/Capture.tsx` - the screenshot page
-- `src/index.css` - The demo's CSS entrypoint
+- `src/index.css` - The demo's CSS entrypoint: the fonts, `src/lib/style.css` and the page's own styles
 - `screens/` - `pnpm screens` writes screenshots into `public/screens/`, which the site serves at `/screens/<flight id>.png`; they are not in the npm package
 - `vite.config.ts` - The demo build; `vite.lib.config.ts` and `tsconfig.lib.json` - the package build (`pnpm build:lib` into `dist-lib/`)
 - `.mise.toml` - Toolchain versions for Node.js and pnpm
 
 ## Dependencies
 
-- Runtime: React 19 and React DOM 19 (peer dependencies of the package), `@tabler/icons-react`, `clsx`, `@fontsource/inter`
-- Styling: Tailwind CSS v4 with the `@tailwindcss/vite` plugin
+- Runtime: React 19 and React DOM 19 (peer dependencies of the package), `@tabler/icons-react`, `@fontsource/inter`
 - Build tooling: Vite 8, TypeScript 5, and `@vitejs/plugin-react`
-- Formatting: Prettier with `prettier-plugin-tailwindcss` (`pnpm format`)
+- Formatting: Prettier (`pnpm format`)
 
 ## Styling
 
-Tailwind runs with **`prefix(fp)`**, in both the package (`src/lib/style.css`) and the demo (`src/index.css`), so the package's CSS never meets a host app's own Tailwind:
+Plain CSS, no framework. All the package's styles are in `src/lib/style.css`:
 
-- Write every utility with the prefix first: `fp:flex`, `fp:md:flex-row`, `fp:hover:bg-container`, `fp:[&::-moz-range-thumb]:size-7`
-- Theme colours are defined unprefixed in `@theme` in `src/lib/scene.css` (`--color-main`), but Tailwind writes them as `--fp-color-main`. Refer to them as `var(--fp-color-main)` in CSS and arbitrary values. `.flight-progress` sets them for the light and dark theme
-- Plain CSS for the scene goes in `src/lib/scene.css`, nested in `.flight-progress`, so no class name reaches the rest of the page
-- The package's stylesheet has no Preflight; its reset in `src/lib/style.css` is scoped to `.flight-progress`. Global element styles for the demo go in `@layer base` in `src/index.css`
+- Everything is nested in `.flight-progress`, the root of `FlightMap` and `FlightPlayer`, so no class name reaches the rest of the page. Components use short semantic class names (`scene`, `data-panel`, `controls`) and combine them in template strings
+- The theme is the `--fp-color-*` custom properties on `.flight-progress`, each a `light-dark()` pair. `color-scheme` picks the side: the system's by default, or the `theme` prop's through `data-theme`
+- The root's own rules are in `:where()`, so a class passed as `className` overrides them. The reset is scoped to `.flight-progress` too
+- Sizes inside the scene are in `cqw`: the scene is 1024px wide by design, so 1px is 0.09765625cqw
+- The demo's `<body>` has the `flight-progress` class, for the theme colours; the demo's own styles are classes in `src/index.css`

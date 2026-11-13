@@ -1,11 +1,10 @@
-import clsx from 'clsx'
 import { useRef, useState } from 'react'
 import type { Flight } from '../data/types'
 import { Header } from '../partials/Header'
 import { PlaybackControls } from '../partials/PlaybackControls'
 import type { SceneHandle } from '../partials/AnimatedRoute'
 import { MapScene } from '../partials/MapScene'
-import { themeAttribute, type Theme } from './theme'
+import { rootProps, type Theme } from './theme'
 
 export type FlightPlayerProps = {
   flight: Flight
@@ -51,13 +50,7 @@ export function FlightPlayer({
   }
 
   return (
-    <div
-      className={clsx(
-        'flight-progress fp:flex fp:w-full fp:flex-col fp:gap-4',
-        className
-      )}
-      {...themeAttribute(theme)}
-    >
+    <div {...rootProps('flight-player', theme, className)}>
       {header && (
         <Header
           flight={flight}
@@ -65,7 +58,7 @@ export function FlightPlayer({
           onSelectFlight={onSelectFlight}
         />
       )}
-      <div className="fp:aspect-4/3 fp:w-full fp:shrink-0 fp:overflow-hidden fp:rounded-md fp:border fp:border-outline">
+      <div className="frame">
         <MapScene
           ref={scene}
           flight={flight}

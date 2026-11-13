@@ -8,13 +8,13 @@ import { FlightPlayer } from './lib/FlightPlayer'
 function App({ flight }: { flight: Flight }) {
   const navigate = useNavigate()
   return (
-    <main className="fp:flex fp:min-h-dvh fp:w-full fp:flex-col fp:items-center fp:justify-center fp:p-4 fp:text-main">
+    <main className="demo">
       <title>{`${flightTitle(flight)} · Flight progress prototype`}</title>
       <FlightPlayer
         flight={flight}
         flights={flights}
         onSelectFlight={(f) => navigate(flightPath(f))}
-        className="fp:max-w-5xl fp:lg:w-[min(100vw-32px,(100dvh-160px)*4/3)]"
+        className="demo-player"
       />
       <Analytics />
     </main>

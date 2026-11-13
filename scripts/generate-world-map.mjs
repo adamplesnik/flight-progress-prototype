@@ -100,7 +100,7 @@ const lines = mesh(topology, topology.objects.countries)
 // The map is drawn inline (see WorldMapView), and its copies beside the first are <use>
 // clones, which page styles do not reach: only what they inherit from the map's <svg>. So
 // the paths carry no colours of their own and take fill, stroke and stroke-width from it
-// (see scene.css); the colours on this <svg> are only for looking at the file by itself.
+// (see style.css); the colours on this <svg> are only for looking at the file by itself.
 // The land has no outline of its own: the outlines are the second path.
 writeFileSync(
   'src/assets/world-mercator.svg',

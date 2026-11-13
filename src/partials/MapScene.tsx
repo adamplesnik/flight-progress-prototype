@@ -12,8 +12,7 @@ const sameReadout = (a: FlightReadout, b: FlightReadout) =>
   (Object.keys(a) as (keyof FlightReadout)[]).every((k) => a[k] === b[k])
 
 /**
- * The 4:3 map with the flight on it: route, cities and flight data. It fills its parent,
- * which sets the size. A new flight starts at `initialProgress` again.
+ * The 4:3 map with the flight on it: route, cities and flight data, as wide as its parent. A new flight starts at `initialProgress` again.
  */
 export function MapScene({
   flight,

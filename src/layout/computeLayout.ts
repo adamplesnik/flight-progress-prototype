@@ -21,7 +21,7 @@ type Rect = { x: number; y: number; w: number; h: number }
 
 const MARGIN = 48 // safe zone: nothing but the map may leave it
 
-// Sizes of the components, in scene px (see scene.css)
+// Sizes of the components, in scene px (see style.css)
 const DOT_RADIUS = 24
 const MARKER_RADIUS = 18 // the route's outer limit: the marker travels along it
 const CITY_GAP = 40 // dot centre → city text

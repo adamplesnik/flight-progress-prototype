@@ -1,10 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 
 /** The npm package: dist-lib/index.js (+ the world map chunk), style.css and fonts.css */
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react()],
   // fonts.css, copied as it is: the app's bundler resolves its @fontsource imports
   publicDir: 'src/lib/public',
   build: {
@@ -18,12 +17,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: [
-        /^react($|\/)/,
-        /^react-dom($|\/)/,
-        '@tabler/icons-react',
-        'clsx',
-      ],
+      external: [/^react($|\/)/, /^react-dom($|\/)/, '@tabler/icons-react'],
     },
   },
 })
