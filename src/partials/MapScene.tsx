@@ -18,7 +18,7 @@ export function MapScene({
   flight,
   paused,
   onProgress,
-  initialProgress = 0.2,
+  initialProgress = 0.45,
   showCountryNames = false,
   ref,
 }: {
