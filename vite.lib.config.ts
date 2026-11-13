@@ -21,7 +21,7 @@ export default defineConfig({
         /^react($|\/)/,
         /^react-dom($|\/)/,
         '@tabler/icons-react',
-        'clsx',
+        // clsx is bundled: it's a few hundred bytes, not worth a dependency for the app
       ],
     },
   },

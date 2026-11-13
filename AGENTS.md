@@ -28,9 +28,9 @@ Start with task-relevant files below. Only follow imports or inspect other files
 
 ## Dependencies
 
-- Runtime: React 19 and React DOM 19 (peer dependencies of the package), `@tabler/icons-react`, `clsx`, `@fontsource/inter`
+- Runtime: React 19 and React DOM 19 (peer dependencies of the package), `@tabler/icons-react`, `@fontsource/inter`. `clsx` is a dev dependency: the package build bundles it
 - Styling: Tailwind CSS v4 with the `@tailwindcss/vite` plugin
-- Build tooling: Vite 8, TypeScript 5, and `@vitejs/plugin-react`
+- Build tooling: Vite 8, TypeScript 7, and `@vitejs/plugin-react`
 - Formatting: Prettier with `prettier-plugin-tailwindcss` (`pnpm format`)
 
 ## Styling
