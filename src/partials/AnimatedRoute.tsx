@@ -112,7 +112,6 @@ export function AnimatedRoute({
     }
 
     render(progress)
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     let frame = 0
     let previousTime: number | undefined
