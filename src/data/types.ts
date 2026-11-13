@@ -74,5 +74,6 @@ export type SceneLayout = {
   destination: PlacedCity
   /** Progress and flight data: in a bottom row or a right column */
   orientation: Orientation
-  report: { scale: number; warnings: string[] }
+  /** What the layout could not do for this flight; logged in development */
+  warnings: string[]
 }

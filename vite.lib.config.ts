@@ -2,16 +2,17 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-/** The npm package: dist-lib/index.js (+ the world map chunk), dist-lib/style.css */
+/** The npm package: dist-lib/index.js (+ the world map chunk), style.css and fonts.css */
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  publicDir: false,
+  // fonts.css, copied as it is: the app's bundler resolves its @fontsource imports
+  publicDir: 'src/lib/public',
   build: {
     // The world map's chunk, loaded after the first paint
     chunkSizeWarningLimit: 1500,
     outDir: 'dist-lib',
     lib: {
-      entry: 'src/lib/index.ts',
+      entry: 'src/lib/build.ts',
       fileName: 'index',
       cssFileName: 'style',
       formats: ['es'],

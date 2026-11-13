@@ -11,7 +11,6 @@
   --color-background: #fafafa;
   --color-container: #e9ebed;
   --color-outline: #b2b2b2;
-  --color-subtle: #555555;
   --color-main: #090909;
   --color-product: #cc0000;
 }
@@ -21,7 +20,6 @@
   --fp-color-background: #fafafa;
   --fp-color-container: #e9ebed;
   --fp-color-outline: #b2b2b2;
-  --fp-color-subtle: #555555;
   --fp-color-main: #090909;
   --fp-color-product: #cc0000;
 }
@@ -32,7 +30,6 @@
     --fp-color-background: #141414;
     --fp-color-container: #212427;
     --fp-color-outline: #424242;
-    --fp-color-subtle: #c4c4c4;
     --fp-color-main: #e0e0e0;
     --fp-color-product: #cc0000;
   }
@@ -43,7 +40,6 @@
   --fp-color-background: #141414;
   --fp-color-container: #212427;
   --fp-color-outline: #424242;
-  --fp-color-subtle: #c4c4c4;
   --fp-color-main: #e0e0e0;
   --fp-color-product: #cc0000;
 }

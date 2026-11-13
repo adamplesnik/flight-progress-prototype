@@ -15,7 +15,7 @@ A Vite development server is **already running** on `$PORT` (default 8443). You 
 
 Start with task-relevant files below. Only follow imports or inspect other files when required, when a documented path is missing, or when the repository contradicts this guide.
 
-- `src/lib/` - The npm package: `index.ts` (its exports), `FlightMap`, `FlightPlayer`, `theme.ts`, and the stylesheets (`style.css` for the package, `scene.css` shared with the demo, `fonts.css`)
+- `src/lib/` - The npm package: `index.ts` (its exports), `FlightMap`, `FlightPlayer`, `theme.ts`, and the stylesheets (`style.css` for the package, `scene.css` shared with the demo, `public/fonts.css` copied to the package as it is); `build.ts` is the package build's entry
 - `src/partials/` - The scene's components, used by both the package and the demo
 - `src/layout/` - Projection, the layout solver and text metrics
 - `src/data/` - Flight data (`flights/`, one file per flight, listed in `flights/index.ts`) and types
@@ -23,7 +23,7 @@ Start with task-relevant files below. Only follow imports or inspect other files
 - `src/App.tsx` - The demo page; `src/Capture.tsx` - the screenshot page
 - `src/index.css` - The demo's CSS entrypoint
 - `screens/` - `pnpm screens` writes screenshots into `public/screens/`, which the site serves at `/screens/<flight id>.png`; they are not in the npm package
-- `vite.config.ts` - The demo build; `vite.lib.config.ts`, `tsconfig.lib.json` and `scripts/finish-lib-build.mjs` - the package build (`pnpm build:lib` into `dist-lib/`)
+- `vite.config.ts` - The demo build; `vite.lib.config.ts` and `tsconfig.lib.json` - the package build (`pnpm build:lib` into `dist-lib/`)
 - `.mise.toml` - Toolchain versions for Node.js and pnpm
 
 ## Dependencies

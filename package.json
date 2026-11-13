@@ -43,7 +43,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "build:lib": "vite build -c vite.lib.config.ts && tsc -p tsconfig.lib.json && node scripts/finish-lib-build.mjs",
+    "build:lib": "vite build -c vite.lib.config.ts && tsc -p tsconfig.lib.json",
     "screens": "node screens/shoot.mjs",
     "prepublishOnly": "pnpm build:lib",
     "format": "prettier --write src screens scripts"

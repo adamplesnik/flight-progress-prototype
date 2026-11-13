@@ -1,6 +1,7 @@
 import clsx from 'clsx'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import type { Flight } from '../data/types'
+import type { SceneHandle } from '../partials/AnimatedRoute'
 import { MapScene } from '../partials/MapScene'
 import { themeAttribute, type Theme } from './theme'
 
@@ -37,16 +38,11 @@ export function FlightMap({
   className,
 }: FlightMapProps) {
   const held = progress !== undefined
-  // A new `progress` jumps there; the id makes the same value jump again on a new flight
-  const [seek, setSeek] = useState<{ to: number; id: number } | null>(null)
-  const seekId = useRef(0)
+  const scene = useRef<SceneHandle>(null)
+  // A new `progress` moves the held flight there
   useEffect(() => {
-    if (progress !== undefined) setSeek({ to: progress, id: ++seekId.current })
-  }, [progress, flight])
-
-  const onProgressRef = useRef(onProgress)
-  onProgressRef.current = onProgress
-  const [report] = useState(() => (at: number) => onProgressRef.current?.(at))
+    if (progress !== undefined) scene.current?.seekTo(progress)
+  }, [progress])
 
   return (
     <div
@@ -54,10 +50,10 @@ export function FlightMap({
       {...themeAttribute(theme)}
     >
       <MapScene
+        ref={scene}
         flight={flight}
         paused={held || paused}
-        seek={seek}
-        onProgress={report}
+        onProgress={onProgress}
         initialProgress={held ? progress : initialProgress}
         showCountryNames={showCountryNames}
       />
