@@ -29,10 +29,10 @@ export type FlightReadout = {
  * point (0..1) on the timeline from EOBT to the end of the parking time.
  */
 export function createFlightModel(flight: Flight) {
-  const { samples, stepMin } = flight.profile
+  const samples = flight.profile
   const { preDepartureMin, postArrivalMin, taxiMin, taxiKnots } =
     flight.timeline
-  const flightMin = (samples.length - 1) * stepMin
+  const flightMin = samples[samples.length - 1][0]
   const totalMin = preDepartureMin + flightMin + postArrivalMin
 
   /** Minutes since the start of the timeline for a 0..1 timeline progress. */
@@ -44,18 +44,20 @@ export function createFlightModel(flight: Flight) {
 
   /** Interpolates the profile between two samples at `minutes` after take-off. */
   const sampleAt = (minutes: number) => {
-    const i = Math.min(Math.floor(minutes / stepMin), samples.length - 2)
-    const t = (minutes - i * stepMin) / stepMin
-    return samples[i].map((v, k) =>
-      lerp(v, samples[i + 1][k], t)
-    ) as ProfileSample
+    const i = Math.max(
+      1,
+      samples.findIndex(([min]) => min >= minutes)
+    )
+    const [from, to] = [samples[i - 1], samples[i]]
+    const t = (minutes - from[0]) / (to[0] - from[0])
+    return from.map((v, k) => lerp(v, to[k], t)) as ProfileSample
   }
 
   /** progress: 0..1 across the whole timeline. Values are interpolated linearly, then snapped. */
   function readoutAt(progress: number): FlightReadout {
     const elapsed = elapsedMinutes(progress)
     const minutes = flightMinutes(elapsed)
-    const [kmh, ft, c, d] = sampleAt(minutes)
+    const [, kmh, ft, c, d] = sampleAt(minutes)
 
     const left = flightMin - Math.floor(minutes) // frozen until take-off
     // speed: nearest 5 knots
@@ -92,10 +94,10 @@ export function createFlightModel(flight: Flight) {
 
   /** Share of the route already flown (0..1) at `progress` (0..1) of the timeline. */
   function distanceProgressAt(progress: number): number {
-    const [, , , remainingKm] = sampleAt(
+    const [, , , , remainingKm] = sampleAt(
       flightMinutes(elapsedMinutes(progress))
     )
-    return 1 - remainingKm / samples[0][3]
+    return 1 - remainingKm / samples[0][4]
   }
 
   return { readoutAt, distanceProgressAt }

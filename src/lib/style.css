@@ -1,38 +1,384 @@
 /*
- * The package's stylesheet: import 'flight-progress/style.css' once. Tailwind's theme and the
- * utilities the components use, but not its Preflight: a reset of its own, scoped to the
- * components, leaves the rest of the page alone. The font is in fonts.css.
+ * The package's stylesheet: import 'flight-progress/style.css' once. The demo uses it too.
+ * Everything is nested in .flight-progress, the root of FlightMap and FlightPlayer, so no
+ * class name reaches the rest of the page. The font is in fonts.css.
  */
-@layer theme, base, components, utilities;
-@import 'tailwindcss/theme.css' layer(theme) prefix(fp);
-@import 'tailwindcss/utilities.css' layer(utilities) source(none);
-@source '../partials';
-@source '../lib';
 
-@import './scene.css';
+/* The root's own rules are in :where(), so a class passed as `className` overrides them */
+:where(.flight-progress) {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
 
-@layer base {
-  .flight-progress,
-  .flight-progress :where(*, ::before, ::after) {
+:where(.flight-player) {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.flight-progress {
+  /* The theme: light-dark() follows color-scheme, which the theme prop sets */
+  color-scheme: light dark;
+  --fp-color-background: light-dark(#fafafa, #141414);
+  --fp-color-container: light-dark(#e9ebed, #212427);
+  --fp-color-outline: light-dark(#b2b2b2, #424242);
+  --fp-color-main: light-dark(#090909, #e0e0e0);
+  --fp-color-product: #cc0000;
+
+  color: var(--fp-color-main);
+  font-family: 'Inter', sans-serif;
+  font-variant-numeric: tabular-nums;
+
+  &[data-theme='light'] {
+    color-scheme: light;
+  }
+
+  &[data-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  /* Reset */
+  :where(*, ::before, ::after) {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     border: 0 solid;
   }
 
-  .flight-progress :where(h1, h2, h3, p) {
+  :where(h1, p) {
     font-size: inherit;
     font-weight: inherit;
   }
 
-  .flight-progress :where(button, input, select) {
+  :where(button, input, select) {
     font: inherit;
     color: inherit;
-    background-color: transparent;
+    background: transparent;
     border-radius: 0;
+    appearance: none;
+    cursor: pointer;
   }
 
-  .flight-progress :where(svg) {
+  :where(svg) {
     display: block;
+  }
+
+  /* The player: title or flight picker, the map in a frame, and the controls */
+  .title,
+  .flight-picker select {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 2rem;
+  }
+
+  .flight-picker {
+    position: relative;
+
+    @media (min-width: 48rem) {
+      align-self: flex-start;
+    }
+
+    select {
+      width: 100%;
+      height: 3rem;
+      padding: 0 3rem 0 1rem;
+      border-radius: 0.375rem;
+    }
+
+    svg {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      pointer-events: none;
+    }
+  }
+
+  .frame {
+    flex-shrink: 0;
+    overflow: hidden;
+    border: 1px solid var(--fp-color-outline);
+    border-radius: 0.375rem;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .controls button {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+  }
+
+  .controls button:hover,
+  .flight-picker select:hover {
+    background: var(--fp-color-container);
+  }
+
+  .controls input {
+    flex: 1;
+    min-width: 0;
+    height: 4rem;
+    padding: 0 0.5rem;
+    touch-action: pan-y;
+
+    &::-webkit-slider-runnable-track {
+      height: 0.5rem;
+      border-radius: 0.25rem;
+      /* The filled part: --value is set by the animation */
+      background: linear-gradient(
+          90deg,
+          var(--fp-color-main) var(--value, 0%),
+          transparent 0
+        )
+        var(--fp-color-container);
+    }
+
+    &::-webkit-slider-thumb {
+      width: 1.75rem;
+      height: 1.75rem;
+      margin-top: -0.625rem;
+      border-radius: 50%;
+      background: var(--fp-color-main);
+      appearance: none;
+    }
+
+    &::-moz-range-track,
+    &::-moz-range-progress {
+      height: 0.5rem;
+      border-radius: 0.25rem;
+      background: var(--fp-color-container);
+    }
+
+    &::-moz-range-progress {
+      background: var(--fp-color-main);
+    }
+
+    &::-moz-range-thumb {
+      width: 1.75rem;
+      height: 1.75rem;
+      border: 0;
+      border-radius: 50%;
+      background: var(--fp-color-main);
+    }
+  }
+
+  /* The scene: 4:3, and 1024px wide by design, so its sizes are in cqw (1px = 0.09765625cqw) */
+  .scene {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    container-type: size;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* The map and route SVGs cover the scene */
+  .world-map,
+  .route-path {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .route-path {
+    overflow: visible;
+  }
+
+  /*
+   * The sea, and the land and outlines: set on the map itself, for its paths to inherit. Rules
+   * on the paths would miss the map's <use> copies (see WorldMapView).
+   */
+  .world-map:not(.country-names) {
+    background: var(--fp-color-container);
+    fill: var(--fp-color-background);
+    stroke: var(--fp-color-outline);
+    stroke-width: var(--map-stroke);
+  }
+
+  .country-names text {
+    fill: currentColor;
+    text-anchor: middle;
+    dominant-baseline: central;
+    opacity: 0.25;
+  }
+
+  .route-lines {
+    z-index: 1;
+  }
+
+  .marker-layer {
+    z-index: 5;
+  }
+
+  .route-segment {
+    fill: none;
+    stroke: var(--fp-color-product);
+    stroke-width: 16;
+  }
+
+  .flight-marker circle {
+    fill: var(--fp-color-background);
+    stroke: var(--fp-color-product);
+    stroke-width: 12;
+  }
+
+  /* A city cluster is a zero-size anchor at the route dot's centre */
+  .city-cluster {
+    position: absolute;
+    width: 0;
+    height: 0;
+  }
+
+  .route-dot {
+    position: absolute;
+    translate: -50% -50%;
+    width: 4.6875cqw;
+    height: 4.6875cqw;
+    border-radius: 50%;
+    background: var(--fp-color-product);
+  }
+
+  .city-copy {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 0.78125cqw;
+    font-weight: 600;
+
+    h1 {
+      font-size: 5.078125cqw;
+    }
+
+    p {
+      display: flex;
+      align-items: center;
+      gap: 0.5cqw;
+      font-size: 3.515625cqw;
+    }
+  }
+
+  /* The arrow points at the destination's time, and away from the origin's */
+  .destination p {
+    flex-direction: row-reverse;
+  }
+
+  /* dot radius 24px + 16px gap */
+  .above .city-copy {
+    bottom: 3.90625cqw;
+  }
+
+  .below .city-copy {
+    top: 3.90625cqw;
+  }
+
+  .align-start .city-copy {
+    left: -2.34375cqw;
+    align-items: flex-start;
+  }
+
+  .align-end .city-copy {
+    right: -2.34375cqw;
+    align-items: flex-end;
+  }
+
+  /* Beside the dot, lined up with its top */
+  .right.align-start .city-copy {
+    top: -2.34375cqw;
+    left: 3.90625cqw;
+  }
+
+  .left.align-end .city-copy {
+    top: -2.34375cqw;
+    right: 3.90625cqw;
+  }
+
+  /* Progress and flight data, in a bottom row or a right column of the 48px safe zone */
+  .data-panel {
+    position: absolute;
+    right: 4.6875%;
+    bottom: 6.25%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    &.row {
+      left: 4.6875%;
+    }
+
+    &.column {
+      top: 6.25%;
+      flex-direction: column;
+    }
+
+    div {
+      display: flex;
+      flex-direction: column;
+      gap: 0.78125cqw;
+    }
+
+    &.column div {
+      align-items: flex-end;
+    }
+  }
+
+  .remaining {
+    display: flex;
+    gap: 1.171875cqw;
+    font-size: 5.078125cqw;
+    font-weight: 600;
+  }
+
+  .distance {
+    font-size: 3.515625cqw;
+
+    :first-child {
+      font-weight: 600;
+    }
+  }
+
+  .row .distance {
+    flex-direction: row;
+    gap: 1.5625cqw;
+  }
+
+  .conditions {
+    display: flex;
+    gap: 3.125cqw;
+    font-size: 3.125cqw;
+
+    div {
+      gap: 0.390625cqw;
+      width: 14.6484375cqw;
+    }
+
+    dt,
+    dd {
+      display: flex;
+      gap: 0.78125cqw;
+    }
+
+    dt {
+      gap: 0.5859375cqw;
+      font-weight: 600;
+    }
+  }
+
+  .row .conditions div:last-child {
+    width: 9.765625cqw;
+  }
+
+  .column .conditions {
+    flex-direction: column;
   }
 }

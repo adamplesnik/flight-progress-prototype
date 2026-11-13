@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useImperativeHandle, useLayoutEffect, useRef, type Ref } from 'react'
 import { flushSync } from 'react-dom'
 import type { FlightModel, FlightReadout } from '../data/flightModel'
 import type { SceneLayout } from '../data/types'
@@ -39,38 +39,46 @@ function pathShareAt(
   return path[i - 1] + (path[i] - path[i - 1]) * Math.min(Math.max(t, 0), 1)
 }
 
+/** What a parent can do to the scene through its ref */
+export type SceneHandle = {
+  /** Jump to this point of the timeline (0..1) */
+  seekTo: (progress: number) => void
+}
+
 export function AnimatedRoute({
   layout,
   model,
   onReadout,
   initialProgress,
   paused,
-  seek,
   onProgress,
+  ref,
 }: {
   layout: SceneLayout
   model: FlightModel
   onReadout: (data: FlightReadout) => void
+  /** Where the flight starts (0..1), and starts again when the flight changes */
   initialProgress: number
   paused: boolean
-  /** Jump the animation to `to` (0..1); a new `id` triggers a new jump. */
-  seek: { to: number; id: number } | null
   /** Called with the timeline position (0..1) whenever it changes. */
-  onProgress: (progress: number) => void
+  onProgress?: (progress: number) => void
+  ref?: Ref<SceneHandle>
 }) {
   const routeRef = useRef<SVGPathElement>(null)
   const flownRef = useRef<SVGPathElement>(null)
   const markerRef = useRef<SVGGElement>(null)
-  const pausedRef = useRef(paused)
   const jumpRef = useRef<(to: number) => void>(undefined)
+  // The animation reads these as they are now, so a new callback or value does not restart it
+  const latest = useRef({ onReadout, onProgress, initialProgress, paused })
+  useLayoutEffect(() => {
+    latest.current = { onReadout, onProgress, initialProgress, paused }
+  })
 
-  useEffect(() => {
-    pausedRef.current = paused
-  }, [paused])
-
-  useEffect(() => {
-    if (seek) jumpRef.current?.(seek.to)
-  }, [seek])
+  useImperativeHandle(
+    ref,
+    () => ({ seekTo: (to) => jumpRef.current?.(to) }),
+    []
+  )
 
   // A layout effect, so the marker never paints at the SVG origin before the first frame
   useLayoutEffect(() => {
@@ -93,25 +101,24 @@ export function AnimatedRoute({
       const point = route.getPointAtLength(routeLength * flownShare)
       flown.setAttribute('stroke-dasharray', `${flownShare} 1`)
       marker.setAttribute('transform', `translate(${point.x} ${point.y})`)
-      onReadout(model.readoutAt(at))
-      onProgress(at)
+      latest.current.onReadout(model.readoutAt(at))
+      latest.current.onProgress?.(at)
     }
 
-    let progress = initialProgress
+    let progress = latest.current.initialProgress
     jumpRef.current = (to) => {
       progress = to
       render(to)
     }
 
     render(progress)
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     let frame = 0
     let previousTime: number | undefined
     const animate = (time: number) => {
       previousTime ??= time
 
-      if (!pausedRef.current) {
+      if (!latest.current.paused) {
         progress = (progress + (time - previousTime) / FLIGHT_DURATION) % 1
         // Text and marker change in the same frame
         flushSync(() => render(progress))
@@ -123,7 +130,7 @@ export function AnimatedRoute({
 
     frame = window.requestAnimationFrame(animate)
     return () => window.cancelAnimationFrame(frame)
-  }, [onReadout, onProgress, initialProgress, model, layout])
+  }, [model, layout])
 
   return (
     <>

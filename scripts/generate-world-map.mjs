@@ -47,10 +47,13 @@ function pathData(line, close) {
     x = nx
     y = ny
   }
-  return `M${startX / 100} ${startY / 100}l${moves.join(' ')}${close ? 'z' : ''}`.replace(
-    / -/g,
-    '-'
-  )
+  // Compact: no zero before a decimal point, no space before a minus or between two decimal
+  // points (1.5.25 is 1.5 and .25). Every ring starts with
+  // an absolute M: Safari draws a relative move that follows a closepath from the wrong point
+  return `M${startX / 100} ${startY / 100}l${moves.join(' ')}${close ? 'z' : ''}`
+    .replace(/ -/g, '-')
+    .replace(/(^|[^\d.])0\./g, '$1.')
+    .replace(/(\.\d+) (?=\.)/g, '$1')
 }
 
 /**
@@ -94,12 +97,16 @@ const lines = mesh(topology, topology.objects.countries)
   .coordinates.map((line) => pathData(continuous(line).map(project), false))
   .join('')
 
-// Fallback colours: the page styles the map with --color-background and --color-border
+// The map is drawn inline (see WorldMapView), and its copies beside the first are <use>
+// clones, which page styles do not reach: only what they inherit from the map's <svg>. So
+// the paths carry no colours of their own and take fill, stroke and stroke-width from it
+// (see style.css); the colours on this <svg> are only for looking at the file by itself.
+// The land has no outline of its own: the outlines are the second path.
 writeFileSync(
   'src/assets/world-mercator.svg',
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WORLD_SIZE} ${WORLD_SIZE}">
-<path fill="#fafafa" d="${land}"/>
-<path fill="none" stroke="#b2b2b2" stroke-linecap="round" stroke-linejoin="round" d="${lines}"/>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WORLD_SIZE} ${WORLD_SIZE}" fill="#fafafa" stroke="#b2b2b2">
+<path stroke="none" d="${land}"/>
+<path fill="none" stroke-linecap="round" stroke-linejoin="round" d="${lines}"/>
 </svg>
 `
 )

@@ -1,7 +1,7 @@
 /*
  * Inter, which the text layout is measured for: import 'flight-progress/fonts.css' unless
- * the page loads Inter (400 and 600) already. Copied to the package as is, so the app's
- * bundler resolves these from @fontsource/inter.
+ * the page loads Inter (400 and 600) already. Copied to the package as it is (Vite's public
+ * directory for the package build), so the app's bundler resolves these from @fontsource/inter.
  */
 @import '@fontsource/inter/latin-400.css';
 @import '@fontsource/inter/latin-ext-400.css';

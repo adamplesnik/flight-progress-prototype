@@ -6,31 +6,6 @@ import { mapView } from './scene'
 let content = ''
 
 /**
- * Safari draws a line that follows a closepath (`zl`, as SVGO writes it) from the wrong point,
- * leaving long stray lines. An explicit move to the subpath's start (`m0 0`) is equivalent.
- */
-const safariSafe = (svg: string) =>
-  svg.replace(
-    /\bd="([^"]*)"/g,
-    (_, d: string) => `d="${d.replace(/z(?=[^mz])/gi, 'z m0 0')}"`
-  )
-
-/**
- * The map's copies beside the first are `<use>` clones, which page styles do not reach: only
- * what they inherit from the map's <svg>. So the paths lose their own colours (the file's
- * fallback) and take fill, stroke and stroke-width from it (see index.css). The land keeps no
- * outline of its own; the outlines are the path drawn with `fill="none"`.
- */
-const inheritColours = (svg: string) =>
-  svg.replace(/<path\b[^>]*>/g, (tag) => {
-    const filled = /\bfill="(?!none")[^"]*"/.test(tag)
-    const stroked = /\bstroke="(?!none")[^"]*"/.test(tag)
-    let out = tag.replace(/\s(fill|stroke)="(?!none")[^"]*"/g, '')
-    if (filled && !stroked) out = out.replace('<path', '<path stroke="none"')
-    return out
-  })
-
-/**
  * The world map, inline rather than an <img>: only then can its outlines keep their
  * weight when zoomed in. Up to 1× they scale down with the map.
  */
@@ -41,9 +16,9 @@ export function WorldMapView({ map }: { map: SceneLayout['map'] }) {
     let cancelled = false
     // A chunk of its own: the map is large, and loads after the scene's first paint
     import('../assets/world-mercator.svg?raw').then(({ default: svg }) => {
-      content = inheritColours(
-        safariSafe(svg.replace(/^[\s\S]*?<svg[^>]*>|<\/svg>\s*$/g, ''))
-      )
+      // The paths inside the file's <svg>, which take their colours from this one's
+      // (see scripts/generate-world-map.mjs)
+      content = svg.replace(/^[\s\S]*?<svg[^>]*>|<\/svg>\s*$/g, '')
       if (!cancelled) setLoaded(true)
     })
     return () => {

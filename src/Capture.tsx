@@ -10,12 +10,11 @@ export function Capture() {
   const flight = flightById(params.get('flight') ?? '')
   if (!flight) return <p data-missing>No such flight</p>
   return (
-    <div className="fp:w-[1024px]">
-      <FlightMap
-        flight={flight}
-        progress={Number(params.get('progress'))}
-        theme="light"
-      />
-    </div>
+    <FlightMap
+      flight={flight}
+      progress={Number(params.get('progress'))}
+      theme="light"
+      className="capture"
+    />
   )
 }

@@ -1,19 +1,35 @@
-@import 'tailwindcss' prefix(fp);
+/* The demo: Inter, the package's stylesheet, and the page around the player */
 @import '@fontsource/inter';
 @import '@fontsource/inter/600.css';
-@import './lib/scene.css';
+@import './lib/style.css';
 
-@layer base {
-  html,
-  body,
-  #root {
-    width: 100%;
-    min-height: 100%;
-  }
+body {
+  background: var(--fp-color-background);
+}
 
+.demo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 1rem;
+}
+
+.demo-player {
+  max-width: 64rem;
+}
+
+/* On a large screen the player fits the window's height too, and the page does not scroll */
+@media (min-width: 64rem) {
   body {
-    background: var(--fp-color-background);
-    font-family: 'Inter', serif;
-    font-variant-numeric: tabular-nums;
+    overflow: hidden;
   }
+
+  .demo-player {
+    width: min(100vw - 2rem, (100dvh - 160px) * 4 / 3);
+  }
+}
+
+.capture {
+  width: 1024px;
 }
