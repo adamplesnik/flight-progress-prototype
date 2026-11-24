@@ -1,15 +1,13 @@
-import { useEffect, useMemo, useState, type Ref } from 'react'
-import { createFlightModel, type FlightReadout } from '../data/flightModel'
+import { useEffect, useMemo, type Ref } from 'react'
+import { createFlightModel } from '../data/flightModel'
 import type { Flight } from '../data/types'
 import { computeLayout } from '../layout/computeLayout'
-import { AnimatedRoute, type SceneHandle } from './AnimatedRoute'
+import { AnimatedRoute } from './AnimatedRoute'
 import { CityCluster } from './CityCluster'
 import { CountryNames } from './CountryNames'
 import { DataPanel } from './DataPanel'
+import { useReadout, type SceneHandle } from './useTimeline'
 import { WorldMapView } from './WorldMapView'
-
-const sameReadout = (a: FlightReadout, b: FlightReadout) =>
-  (Object.keys(a) as (keyof FlightReadout)[]).every((k) => a[k] === b[k])
 
 /**
  * The 4:3 map with the flight on it: route, cities and flight data, as wide as its parent. A new flight starts at `initialProgress` again.
@@ -33,7 +31,7 @@ export function MapScene({
 }) {
   const layout = useMemo(() => computeLayout(flight), [flight])
   const model = useMemo(() => createFlightModel(flight), [flight])
-  const [data, setData] = useState(() => model.readoutAt(initialProgress))
+  const [data, onReadout] = useReadout(model, initialProgress)
 
   // For whoever adds a flight: what the layout could not do for it
   useEffect(() => {
@@ -50,10 +48,7 @@ export function MapScene({
         ref={ref}
         layout={layout}
         model={model}
-        // The same readout again and again while the numbers stand still: no re-render
-        onReadout={(next) =>
-          setData((prev) => (sameReadout(prev, next) ? prev : next))
-        }
+        onReadout={onReadout}
         initialProgress={initialProgress}
         paused={paused}
         onProgress={onProgress}

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { Flight } from '../data/types'
-import type { SceneHandle } from '../partials/AnimatedRoute'
-import { MapScene } from '../partials/MapScene'
+import type { SceneHandle } from '../partials/useTimeline'
+import { FlightScene, type Variant } from '../partials/FlightScene'
 import { rootProps, type Theme } from './theme'
 
 export type FlightMapProps = {
@@ -17,6 +17,9 @@ export type FlightMapProps = {
   paused?: boolean
   /** Called with the timeline position (0..1) as it changes, every frame while animating */
   onProgress?: (progress: number) => void
+  /** 'map' (the default), or 'compact' for small screens: no map, a straight track and large text, 3:2 */
+  variant?: Variant
+  /** Map variant only */
   showCountryNames?: boolean
   theme?: Theme
   className?: string
@@ -32,6 +35,7 @@ export function FlightMap({
   initialProgress,
   paused = false,
   onProgress,
+  variant = 'map',
   showCountryNames,
   theme,
   className,
@@ -44,13 +48,14 @@ export function FlightMap({
   }, [progress])
 
   return (
-    <div {...rootProps('flight-map', theme, className)}>
-      <MapScene
+    <div {...rootProps(`flight-map ${variant}`, theme, className)}>
+      <FlightScene
         ref={scene}
         flight={flight}
         paused={held || paused}
         onProgress={onProgress}
         initialProgress={held ? progress : initialProgress}
+        variant={variant}
         showCountryNames={showCountryNames}
       />
     </div>

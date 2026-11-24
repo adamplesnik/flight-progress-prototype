@@ -16,7 +16,7 @@ A Vite development server is **already running** on `$PORT` (default 8443). You 
 Start with task-relevant files below. Only follow imports or inspect other files when required, when a documented path is missing, or when the repository contradicts this guide.
 
 - `src/lib/` - The npm package: `index.ts` (its exports), `FlightMap`, `FlightPlayer`, `theme.ts`, and the stylesheets (`style.css`, all the package's styles, which the demo imports too, and `public/fonts.css`, copied to the package as it is); `build.ts` is the package build's entry
-- `src/partials/` - The scene's components, used by both the package and the demo
+- `src/partials/` - The scene's components, used by both the package and the demo: `MapScene` (the `map` variant), `CompactScene` (the `compact` variant, for small screens), and `useTimeline`, the animation both share
 - `src/layout/` - Projection, the layout solver and text metrics
 - `src/data/` - Flight data (`flights/`, one file per flight, listed in `flights/index.ts`) and types
 - `src/main.tsx` - Demo entrypoint and router: `/:ORIG-DEST` shows a flight, `/capture` is for screenshots
@@ -39,5 +39,5 @@ Plain CSS, no framework. All the package's styles are in `src/lib/style.css`:
 - Everything is nested in `.flight-progress`, the root of `FlightMap` and `FlightPlayer`, so no class name reaches the rest of the page. Components use short semantic class names (`scene`, `data-panel`, `controls`) and combine them in template strings
 - The theme is the `--fp-color-*` custom properties on `.flight-progress`, each a `light-dark()` pair. `color-scheme` picks the side: the system's by default, or the `theme` prop's through `data-theme`
 - The root's own rules are in `:where()`, so a class passed as `className` overrides them. The reset is scoped to `.flight-progress` too
-- Sizes inside the scene are in `cqw`: the scene is 1024px wide by design, so 1px is 0.09765625cqw
+- Sizes inside the scene are in `cqw`: the scene is 1024px wide by design, so 1px is 0.09765625cqw. The compact scene is 1152px wide by design, and its sizes are `calc(n * var(--px))`
 - The demo's `<body>` has the `flight-progress` class, for the theme colours; the demo's own styles are classes in `src/index.css`

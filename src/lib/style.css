@@ -381,4 +381,166 @@
   .column .conditions {
     flex-direction: column;
   }
+
+  /*
+   * The compact scene, for small screens: 3:2, and 1152px wide by design. --px is one of those
+   * px, so sizes read as in the design: calc(76 * var(--px)). The origin's dot is at (96, 96),
+   * the destination's at (96, 672); --flown (0..1, set by the animation) is the share flown.
+   */
+  .compact-scene {
+    --px: calc(100cqw / 1152);
+    position: relative;
+    aspect-ratio: 3 / 2;
+    container-type: size;
+    overflow: hidden;
+    background: var(--fp-color-container);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* The track runs from dot centre to dot centre */
+  .track {
+    position: absolute;
+    top: calc(96 * var(--px));
+    left: calc(84 * var(--px));
+    width: calc(24 * var(--px));
+    height: calc(576 * var(--px));
+
+    > * {
+      position: absolute;
+      left: 50%;
+    }
+
+    .route-dot {
+      width: calc(80 * var(--px));
+      height: calc(80 * var(--px));
+    }
+
+    .route-dot.start {
+      top: 0;
+    }
+
+    .route-dot.end {
+      top: 100%;
+    }
+  }
+
+  /* Dashes from the destination up; the flown part and the marker cover them */
+  .track-remaining,
+  .track-flown {
+    top: 0;
+    width: 100%;
+    translate: -50%;
+  }
+
+  .track-remaining {
+    bottom: 0;
+    background: repeating-linear-gradient(
+      to top,
+      var(--fp-color-product) 0 calc(24 * var(--px)),
+      transparent 0 calc(56 * var(--px))
+    );
+  }
+
+  .track-flown {
+    height: calc(var(--flown, 0) * 100%);
+    background: var(--fp-color-product);
+  }
+
+  .track-marker {
+    top: calc(var(--flown, 0) * 100%);
+    translate: -50% -50%;
+    width: calc(84 * var(--px));
+    height: calc(84 * var(--px));
+    border: calc(20 * var(--px)) solid var(--fp-color-product);
+    border-radius: 50%;
+    background: var(--fp-color-background);
+  }
+
+  /*
+   * A city: the name 76px and the time 50px, smaller together when --city-size says so. With
+   * line-height 1, a line's middle is the middle of its capitals: the origin's name and the
+   * destination's time line up with their dots.
+   */
+  .compact-city {
+    --ratio: calc(var(--city-size, 76) / 76);
+    position: absolute;
+    left: calc(188 * var(--px));
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: calc(12 * var(--ratio) * var(--px));
+    font-weight: 600;
+
+    h1 {
+      font-size: calc(76 * var(--ratio) * var(--px));
+    }
+
+    p {
+      display: flex;
+      align-items: center;
+      gap: calc(12 * var(--ratio) * var(--px));
+      font-size: calc(50 * var(--ratio) * var(--px));
+    }
+
+    svg {
+      width: calc(46 * var(--ratio) * var(--px));
+      height: calc(46 * var(--ratio) * var(--px));
+    }
+
+    &.origin {
+      top: calc((96 - 38 * var(--ratio)) * var(--px));
+    }
+
+    &.destination {
+      bottom: calc((96 - 25 * var(--ratio)) * var(--px));
+    }
+  }
+
+  /*
+   * Time and distance left: beside the marker, the gap under the time at its centre, but held
+   * between the cities (the origin ends at 196, the destination starts at 559; 40 gap, 204 tall)
+   */
+  .compact-progress {
+    position: absolute;
+    top: calc(clamp(236, 13 + var(--flown, 0) * 576, 315) * var(--px));
+    left: calc(188 * var(--px));
+    display: flex;
+    flex-direction: column;
+    gap: calc(14 * var(--px));
+    font-size: calc(50 * var(--px));
+
+    .remaining {
+      gap: calc(16 * var(--px));
+      font-size: calc(76 * var(--px));
+    }
+
+    .km {
+      font-weight: 600;
+    }
+  }
+
+  /* Flight data at the top right, its first capitals level with the origin's name */
+  .compact-scene .conditions {
+    position: absolute;
+    top: calc(63 * var(--px));
+    right: calc(56 * var(--px));
+    flex-direction: column;
+    align-items: flex-end;
+    gap: calc(40 * var(--px));
+    font-size: calc(40 * var(--px));
+
+    div {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: calc(10 * var(--px));
+      width: auto;
+    }
+
+    dt,
+    dd {
+      gap: calc(8 * var(--px));
+    }
+  }
 }

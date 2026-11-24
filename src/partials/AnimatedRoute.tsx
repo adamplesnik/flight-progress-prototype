@@ -1,12 +1,9 @@
-import { useImperativeHandle, useLayoutEffect, useRef, type Ref } from 'react'
-import { flushSync } from 'react-dom'
-import type { FlightModel, FlightReadout } from '../data/flightModel'
+import { useRef } from 'react'
 import type { SceneLayout } from '../data/types'
 import { SCENE } from './scene'
+import { useTimeline, type TimelineOptions } from './useTimeline'
 
 const VIEW_BOX = `0 0 ${SCENE.w} ${SCENE.h}`
-// Length of one full animation loop (ms)
-const FLIGHT_DURATION = 40000
 // Route dash pattern (px)
 const DASH_LENGTH = 28
 const DASH_GAP = 30
@@ -39,53 +36,18 @@ function pathShareAt(
   return path[i - 1] + (path[i] - path[i - 1]) * Math.min(Math.max(t, 0), 1)
 }
 
-/** What a parent can do to the scene through its ref */
-export type SceneHandle = {
-  /** Jump to this point of the timeline (0..1) */
-  seekTo: (progress: number) => void
-}
-
 export function AnimatedRoute({
   layout,
-  model,
-  onReadout,
-  initialProgress,
-  paused,
-  onProgress,
-  ref,
-}: {
-  layout: SceneLayout
-  model: FlightModel
-  onReadout: (data: FlightReadout) => void
-  /** Where the flight starts (0..1), and starts again when the flight changes */
-  initialProgress: number
-  paused: boolean
-  /** Called with the timeline position (0..1) whenever it changes. */
-  onProgress?: (progress: number) => void
-  ref?: Ref<SceneHandle>
-}) {
+  ...timeline
+}: TimelineOptions & { layout: SceneLayout }) {
   const routeRef = useRef<SVGPathElement>(null)
   const flownRef = useRef<SVGPathElement>(null)
   const markerRef = useRef<SVGGElement>(null)
-  const jumpRef = useRef<(to: number) => void>(undefined)
-  // The animation reads these as they are now, so a new callback or value does not restart it
-  const latest = useRef({ onReadout, onProgress, initialProgress, paused })
-  useLayoutEffect(() => {
-    latest.current = { onReadout, onProgress, initialProgress, paused }
-  })
 
-  useImperativeHandle(
-    ref,
-    () => ({ seekTo: (to) => jumpRef.current?.(to) }),
-    []
-  )
-
-  // A layout effect, so the marker never paints at the SVG origin before the first frame
-  useLayoutEffect(() => {
+  useTimeline(timeline, () => {
     const route = routeRef.current
     const flown = flownRef.current
     const marker = markerRef.current
-
     if (!route || !flown || !marker) return
 
     fitDashes(route)
@@ -93,44 +55,16 @@ export function AnimatedRoute({
 
     // `at` is timeline time (0..1); the marker follows distance flown,
     // so it stays put until take-off and moves slowly while the aircraft is slow.
-    const render = (at: number) => {
+    return (at) => {
       const flownShare = pathShareAt(
         layout.routeShares,
-        model.distanceProgressAt(at)
+        timeline.model.distanceProgressAt(at)
       )
       const point = route.getPointAtLength(routeLength * flownShare)
       flown.setAttribute('stroke-dasharray', `${flownShare} 1`)
       marker.setAttribute('transform', `translate(${point.x} ${point.y})`)
-      latest.current.onReadout(model.readoutAt(at))
-      latest.current.onProgress?.(at)
     }
-
-    let progress = latest.current.initialProgress
-    jumpRef.current = (to) => {
-      progress = to
-      render(to)
-    }
-
-    render(progress)
-
-    let frame = 0
-    let previousTime: number | undefined
-    const animate = (time: number) => {
-      previousTime ??= time
-
-      if (!latest.current.paused) {
-        progress = (progress + (time - previousTime) / FLIGHT_DURATION) % 1
-        // Text and marker change in the same frame
-        flushSync(() => render(progress))
-      }
-
-      previousTime = time
-      frame = window.requestAnimationFrame(animate)
-    }
-
-    frame = window.requestAnimationFrame(animate)
-    return () => window.cancelAnimationFrame(frame)
-  }, [model, layout])
+  }, [timeline.model, layout])
 
   return (
     <>

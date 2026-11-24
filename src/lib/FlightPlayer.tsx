@@ -2,8 +2,8 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import type { Flight } from '../data/types'
 import { Header } from '../partials/Header'
 import { PlaybackControls } from '../partials/PlaybackControls'
-import type { SceneHandle } from '../partials/AnimatedRoute'
-import { MapScene } from '../partials/MapScene'
+import type { SceneHandle } from '../partials/useTimeline'
+import { FlightScene, type Variant } from '../partials/FlightScene'
 import { rootProps, type Theme } from './theme'
 
 export type FlightPlayerProps = {
@@ -17,6 +17,9 @@ export type FlightPlayerProps = {
   initialProgress?: number
   /** Start playing, without waiting for the play button. Default false */
   autoPlay?: boolean
+  /** 'map' (the default), or 'compact' for small screens: no map, a straight track and large text, 3:2 */
+  variant?: Variant
+  /** Map variant only */
   showCountryNames?: boolean
   theme?: Theme
   className?: string
@@ -33,6 +36,7 @@ export function FlightPlayer({
   onSelectFlight,
   initialProgress,
   autoPlay = false,
+  variant = 'map',
   showCountryNames,
   theme,
   className,
@@ -57,7 +61,7 @@ export function FlightPlayer({
   useLayoutEffect(showProgress, [])
 
   return (
-    <div {...rootProps('flight-player', theme, className)}>
+    <div {...rootProps(`flight-player ${variant}`, theme, className)}>
       {header && (
         <Header
           flight={flight}
@@ -66,12 +70,13 @@ export function FlightPlayer({
         />
       )}
       <div className="frame">
-        <MapScene
+        <FlightScene
           ref={scene}
           flight={flight}
           paused={paused || scrubbing}
           onProgress={onProgress}
           initialProgress={initialProgress}
+          variant={variant}
           showCountryNames={showCountryNames}
         />
       </div>

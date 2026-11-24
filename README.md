@@ -18,6 +18,8 @@ route sits and where the city names and data go, so that nothing overlaps.
   the date line continue onto the next copy of the map
 - **Playback** — play, pause and a scrubbing slider that follows the flight
 - **Responsive** — the controls stack on narrow screens, and the scene scales with its container
+- **Compact variant** — for small screens: no map, a straight track from origin to destination
+  and large text; on the demo, add `?variant=compact` to the address
 - **Light and dark mode** — following the system setting, through a small set of theme colours
 
 ## Getting started
@@ -31,15 +33,15 @@ pnpm dev
 
 The app runs at http://localhost:8443 (or the port in `PORT`).
 
-| Command | What it does |
-| --- | --- |
-| `pnpm dev` | Development server with hot reload |
-| `pnpm build` | Production build into `dist/` |
-| `pnpm preview` | Serve the production build |
-| `pnpm build:lib` | Build the package into `dist-lib/` |
-| `pnpm screens` | Remake `public/screens/` from `screens/positions.mjs`, with the dev server running |
-| `pnpm format` | Format the sources with Prettier |
-| `node scripts/generate-world-map.mjs` | Regenerate the world map and country names |
+| Command                               | What it does                                                                       |
+| ------------------------------------- | ---------------------------------------------------------------------------------- |
+| `pnpm dev`                            | Development server with hot reload                                                 |
+| `pnpm build`                          | Production build into `dist/`                                                      |
+| `pnpm preview`                        | Serve the production build                                                         |
+| `pnpm build:lib`                      | Build the package into `dist-lib/`                                                 |
+| `pnpm screens`                        | Remake `public/screens/` from `screens/positions.mjs`, with the dev server running |
+| `pnpm format`                         | Format the sources with Prettier                                                   |
+| `node scripts/generate-world-map.mjs` | Regenerate the world map and country names                                         |
 
 ## Using the package
 
@@ -62,9 +64,12 @@ import 'flight-progress/fonts.css' // unless the page loads Inter 400 and 600 al
 // Only the map, without border or rounded corners: animated, or held at a position
 <FlightMap flight={lisZurich} />
 <FlightMap flight={lisZurich} progress={0.4} theme="dark" />
+
+// For small screens, such as an 80mm display above the seats: no map, large text, 3:2
+<FlightMap flight={lisZurich} variant="compact" />
 ```
 
-Both take the full width of their parent, with the map at 4:3. `theme` is `'system'` (the
+Both take the full width of their parent, with the map at 4:3, or 3:2 for `variant="compact"`. `theme` is `'system'` (the
 default), `'light'` or `'dark'`. `progress` and `initialProgress` are shares (0..1) of the
 flight's timeline, which includes the time on the ground before take-off and after landing.
 The world map, about 1.4 MB, loads as a chunk of its own after the first paint.

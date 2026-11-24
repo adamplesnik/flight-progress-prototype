@@ -28,6 +28,10 @@ body {
   .demo-player {
     width: min(100vw - 2rem, (100dvh - 160px) * 4 / 3);
   }
+
+  .demo-player.compact {
+    width: min(100vw - 2rem, (100dvh - 160px) * 3 / 2);
+  }
 }
 
 .capture {
