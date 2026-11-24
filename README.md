@@ -88,8 +88,10 @@ The package also exports the flights (`flights`, each by name, `flightById`, `fi
 
 Screenshots of every flight, 2048 × 1536, are in `public/screens/`, so the demo serves them at
 `https://flights.adamplesnik.com/screens/<flight id>.png`, for example
-[lis-zurich.png](https://flights.adamplesnik.com/screens/lis-zurich.png). They are not part of
-the npm package.
+[lis-zurich.png](https://flights.adamplesnik.com/screens/lis-zurich.png), and in the dark theme
+at `<flight id>-dark.png`, for example
+[lis-zurich-dark.png](https://flights.adamplesnik.com/screens/lis-zurich-dark.png). They are not
+part of the npm package.
 
 `screens/positions.mjs` sets where each flight is caught, in percent of its timeline, and
 `pnpm screens` (with the dev server running and Google Chrome installed) remakes

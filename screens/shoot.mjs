@@ -1,7 +1,7 @@
 /**
  * Captures the map of each flight in positions.mjs at 1024 × 768, 2× (2048 × 1536 px),
- * into public/screens/<flight id>.png, from the dev server's /capture page. The site
- * serves them at /screens/<flight id>.png.
+ * light and dark, into public/screens/<flight id>.png and <flight id>-dark.png, from the
+ * dev server's /capture page. The site serves them at /screens/<flight id>.png.
  *
  * Needs the dev server running and Google Chrome installed:
  *   pnpm screens
@@ -25,20 +25,26 @@ const browser = await puppeteer.launch({ executablePath: chrome })
 const page = await browser.newPage()
 await page.setViewport({ width: 1100, height: 850, deviceScaleFactor: 2 })
 
-for (const [id, percent] of Object.entries(positions)) {
-  const query = new URLSearchParams({ flight: id, progress: percent / 100 })
-  await page.goto(`${baseUrl}/capture?${query}`)
-  // The map is in once it has paths, the font once the document's fonts are ready
-  await page.waitForSelector('.world-map path, [data-missing]')
-  if (await page.$('[data-missing]')) {
-    console.warn(`No flight "${id}": skipped`)
-    continue
-  }
-  await page.evaluate(() => document.fonts.ready)
+const themes = { light: '', dark: '-dark' }
+for (const [id, percent] of Object.entries(positions))
+  for (const [theme, suffix] of Object.entries(themes)) {
+    const query = new URLSearchParams({
+      flight: id,
+      progress: percent / 100,
+      theme,
+    })
+    await page.goto(`${baseUrl}/capture?${query}`)
+    // The map is in once it has paths, the font once the document's fonts are ready
+    await page.waitForSelector('.world-map path, [data-missing]')
+    if (await page.$('[data-missing]')) {
+      console.warn(`No flight "${id}": skipped`)
+      continue
+    }
+    await page.evaluate(() => document.fonts.ready)
 
-  const file = path.join(outDir, `${id}.png`)
-  await (await page.$('.scene')).screenshot({ path: file })
-  console.log(`${path.relative(process.cwd(), file)}  ${percent}%`)
-}
+    const file = path.join(outDir, `${id}${suffix}.png`)
+    await (await page.$('.scene')).screenshot({ path: file })
+    console.log(`${path.relative(process.cwd(), file)}  ${percent}%`)
+  }
 
 await browser.close()
