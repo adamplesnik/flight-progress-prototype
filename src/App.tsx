@@ -1,39 +1,28 @@
 import { Analytics } from '@vercel/analytics/react'
 import { useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { flightPath, flights, flightTitle } from './data/flights'
 import type { Flight } from './data/types'
+import { DemoOptions, useDemoOptions } from './DemoOptions'
 import { FlightPlayer } from './lib/FlightPlayer'
 import { Mockup } from './Mockup'
 
 /**
- * The demo site: the player for the flight in the address, sized to fit the window.
- * ?variant=compact shows the compact variant, ?mockup=1 shows it on a screen in a cabin photo,
- * ?night=1 the dark theme, and the cabin at night.
+ * The demo site: the player for the flight in the address, sized to fit the window, with
+ * options for the compact variant, a cabin photo around it, and night mode.
  */
 function App({ flight }: { flight: Flight }) {
   const navigate = useNavigate()
-  const [params, setParams] = useSearchParams()
-  const variant = params.get('variant') === 'compact' ? 'compact' : 'map'
-  const mockup = params.has('mockup')
-  const night = params.has('night')
+  const { search } = useLocation()
+  const [options, setOption] = useDemoOptions()
+  const { mockup, night } = options
+  const variant = options.compact ? 'compact' : 'map'
+
   // The page is dark at night too: <body> has the theme's colours
   useEffect(() => {
     if (night) document.body.dataset.theme = 'dark'
     else delete document.body.dataset.theme
   }, [night])
-
-  /** Sets or clears an option in the address, keeping the others */
-  const setOption = (name: string, value: string | null) =>
-    setParams(
-      (prev) => {
-        const next = new URLSearchParams(prev)
-        if (value === null) next.delete(name)
-        else next.set(name, value)
-        return next
-      },
-      { replace: true }
-    )
 
   return (
     <main className="demo">
@@ -41,45 +30,11 @@ function App({ flight }: { flight: Flight }) {
       <FlightPlayer
         flight={flight}
         flights={flights}
-        onSelectFlight={(f) =>
-          navigate({ pathname: flightPath(f), search: params.toString() })
-        }
+        // Another flight, the same options
+        onSelectFlight={(f) => navigate({ pathname: flightPath(f), search })}
         variant={variant}
         theme={night ? 'dark' : undefined}
-        toolbar={
-          <div className="demo-options">
-            <label>
-              <input
-                type="checkbox"
-                checked={variant === 'compact'}
-                onChange={(e) =>
-                  setOption('variant', e.target.checked ? 'compact' : null)
-                }
-              />
-              Compact
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={mockup}
-                onChange={(e) =>
-                  setOption('mockup', e.target.checked ? '1' : null)
-                }
-              />
-              Real world mockup
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={night}
-                onChange={(e) =>
-                  setOption('night', e.target.checked ? '1' : null)
-                }
-              />
-              Night mode
-            </label>
-          </div>
-        }
+        toolbar={<DemoOptions options={options} onChange={setOption} />}
         frame={
           mockup
             ? (scene) => (

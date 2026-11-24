@@ -20,7 +20,7 @@ Start with task-relevant files below. Only follow imports or inspect other files
 - `src/layout/` - Projection, the layout solver and text metrics
 - `src/data/` - Flight data (`flights/`, one file per flight, listed in `flights/index.ts`) and types
 - `src/main.tsx` - Demo entrypoint and router: `/:ORIG-DEST` shows a flight, `/capture` is for screenshots
-- `src/App.tsx` - The demo page, with the compact and mockup checkboxes; `src/Mockup.tsx` - the live scene on a screen in a cabin photo (`public/mockups/`, the screens' corners measured in the photos); `src/Capture.tsx` - the screenshot page
+- `src/App.tsx` - The demo page; `src/DemoOptions.tsx` - its checkboxes (compact, mockup, night), kept in the address; `src/Mockup.tsx` - the live scene on a screen in a cabin photo (`public/mockups/`, the screens' corners measured in the photos); `src/Capture.tsx` - the screenshot page
 - `src/index.css` - The demo's CSS entrypoint: the fonts, `src/lib/style.css` and the page's own styles
 - `screens/` - `pnpm screens` writes screenshots into `public/screens/`, which the site serves at `/screens/<flight id>.png`; they are not in the npm package
 - `vite.config.ts` - The demo build; `vite.lib.config.ts` and `tsconfig.lib.json` - the package build (`pnpm build:lib` into `dist-lib/`)
