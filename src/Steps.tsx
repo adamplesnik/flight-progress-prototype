@@ -53,11 +53,7 @@ export function Steps() {
           height={SCENE.h - 2 * MARGIN}
         />
         {step === 1 && (
-          <rect
-            className="panel-area"
-            rx="24"
-            {...panelArea(layout.orientation)}
-          />
+          <rect className="panel-area" {...panelArea(layout.orientation)} />
         )}
       </svg>
     </div>
