@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import type { Flight } from '../data/types'
 import { Header } from '../partials/Header'
 import { PlaybackControls } from '../partials/PlaybackControls'
@@ -13,6 +13,10 @@ export type FlightPlayerProps = {
   /** With `onSelectFlight`, the name becomes a picker of these flights */
   flights?: Flight[]
   onSelectFlight?: (flight: Flight) => void
+  /** Shown beside the flight's name, e.g. options of your own */
+  toolbar?: ReactNode
+  /** Puts the scene in a frame of your own instead of the rounded border */
+  frame?: (scene: ReactNode) => ReactNode
   /** Where the flight starts (0..1 of its timeline). Default 0.2 */
   initialProgress?: number
   /** Start playing, without waiting for the play button. Default false */
@@ -34,6 +38,8 @@ export function FlightPlayer({
   header = true,
   flights = [],
   onSelectFlight,
+  toolbar,
+  frame,
   initialProgress,
   autoPlay = false,
   variant = 'map',
@@ -60,26 +66,33 @@ export function FlightPlayer({
   // The scene reports where it starts before the slider is there to show it
   useLayoutEffect(showProgress, [])
 
+  const sceneView = (
+    <FlightScene
+      ref={scene}
+      flight={flight}
+      paused={paused || scrubbing}
+      onProgress={onProgress}
+      initialProgress={initialProgress}
+      variant={variant}
+      showCountryNames={showCountryNames}
+    />
+  )
+
   return (
     <div {...rootProps(`flight-player ${variant}`, theme, className)}>
-      {header && (
-        <Header
-          flight={flight}
-          flights={flights}
-          onSelectFlight={onSelectFlight}
-        />
+      {(header || toolbar) && (
+        <div className="player-header">
+          {header && (
+            <Header
+              flight={flight}
+              flights={flights}
+              onSelectFlight={onSelectFlight}
+            />
+          )}
+          {toolbar}
+        </div>
       )}
-      <div className="frame">
-        <FlightScene
-          ref={scene}
-          flight={flight}
-          paused={paused || scrubbing}
-          onProgress={onProgress}
-          initialProgress={initialProgress}
-          variant={variant}
-          showCountryNames={showCountryNames}
-        />
-      </div>
+      {frame ? frame(sceneView) : <div className="frame">{sceneView}</div>}
       <PlaybackControls
         paused={paused}
         onToggle={() => setPaused((p) => !p)}

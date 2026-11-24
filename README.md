@@ -19,7 +19,10 @@ route sits and where the city names and data go, so that nothing overlaps.
 - **Playback** — play, pause and a scrubbing slider that follows the flight
 - **Responsive** — the controls stack on narrow screens, and the scene scales with its container
 - **Compact variant** — for small screens: no map, a straight track from origin to destination
-  and large text; on the demo, add `?variant=compact` to the address
+  and large text
+- **Real world mockup** — on the demo, the live player on a screen in a cabin photo
+  (`public/mockups/`), put into perspective with a CSS `matrix3d()`; the two checkboxes beside
+  the flight picker turn on the compact variant and the mockup (`?variant=compact&mockup=1`)
 - **Light and dark mode** — following the system setting, through a small set of theme colours
 
 ## Getting started
@@ -68,6 +71,9 @@ import 'flight-progress/fonts.css' // unless the page loads Inter 400 and 600 al
 // For small screens, such as an 80mm display above the seats: no map, large text, 3:2
 <FlightMap flight={lisZurich} variant="compact" />
 ```
+
+`FlightPlayer` also takes `toolbar`, shown beside the flight's name, and `frame`, a function
+that puts the scene in a frame of your own instead of the rounded border.
 
 Both take the full width of their parent, with the map at 4:3, or 3:2 for `variant="compact"`. `theme` is `'system'` (the
 default), `'light'` or `'dark'`. `progress` and `initialProgress` are shares (0..1) of the

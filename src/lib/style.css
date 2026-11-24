@@ -66,6 +66,13 @@
   }
 
   /* The player: title or flight picker, the map in a frame, and the controls */
+  .player-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.5rem;
+  }
+
   .title,
   .flight-picker select {
     font-size: 1.5rem;
@@ -75,9 +82,11 @@
 
   .flight-picker {
     position: relative;
+    /* Full width on a small screen, the toolbar under it */
+    flex: 1 1 100%;
 
     @media (min-width: 48rem) {
-      align-self: flex-start;
+      flex: none;
     }
 
     select {
