@@ -1,6 +1,6 @@
 import { Analytics } from '@vercel/analytics/react'
 import { useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router'
+import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { flightPath, flights, flightTitle } from './data/flights'
 import type { Flight } from './data/types'
 import { DemoOptions, useDemoOptions } from './DemoOptions'
@@ -9,7 +9,8 @@ import { Mockup } from './Mockup'
 
 /**
  * The demo site: the player for the flight in the address, sized to fit the window, with
- * options for the compact variant, a cabin photo around it, and night mode.
+ * options for the compact variant, a cabin photo around it, and night mode, and a footer
+ * with the author. ?no-footer=1 leaves the footer out, for embeds.
  */
 function App({ flight }: { flight: Flight }) {
   const navigate = useNavigate()
@@ -17,6 +18,8 @@ function App({ flight }: { flight: Flight }) {
   const [options, setOption] = useDemoOptions()
   const { mockup, night } = options
   const variant = options.compact ? 'compact' : 'map'
+  const [params] = useSearchParams()
+  const footer = params.get('no-footer') !== '1'
 
   // The page is dark at night too: <body> has the theme's colours
   useEffect(() => {
@@ -25,7 +28,7 @@ function App({ flight }: { flight: Flight }) {
   }, [night])
 
   return (
-    <main className="demo">
+    <main className={`demo ${footer ? 'with-footer' : ''}`}>
       <title>{`${flightTitle(flight)} · Flight progress prototype`}</title>
       <FlightPlayer
         flight={flight}
@@ -46,6 +49,14 @@ function App({ flight }: { flight: Flight }) {
         }
         className={`demo-player ${mockup ? 'with-mockup' : ''}`}
       />
+      {footer && (
+        <footer className="demo-footer">
+          Designed by Adam Plesník —{' '}
+          <a href="https://adamplesnik.com" target="_blank">
+            adamplesnik.com
+          </a>
+        </footer>
+      )}
       <Analytics />
     </main>
   )
