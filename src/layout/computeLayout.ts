@@ -23,12 +23,13 @@ const MARGIN = 48 // safe zone: nothing but the map may leave it
 
 // Sizes of the components, in scene px (see style.css)
 const DOT_RADIUS = 24
-const MARKER_RADIUS = 18 // the route's outer limit: the marker travels along it
+const MARKER_RADIUS = 24 // the route's outer limit: the marker (r 18, stroke 12) travels along it
 const CITY_GAP = 40 // dot centre → city text
 
 // Clearances
-const CITY_LINE_CLEARANCE = 10
 const OBSTACLE_PADDING = 8
+// The safe zone around the route: the marker sweeps all of it, so no city text may enter
+const CITY_LINE_CLEARANCE = MARKER_RADIUS + OBSTACLE_PADDING
 
 // Search
 const ROUTE_STEPS = 96
