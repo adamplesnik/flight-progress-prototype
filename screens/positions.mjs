@@ -16,3 +16,6 @@ export const positions = {
   'seoul-helsinki': 55,
   'sydney-hobart': 67,
 }
+
+/** The flights screens/shoot.mjs shows the layout's steps with: one for each data panel */
+export const stepsFlights = { column: 'lis-zurich', row: 'jfk-singapore' }

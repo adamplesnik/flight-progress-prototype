@@ -5,6 +5,7 @@ import App from './App'
 import { Capture } from './Capture'
 import { defaultFlight, findFlight, flightPath } from './data/flights'
 import './index.css'
+import { Steps } from './Steps'
 
 /** /ORIG-DEST shows that flight; anything else goes to the default one. */
 function FlightRoute() {
@@ -22,6 +23,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/capture" element={<Capture />} />
+        <Route path="/steps" element={<Steps />} />
         <Route path="/:route" element={<FlightRoute />} />
         <Route
           path="*"

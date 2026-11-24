@@ -19,10 +19,10 @@ Start with task-relevant files below. Only follow imports or inspect other files
 - `src/partials/` - The scene's components, used by both the package and the demo: `MapScene` (the `map` variant), `CompactScene` (the `compact` variant, for small screens), and `useTimeline`, the animation both share
 - `src/layout/` - Projection, the layout solver and text metrics
 - `src/data/` - Flight data (`flights/`, one file per flight, listed in `flights/index.ts`) and types
-- `src/main.tsx` - Demo entrypoint and router: `/:ORIG-DEST` shows a flight, `/capture` is for screenshots
-- `src/App.tsx` - The demo page; `src/DemoOptions.tsx` - its checkboxes (compact, mockup, night), kept in the address; `src/Mockup.tsx` - the live scene on a screen in a cabin photo (`public/mockups/`, the screens' corners measured in the photos); `src/Capture.tsx` - the screenshot page
+- `src/main.tsx` - Demo entrypoint and router: `/:ORIG-DEST` shows a flight, `/capture` and `/steps` are for screenshots
+- `src/App.tsx` - The demo page; `src/DemoOptions.tsx` - its checkboxes (compact, mockup, night), kept in the address; `src/Mockup.tsx` - the live scene on a screen in a cabin photo (`public/mockups/`, the screens' corners measured in the photos); `src/Capture.tsx` - the screenshot page; `src/Steps.tsx` - the layout in two steps, for the steps screenshots
 - `src/index.css` - The demo's CSS entrypoint: the fonts, `src/lib/style.css` and the page's own styles
-- `screens/` - `pnpm screens` writes screenshots into `public/screens/`, light and dark, which the site serves at `/screens/<flight id>.png` and `<flight id>-dark.png`; they are not in the npm package
+- `screens/` - `pnpm screens` writes screenshots into `public/screens/`, light and dark, which the site serves at `/screens/<flight id>.png` and `<flight id>-dark.png`, and the layout's steps, for a column and a row data panel, into `public/screens/steps/`; they are not in the npm package
 - `vite.config.ts` - The demo build; `vite.lib.config.ts` and `tsconfig.lib.json` - the package build (`pnpm build:lib` into `dist-lib/`)
 - `.mise.toml` - Toolchain versions for Node.js and pnpm
 

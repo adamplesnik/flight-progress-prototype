@@ -97,6 +97,12 @@ part of the npm package.
 `pnpm screens` (with the dev server running and Google Chrome installed) remakes
 `public/screens/` from the `/capture` page.
 
+`public/screens/steps/` shows how the scene is laid out, in two 2048 × 1536 steps for each place
+the data panel can go: `column-1.png` and `row-1.png` the safe zone, the route and the cities,
+and the room kept for the panel; `column-2.png` and `row-2.png` the panel in it. The flights are
+`stepsFlights` in `screens/positions.mjs`, and `pnpm screens` remakes them from the `/steps`
+page.
+
 ## Releasing
 
 Bump `version` in `package.json` (`npm version patch --no-git-tag-version`, or `minor`/`major`)
@@ -137,7 +143,7 @@ each route's distance and duration, not recorded flight data.
 - `src/lib/style.css` — all the styles, in plain CSS nested in `.flight-progress`, so the
   package's stylesheet leaves the rest of the page alone. The theme is five `--fp-color-*`
   colours, each a `light-dark()` pair
-- `src/Capture.tsx` and `screens/` — the page and script that make the screenshots
+- `src/Capture.tsx`, `src/Steps.tsx` and `screens/` — the pages and script that make the screenshots
 
 ## Built with
 

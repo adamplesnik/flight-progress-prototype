@@ -3,6 +3,10 @@
  * light and dark, into public/screens/<flight id>.png and <flight id>-dark.png, from the
  * dev server's /capture page. The site serves them at /screens/<flight id>.png.
  *
+ * Then how the scene is laid out, in two steps for each data panel (the flights in
+ * `stepsFlights`), light only: into public/screens/steps/column-1.png, column-2.png,
+ * row-1.png and row-2.png, from the /steps page.
+ *
  * Needs the dev server running and Google Chrome installed:
  *   pnpm screens
  * Optional environment: PORT (dev server, default 8443), CHROME_PATH (Chrome executable).
@@ -11,7 +15,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import puppeteer from 'puppeteer-core'
-import { positions } from './positions.mjs'
+import { positions, stepsFlights } from './positions.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const outDir = path.join(here, '..', 'public', 'screens')
@@ -45,6 +49,30 @@ for (const [id, percent] of Object.entries(positions))
     const file = path.join(outDir, `${id}${suffix}.png`)
     await (await page.$('.scene')).screenshot({ path: file })
     console.log(`${path.relative(process.cwd(), file)}  ${percent}%`)
+  }
+
+const stepsDir = path.join(outDir, 'steps')
+fs.mkdirSync(stepsDir, { recursive: true })
+for (const [orientation, flight] of Object.entries(stepsFlights))
+  for (const step of [1, 2]) {
+    const query = new URLSearchParams({
+      flight,
+      progress: positions[flight] / 100,
+      step,
+    })
+    await page.goto(`${baseUrl}/steps?${query}`)
+    await page.waitForSelector('.data-panel, [data-missing]')
+    if (await page.$('[data-missing]')) {
+      console.warn(`No flight "${flight}": skipped`)
+      break
+    }
+    await page.evaluate(() => document.fonts.ready)
+
+    const file = path.join(stepsDir, `${orientation}-${step}.png`)
+    await (await page.$('.steps')).screenshot({ path: file })
+    console.log(
+      `${path.relative(process.cwd(), file)}  ${flight}, step ${step}`
+    )
   }
 
 await browser.close()

@@ -149,3 +149,64 @@ body {
 .capture {
   width: 1024px;
 }
+
+/*
+ * How the scene is laid out (see Steps.tsx): 1 the safe zone, the route and the cities, and the
+ * room kept for the data panel; 2 the data panel in it. No marker, and the drawing in the
+ * text colour; in step 2 the route and cities are faded, in solid colours so the route and the
+ * dots do not darken where they meet.
+ */
+.steps {
+  --ink: var(--fp-color-main);
+  --faded: color-mix(
+    in srgb,
+    var(--fp-color-main) 20%,
+    var(--fp-color-background)
+  );
+
+  position: relative;
+
+  .scene {
+    background: var(--fp-color-background);
+  }
+
+  .marker-layer {
+    display: none;
+  }
+
+  .route-segment {
+    stroke: var(--ink);
+    stroke-dasharray: none;
+  }
+
+  .city-cluster {
+    color: var(--ink);
+  }
+
+  .route-dot {
+    background: var(--ink);
+  }
+
+  .step-guides {
+    z-index: 0;
+  }
+
+  .safe-zone {
+    fill: none;
+    stroke: var(--fp-color-outline);
+    stroke-width: 2;
+    stroke-dasharray: 16 12;
+  }
+
+  .panel-area {
+    fill: var(--faded);
+  }
+}
+
+.steps.step-1 .data-panel {
+  display: none;
+}
+
+.steps.step-2 :is(.route-lines, .city-cluster) {
+  --ink: var(--faded);
+}

@@ -19,7 +19,7 @@ import { textWidth } from './textMetrics'
 
 type Rect = { x: number; y: number; w: number; h: number }
 
-const MARGIN = 48 // safe zone: nothing but the map may leave it
+export const MARGIN = 48 // safe zone: nothing but the map may leave it
 
 // Sizes of the components, in scene px (see style.css)
 const DOT_RADIUS = 24
@@ -50,7 +50,7 @@ const CITY_POSITIONS: { placement: CitySide; align: 'start' | 'end' }[] = [
 // A bottom row or a right column holds progress and flight data, and the route and cities
 // get the rest of the safe zone: above the row they stop 192px from the bottom, and beside
 // the column there is a 16px gap
-const LAYOUTS: { area: Rect; orientation: Orientation }[] = [
+export const LAYOUTS: { area: Rect; orientation: Orientation }[] = [
   {
     area: { x: MARGIN, y: MARGIN, w: 928, h: 528 },
     orientation: 'row',
