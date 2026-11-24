@@ -7,16 +7,41 @@ body {
   background: var(--fp-color-background);
 }
 
+/*
+ * The page: soft washes of colour for the glass to blur. Every colour is a light-dark() pair,
+ * so night mode (the dark theme on <body>) gets dark glass.
+ */
 .demo {
+  --glass: light-dark(rgb(255 255 255 / 0.55), rgb(30 32 36 / 0.55));
+  --glass-edge: light-dark(rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.1));
+  --glass-highlight: light-dark(
+    rgb(255 255 255 / 0.9),
+    rgb(255 255 255 / 0.08)
+  );
+  --glass-shadow: light-dark(rgb(20 30 50 / 0.12), rgb(0 0 0 / 0.5));
+  --wash-warm: light-dark(rgb(204 0 0 / 0.14), rgb(204 0 0 / 0.18));
+  --wash-cool: light-dark(rgb(60 130 220 / 0.18), rgb(60 130 220 / 0.16));
+  --wash-sea: light-dark(rgb(90 200 190 / 0.18), rgb(90 200 190 / 0.1));
+
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100dvh;
   padding: 1rem;
+  background: light-dark(#e4e6ea, #0e0f11);
 }
 
+/* The player on frosted glass: translucent, blurring the page, a light edge and a soft shadow */
 .demo-player {
   max-width: 64rem;
+  padding: 1rem 0.5rem 0.5rem;
+  border: 1px solid var(--glass-edge);
+  border-radius: 1rem;
+  background: var(--glass);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 1.5rem 4rem -1rem var(--glass-shadow);
+  backdrop-filter: blur(1.5rem) saturate(1.6);
 }
 
 /* On a large screen the player fits the window's height too, and the page does not scroll */
@@ -26,12 +51,12 @@ body {
   }
 
   .demo-player {
-    width: min(100vw - 2rem, (100dvh - 160px) * 4 / 3);
+    width: min(100vw - 2rem, (100dvh - 13rem) * 4 / 3);
   }
 
   .demo-player.compact,
   .demo-player.with-mockup {
-    width: min(100vw - 2rem, (100dvh - 160px) * 3 / 2);
+    width: min(100vw - 2rem, (100dvh - 13rem) * 3 / 2);
   }
 }
 

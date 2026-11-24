@@ -434,7 +434,7 @@
     }
   }
 
-  /* Dashes from the destination up; the flown part and the marker cover them */
+  /* Solid down to the marker, dashes from the destination up to it */
   .track-remaining,
   .track-flown {
     top: 0;
@@ -442,7 +442,9 @@
     translate: -50%;
   }
 
+  /* Only under the marker, so no dash shows at the flown part's edges */
   .track-remaining {
+    top: calc(var(--flown, 0) * 100%);
     bottom: 0;
     background: repeating-linear-gradient(
       to top,
