@@ -160,7 +160,7 @@ body {
   --ink: var(--fp-color-main);
   --faded: color-mix(
     in srgb,
-    var(--fp-color-main) 10%,
+    var(--fp-color-main) 30%,
     var(--fp-color-background)
   );
 
