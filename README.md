@@ -57,20 +57,23 @@ npm install flight-progress
 ```
 
 ```tsx
-import { FlightMap, FlightPlayer, flights, lisZurich } from 'flight-progress'
+import { FlightMap, FlightPlayer, flights, flightById } from 'flight-progress'
 import 'flight-progress/style.css'
 import 'flight-progress/fonts.css' // unless the page loads Inter 400 and 600 already
 
+// A flight by its id, which is also its screenshot's name
+const flight = flightById('lis-zurich')!
+
 // The whole view: the flight's name, the map in a rounded frame, play/pause and a slider
-<FlightPlayer flight={lisZurich} />
+<FlightPlayer flight={flight} />
 <FlightPlayer flight={flight} flights={flights} onSelectFlight={setFlight} />
 
 // Only the map, without border or rounded corners: animated, or held at a position
-<FlightMap flight={lisZurich} />
-<FlightMap flight={lisZurich} progress={0.4} theme="dark" />
+<FlightMap flight={flight} />
+<FlightMap flight={flight} progress={0.4} theme="dark" />
 
 // For small screens, such as an 80mm display above the seats: no map, large text, 3:2
-<FlightMap flight={lisZurich} variant="compact" />
+<FlightMap flight={flight} variant="compact" />
 ```
 
 `FlightPlayer` also takes `toolbar`, shown beside the flight's name, and `frame`, a function
@@ -81,7 +84,8 @@ default), `'light'` or `'dark'`. `progress` and `initialProgress` are shares (0.
 flight's timeline, which includes the time on the ground before take-off and after landing.
 The world map, about 1.4 MB, loads as a chunk of its own after the first paint.
 
-The package also exports the flights (`flights`, each by name, `flightById`, `findFlight`),
+The package also exports the flights (`flights`, `defaultFlight`, `flightById` by id such as `'lis-zurich'`, `findFlight` by
+ICAO codes),
 `flightTitle`, `flightPath` and the `Flight` type, so you can pass in flights of your own.
 
 ## Screenshots

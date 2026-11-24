@@ -1,6 +1,6 @@
 import type { Flight } from '../types'
 
-export const sydneyHobart: Flight = {
+const flight: Flight = {
   id: 'sydney-hobart',
   origin: {
     city: 'Sydney',
@@ -65,3 +65,5 @@ export const sydneyHobart: Flight = {
     taxiKnots: 10,
   },
 }
+
+export default flight

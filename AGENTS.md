@@ -18,7 +18,7 @@ Start with task-relevant files below. Only follow imports or inspect other files
 - `src/lib/` - The npm package: `index.ts` (its exports), `FlightMap`, `FlightPlayer`, `theme.ts`, and the stylesheets (`style.css`, all the package's styles, which the demo imports too, and `public/fonts.css`, copied to the package as it is); `build.ts` is the package build's entry
 - `src/partials/` - The scene's components, used by both the package and the demo: `MapScene` (the `map` variant), `CompactScene` (the `compact` variant, for small screens), and `useTimeline`, the animation both share
 - `src/layout/` - Projection, the layout solver and text metrics
-- `src/data/` - Flight data (`flights/`, one file per flight, listed in `flights/index.ts`) and types
+- `src/data/` - Flight data (`flights/`, one file per flight, its id the file name and the flight its default export; `flights/index.ts` picks up every file) and types
 - `src/main.tsx` - Demo entrypoint and router: `/:ORIG-DEST` shows a flight, `/capture` and `/steps` are for screenshots
 - `src/App.tsx` - The demo page; `src/DemoOptions.tsx` - its checkboxes (compact, mockup, night), kept in the address; `src/Mockup.tsx` - the live scene on a screen in a cabin photo (`public/mockups/`, the screens' corners measured in the photos); `src/Capture.tsx` - the screenshot page; `src/Steps.tsx` - the layout in two steps, for the steps screenshots
 - `src/index.css` - The demo's CSS entrypoint: the fonts, `src/lib/style.css` and the page's own styles
