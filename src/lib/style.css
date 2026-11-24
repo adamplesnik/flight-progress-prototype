@@ -498,12 +498,12 @@
   }
 
   /*
-   * Time and distance left: beside the marker, the gap under the time at its centre, but held
-   * between the cities (the origin ends at 196, the destination starts at 559; 40 gap, 204 tall)
+   * Time and distance left, still in the middle between the cities: the origin ends at 196,
+   * the destination starts at 559, and the block is 204 tall
    */
   .compact-progress {
     position: absolute;
-    top: calc(clamp(236, 13 + var(--flown, 0) * 576, 315) * var(--px));
+    top: calc(276 * var(--px));
     left: calc(188 * var(--px));
     display: flex;
     flex-direction: column;
@@ -520,15 +520,15 @@
     }
   }
 
-  /* Flight data at the top right, its first capitals level with the origin's name */
+  /* Flight data at the right, in the middle: 3 × (50 + 10 + 50) + 2 × 36 = 402 tall */
   .compact-scene .conditions {
     position: absolute;
-    top: calc(63 * var(--px));
+    top: calc(183 * var(--px));
     right: calc(56 * var(--px));
     flex-direction: column;
     align-items: flex-end;
-    gap: calc(40 * var(--px));
-    font-size: calc(40 * var(--px));
+    gap: calc(36 * var(--px));
+    font-size: calc(50 * var(--px));
 
     div {
       display: flex;

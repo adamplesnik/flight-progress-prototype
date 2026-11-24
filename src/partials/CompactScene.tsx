@@ -14,25 +14,29 @@ const COMPACT = { w: 1152, margin: 56, textX: 188 }
 const CITY_SIZE = 76
 const TIME_SIZE = 50
 const ARROW_W = 58 // the time's arrow icon, 46px, and its 12px gap
-const DATA_W = 240 // the flight data column at the top right, and a gap before it
+// The flight data column at the right, as wide as "1,000 km/h", and a 40px gap before it.
+// It is level with the origin's time and the destination's name.
+const DATA_W = 320
 
-/** The largest font size up to `CITY_SIZE` at which the city's name and time fit `width`. */
-function citySize({ city, time }: City, width: number) {
-  const nameScale = width / textWidth(city, CITY_SIZE, 600)
-  const timeScale = width / (textWidth(time, TIME_SIZE, 600) + ARROW_W)
+/** The largest font size up to `CITY_SIZE` at which the city's name and time fit. */
+function citySize({ city, time }: City, nameWidth: number, timeWidth: number) {
+  const nameScale = nameWidth / textWidth(city, CITY_SIZE, 600)
+  const timeScale = timeWidth / (textWidth(time, TIME_SIZE, 600) + ARROW_W)
   return Math.floor(CITY_SIZE * Math.min(1, nameScale, timeScale))
 }
 
 function CompactCity({
   city,
   isDestination,
-  width,
+  nameWidth,
+  timeWidth,
 }: {
   city: City
   isDestination: boolean
-  width: number
+  nameWidth: number
+  timeWidth: number
 }) {
-  const size = citySize(city, width)
+  const size = citySize(city, nameWidth, timeWidth)
   return (
     <section
       className={`compact-city ${isDestination ? 'destination' : 'origin'}`}
@@ -72,7 +76,7 @@ export function CompactScene({
   const [data, onReadout] = useReadout(model, initialProgress)
   const sceneRef = useRef<HTMLDivElement>(null)
 
-  // The track, marker and progress follow the share of the distance flown, through --flown
+  // The track and marker follow the share of the distance flown, through --flown
   useTimeline(
     { model, onReadout, initialProgress, paused, onProgress, ref },
     () => {
@@ -101,12 +105,14 @@ export function CompactScene({
       <CompactCity
         city={flight.origin}
         isDestination={false}
-        width={copyWidth - DATA_W}
+        nameWidth={copyWidth}
+        timeWidth={copyWidth - DATA_W}
       />
       <CompactCity
         city={flight.destination}
         isDestination={true}
-        width={copyWidth}
+        nameWidth={copyWidth - DATA_W}
+        timeWidth={copyWidth}
       />
       <div className="compact-progress">
         <p className="remaining">
