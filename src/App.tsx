@@ -1,4 +1,5 @@
 import { Analytics } from '@vercel/analytics/react'
+import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { flightPath, flights, flightTitle } from './data/flights'
 import type { Flight } from './data/types'
@@ -16,6 +17,11 @@ function App({ flight }: { flight: Flight }) {
   const variant = params.get('variant') === 'compact' ? 'compact' : 'map'
   const mockup = params.has('mockup')
   const night = params.has('night')
+  // The page is dark at night too: <body> has the theme's colours
+  useEffect(() => {
+    if (night) document.body.dataset.theme = 'dark'
+    else delete document.body.dataset.theme
+  }, [night])
 
   /** Sets or clears an option in the address, keeping the others */
   const setOption = (name: string, value: string | null) =>

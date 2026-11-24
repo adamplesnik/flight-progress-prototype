@@ -21,8 +21,9 @@ route sits and where the city names and data go, so that nothing overlaps.
 - **Compact variant** — for small screens: no map, a straight track from origin to destination
   and large text
 - **Real world mockup** — on the demo, the live player on a screen in a cabin photo
-  (`public/mockups/`), put into perspective with a CSS `matrix3d()`; the two checkboxes beside
-  the flight picker turn on the compact variant and the mockup (`?variant=compact&mockup=1`)
+  (`public/mockups/`, by day and by night), put into perspective with a CSS `matrix3d()`. The
+  checkboxes beside the flight picker turn on the compact variant, the mockup and night mode,
+  which is the dark theme and the cabin at night (`?variant=compact&mockup=1&night=1`)
 - **Light and dark mode** — following the system setting, through a small set of theme colours
 
 ## Getting started

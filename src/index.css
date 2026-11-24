@@ -82,7 +82,7 @@ body {
 /* A screen is never as bright as paper, and catches a little of the cabin's light */
 .mockup-screen {
   overflow: hidden;
-  filter: brightness(0.9) contrast(0.95);
+  filter: brightness(0.95) contrast(0.99);
 
   &::after {
     position: absolute;
@@ -97,14 +97,13 @@ body {
   }
 }
 
-/* The large screen: warm light from the side, in focus */
-.mockup-large .mockup-screen {
-  filter: brightness(0.88) contrast(0.95) sepia(0.06);
+.mockup-screen .scene {
+  overflow: hidden;
+  border-radius: 17px 16px 16px 14px;
 }
 
-/* The small screen: out of focus like the rest of the photo */
-.mockup-small .mockup-screen {
-  filter: brightness(0.9) contrast(0.95) blur(2.5px);
+.mockup-screen .compact-scene {
+  border-radius: 42px 30px 30px 32px;
 }
 
 /* At night the screen is the light in the dark cabin: full brightness, no warm light, a glow */
@@ -115,10 +114,6 @@ body {
   &::after {
     opacity: 0.4;
   }
-}
-
-.mockup-small.night .mockup-screen {
-  filter: blur(2.5px);
 }
 
 .capture {
