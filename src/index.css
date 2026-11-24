@@ -12,7 +12,7 @@ body {
  * so night mode (the dark theme on <body>) gets dark glass.
  */
 .demo {
-  --glass: light-dark(rgb(255 255 255 / 0.55), rgb(30 32 36 / 0.55));
+  --glass: light-dark(rgb(255 255 255 / 0.75), rgb(30 32 36 / 0.55));
   --glass-edge: light-dark(rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.1));
   --glass-highlight: light-dark(
     rgb(255 255 255 / 0.9),
@@ -34,7 +34,6 @@ body {
 /* The player on frosted glass: translucent, blurring the page, a light edge and a soft shadow */
 .demo-player {
   max-width: 64rem;
-  padding: 1rem 0.5rem 0.5rem;
   border: 1px solid var(--glass-edge);
   border-radius: 1rem;
   background: var(--glass);
@@ -42,6 +41,7 @@ body {
     inset 0 1px 0 var(--glass-highlight),
     0 1.5rem 4rem -1rem var(--glass-shadow);
   backdrop-filter: blur(1.5rem) saturate(1.6);
+  overflow: hidden;
 }
 
 /* On a large screen the player fits the window's height too, and the page does not scroll */
@@ -50,12 +50,8 @@ body {
     overflow: hidden;
   }
 
+  /* 3:2 in every view: the map, the compact scene and the cabin photo */
   .demo-player {
-    width: min(100vw - 2rem, (100dvh - 13rem) * 4 / 3);
-  }
-
-  .demo-player.compact,
-  .demo-player.with-mockup {
     width: min(100vw - 2rem, (100dvh - 13rem) * 3 / 2);
   }
 }
@@ -92,7 +88,6 @@ body {
 .mockup {
   position: relative;
   overflow: hidden;
-  border-radius: 0.375rem;
 }
 
 .mockup-photo,

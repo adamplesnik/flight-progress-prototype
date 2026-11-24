@@ -79,7 +79,8 @@ const flight = flightById('lis-zurich')!
 `FlightPlayer` also takes `toolbar`, shown beside the flight's name, and `frame`, a function
 that puts the scene in a frame of your own instead of the rounded border.
 
-Both take the full width of their parent, with the map at 4:3, or 3:2 for `variant="compact"`. `theme` is `'system'` (the
+Both take the full width of their parent. `FlightMap` is 4:3, or 3:2 for `variant="compact"`;
+`FlightPlayer` is 3:2 in both, the 4:3 scene centred in it. `theme` is `'system'` (the
 default), `'light'` or `'dark'`. `progress` and `initialProgress` are shares (0..1) of the
 flight's timeline, which includes the time on the ground before take-off and after landing.
 The world map, about 1.4 MB, loads as a chunk of its own after the first paint.

@@ -4,18 +4,16 @@
  * class name reaches the rest of the page. The font is in fonts.css.
  */
 
-/* The root's own rules are in :where(), so a class passed as `className` overrides them */
-:where(.flight-progress) {
+.flight-progress {
   box-sizing: border-box;
   width: 100%;
   margin: 0;
   padding: 0;
 }
 
-:where(.flight-player) {
+.flight-player {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
 .flight-progress {
@@ -65,12 +63,12 @@
     display: block;
   }
 
-  /* The player: title or flight picker, the map in a frame, and the controls */
   .player-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem 1.5rem;
+    padding: 1rem;
   }
 
   .title,
@@ -108,14 +106,29 @@
   .frame {
     flex-shrink: 0;
     overflow: hidden;
-    border: 1px solid var(--fp-color-outline);
-    border-radius: 0.375rem;
+  }
+
+  /*
+   * The player is 3:2 in either variant: the 4:3 map scene in the middle of it, with the
+   * frame's border and corners on the scene
+   */
+  .map .frame {
+    aspect-ratio: 3 / 2;
+    border: 0;
+    border-radius: 0;
+
+    .scene {
+      height: 100%;
+      margin-inline: auto;
+      overflow: hidden;
+    }
   }
 
   .controls {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    padding: 1rem 1rem 0.5rem;
   }
 
   .controls button {
